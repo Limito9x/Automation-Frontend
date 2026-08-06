@@ -1,0 +1,13 @@
+import { z } from "zod";
+import { defineFilterConfig } from "@/components/filter-panel";
+
+export const {{camelCase name}}FilterSchema = z.object({
+  name: z.string().optional(),
+});
+
+export const {{camelCase name}}FilterConfig = defineFilterConfig({{camelCase name}}FilterSchema, {
+  fields: {
+    name: { label: "Name", fieldType: "text", placeholder: "Search..." },
+  },
+  quickFilters: [],
+});

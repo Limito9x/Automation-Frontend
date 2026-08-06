@@ -1,0 +1,27 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { createMutationHook } from "@/lib/query-utils";
+import * as {{pascalCase name}}sApi from "@/gen/endpoints/{{camelCase name}}s/{{camelCase name}}s";
+import { Get{{pascalCase name}}sQueryParams } from "@/gen/endpoints/{{camelCase name}}s/{{camelCase name}}s.zod";
+import { z } from "zod";
+
+type {{camelCase name}}Query = z.infer<typeof Get{{pascalCase name}}sQueryParams>;
+
+export const use{{pascalCase name}}s = (params: {{camelCase name}}Query) => {
+    return {{pascalCase name}}sApi.useGet{{pascalCase name}}s(params, {
+        query: {
+            placeholderData: keepPreviousData,
+        }
+    });
+};
+
+export const useGet{{pascalCase name}}ById = (id: string) => {
+    return {{pascalCase name}}sApi.useGet{{pascalCase name}}ById(id, {
+        query: {
+            enabled: !!id,
+        }
+    });
+};
+
+export const useCreate{{pascalCase name}} = createMutationHook({{pascalCase name}}sApi.useCreate{{pascalCase name}}, [{{pascalCase name}}sApi.getGet{{pascalCase name}}sQueryKey()]);
+export const useUpdate{{pascalCase name}} = createMutationHook({{pascalCase name}}sApi.useUpdate{{pascalCase name}}, [{{pascalCase name}}sApi.getGet{{pascalCase name}}sQueryKey()]);
+export const useDelete{{pascalCase name}} = createMutationHook({{pascalCase name}}sApi.useDelete{{pascalCase name}}, [{{pascalCase name}}sApi.getGet{{pascalCase name}}sQueryKey()]);

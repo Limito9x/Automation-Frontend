@@ -1,0 +1,42 @@
+import { Form, FormGrid, zodResolver, useForm } from "@/components/form";
+import { FormInput } from "@/components/form-controls";
+import { update{{pascalCase name}}Schema, type Update{{pascalCase name}}Input, type Update{{pascalCase name}}Output } from "../schemas/update{{pascalCase name}}Schema";
+import { useTranslation } from "react-i18next";
+// import { useGet{{pascalCase name}}ById } from "../hooks/use{{pascalCase name}}s";
+
+interface {{pascalCase name}}FormProps {
+    id: string;
+    onSubmit: (data: Update{{pascalCase name}}Output) => void;
+}
+
+export function Update{{pascalCase name}}Form({ id, onSubmit }: {{pascalCase name}}FormProps) {
+    const { t } = useTranslation("{{camelCase name}}s");
+    
+    // TODO: Bỏ comment khi API get by id khả dụng
+    // const { data: {{camelCase name}} } = useGet{{pascalCase name}}ById(id);
+    const {{camelCase name}}: any = null;
+
+    const form = useForm<Update{{pascalCase name}}Input, any, Update{{pascalCase name}}Output>({
+        resolver: zodResolver(update{{pascalCase name}}Schema),
+        values: {{camelCase name}} ? {
+            name: {{camelCase name}}.name || "",
+        } : undefined,
+        defaultValues: {
+            name: "",
+        }
+    });
+
+    return (
+        <Form form={form} formId={`update-{{kebabCase name}}-form-${id}`} onSubmit={onSubmit}>
+            <FormGrid cols={1}>
+                <FormInput
+                    control={form.control}
+                    label={t("fields.name", { defaultValue: "Name" })}
+                    name="name"
+                    type="text"
+                    placeholder="Enter name"
+                />
+            </FormGrid>
+        </Form>
+    );
+}

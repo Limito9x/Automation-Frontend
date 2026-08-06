@@ -1,0 +1,9 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { Create{{pascalCase name}}Page } from '@/features/{{camelCase name}}s/pages/Create{{pascalCase name}}Page'
+
+export const Route = createFileRoute('/_layout/{{kebabCase name}}s/new')({
+  staticData: {
+    breadcrumb: 'New {{pascalCase name}}',
+  },
+  component: Create{{pascalCase name}}Page,
+})

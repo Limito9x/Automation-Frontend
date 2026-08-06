@@ -1,0 +1,20 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { buildPagedSearchSchema } from "@/lib/schemas/pagedSearch.schema";
+import { {{constantCase name}}_FILTERABLE_FIELDS } from "@/features/{{camelCase name}}s/schemas/{{camelCase name}}FilterableFields";
+import { {{pascalCase name}}Page } from "@/features/{{camelCase name}}s/{{pascalCase name}}Page";
+
+export const {{camelCase name}}sRouteSearch = buildPagedSearchSchema({{constantCase name}}_FILTERABLE_FIELDS);
+
+export const Route = createFileRoute("/_layout/{{kebabCase name}}s")({
+    validateSearch: {{camelCase name}}sRouteSearch,
+    component: {{pascalCase name}}sRoute,
+});
+
+function {{pascalCase name}}sRoute() {
+    return (
+        <{{pascalCase name}}Page
+            useSearch={Route.useSearch}
+            useNavigate={Route.useNavigate}
+        />
+    );
+}

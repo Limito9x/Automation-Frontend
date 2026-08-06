@@ -1,0 +1,9 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { {{pascalCase name}}DetailPage } from '@/features/{{camelCase name}}s/pages/{{pascalCase name}}DetailPage'
+
+export const Route = createFileRoute('/_layout/{{kebabCase name}}s/$id/')({
+  staticData: {
+    breadcrumb: 'View Details',
+  },
+  component: {{pascalCase name}}DetailPage,
+})

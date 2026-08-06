@@ -1,0 +1,35 @@
+import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { FormPageShell } from "@/components/layout/FormPageShell";
+import { Create{{pascalCase name}}Form } from "../components/Create{{pascalCase name}}Form";
+import { useCreate{{pascalCase name}} } from "../hooks/use{{pascalCase name}}s";
+import type { Create{{pascalCase name}}Output } from "../schemas/create{{pascalCase name}}Schema";
+
+export function Create{{pascalCase name}}Page() {
+    const { t } = useTranslation("{{camelCase name}}");
+    const navigate = useNavigate();
+    const { mutate, isPending } = useCreate{{pascalCase name}}();
+
+    const handleSubmit = (data: Create{{pascalCase name}}Output) => {
+        mutate(
+            { data },
+            {
+                onSuccess: () => navigate({ to: "/{{kebabCase name}}s" }),
+            }
+        );
+    };
+
+    return (
+        <FormPageShell
+            title={t("actions.create", { defaultValue: "Create {{pascalCase name}}" })}
+            description={t("create.description", { defaultValue: "Add a new {{camelCase name}} to the system." })}
+            formId="create-{{kebabCase name}}-form"
+            isPending={isPending}
+            submitLabel={t("actions.create", { defaultValue: "Create" })}
+            onCancel={() => navigate({ to: "/{{kebabCase name}}s" })}
+            cancelLabel={t("common:cancel", { defaultValue: "Cancel" })}
+        >
+            <Create{{pascalCase name}}Form onSubmit={handleSubmit} />
+        </FormPageShell>
+    );
+}

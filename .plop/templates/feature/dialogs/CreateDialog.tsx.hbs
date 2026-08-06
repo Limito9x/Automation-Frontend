@@ -1,0 +1,30 @@
+import { Create{{pascalCase name}}Form } from "../components/Create{{pascalCase name}}Form";
+import { BaseFormDialog } from "@/components/custom-ui/dialog/BaseFormDialog";
+import type { DialogProps } from "@/lib/dialog-registry";
+import { useTranslation } from "react-i18next";
+import { useCreate{{pascalCase name}} } from "../hooks/use{{pascalCase name}}s";
+
+export function Create{{pascalCase name}}Dialog({ open, onOpenChange }: DialogProps<undefined>) {
+    const { t } = useTranslation("{{camelCase name}}s");
+    const create{{pascalCase name}} = useCreate{{pascalCase name}}();
+    const isPending = create{{pascalCase name}}.isPending;
+
+    return (
+        <BaseFormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("actions.create", { defaultValue: "Create {{pascalCase name}}" })}
+            formId="create-{{kebabCase name}}-form"
+            isPending={isPending}
+            size="md"
+        >
+            <Create{{pascalCase name}}Form
+                onSubmit={(values) => {
+                    create{{pascalCase name}}.mutate({ data: values }, {
+                        onSuccess: () => onOpenChange(false)
+                    });
+                }}
+            />
+        </BaseFormDialog>
+    );
+}

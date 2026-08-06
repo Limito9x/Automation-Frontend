@@ -1,0 +1,84 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useDialogStore } from "@/stores/dialogStore";
+import { useAuthStore } from "@/stores/authStore";
+{{#if (eq layout 'page')}}
+import { useNavigate } from "@tanstack/react-router";
+{{/if}}
+import { DataTableRowActions, type ActionItem } from "@/components/table/DataTableRowActions";
+import type { BaseSearchParams, useResourceQuery } from "@/lib/useResourceQuery";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { {{pascalCase name}}Dto } from "@/gen/model";
+import { EditIcon, TrashIcon, TypeIcon } from "lucide-react";
+import { useDataTable } from "@/lib/useDataTable";
+
+export interface Use{{pascalCase name}}TableOptions {
+    data: {{pascalCase name}}Dto[];
+    totalCount: number;
+    resource: ReturnType<typeof useResourceQuery<BaseSearchParams>>;
+}
+
+export function use{{pascalCase name}}Table({ data, totalCount, resource }: Use{{pascalCase name}}TableOptions) {
+    const { t } = useTranslation(["{{camelCase name}}s", "common"]);
+    const openDialog = useDialogStore((state) => state.openDialog);
+    const hasPermission = useAuthStore((state) => state.hasPermission);
+    {{#if (eq layout 'page')}}
+    const navigate = useNavigate();
+    {{/if}}
+
+    const columns = useMemo<ColumnDef<{{pascalCase name}}Dto>[]>(
+        () => [
+            {
+                accessorKey: "name",
+                header: () => t("fields.name", { defaultValue: "Name" }),
+                meta: { label: t("fields.name", { defaultValue: "Name" }), icon: TypeIcon },
+                cell: (info) => (
+                    <span className="font-semibold text-foreground">
+                        {info.getValue() as string}
+                    </span>
+                ),
+            },
+            {
+                id: "actions",
+                enableSorting: false,
+                cell: ({ row }) => {
+                    const item = row.original;
+                    const actions = [
+                        {{#if (eq layout 'page')}}
+                        {
+                            label: t("common:viewDetails", { defaultValue: "View Details" }),
+                            icon: EditIcon, // Using EditIcon or EyeIcon
+                            onClick: () => navigate({ to: "/{{kebabCase name}}s/$id", params: { id: item.id! } }),
+                        },
+                        hasPermission("{{camelCase name}}s:update") && {
+                            label: t("common:edit", { defaultValue: "Edit" }),
+                            icon: EditIcon,
+                            onClick: () => navigate({ to: "/{{kebabCase name}}s/$id/edit", params: { id: item.id! } }),
+                        },
+                        {{else}}
+                        hasPermission("{{camelCase name}}s:update") && {
+                            label: t("common:edit", { defaultValue: "Edit" }),
+                            icon: EditIcon,
+                            onClick: () => openDialog("update-{{kebabCase name}}", { id: item.id! }),
+                        },
+                        {{/if}}
+                        hasPermission("{{camelCase name}}s:delete") && {
+                            label: t("common:delete", { defaultValue: "Delete" }),
+                            icon: TrashIcon,
+                            onClick: () => openDialog("delete-{{kebabCase name}}", { id: item.id! }),
+                            destructive: true,
+                            separatorBefore: true,
+                        }
+                    ].filter(Boolean) as ActionItem[];
+
+                    return <DataTableRowActions actions={actions} />;
+                },
+            },
+        ],
+        [openDialog, hasPermission, t{{#if (eq layout 'page')}}, navigate{{/if}}]
+    );
+
+    const table = useDataTable({ data, columns, totalCount, resource });
+
+    return { table, columns };
+}

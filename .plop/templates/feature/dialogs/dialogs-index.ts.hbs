@@ -1,0 +1,49 @@
+import { lazy } from "react";
+import { registerDialog } from "@/lib/dialog-registry";
+
+declare module "@/lib/dialog-registry" {
+    interface GlobalDialogRegistry {
+        {{#if (eq layout 'dialog')}}
+        "create-{{kebabCase name}}": undefined;
+        "update-{{kebabCase name}}": { id: string };
+        {{/if}}
+        "delete-{{kebabCase name}}": { id: string };
+    }
+}
+
+{{#if (eq layout 'dialog')}}
+const Create{{pascalCase name}}Dialog = lazy(() =>
+    import("./Create{{pascalCase name}}Dialog").then((m) => ({
+        default: m.Create{{pascalCase name}}Dialog
+    }))
+);
+
+const Update{{pascalCase name}}Dialog = lazy(() =>
+    import("./Update{{pascalCase name}}Dialog").then((m) => ({
+        default: m.Update{{pascalCase name}}Dialog
+    }))
+);
+{{/if}}
+
+const Delete{{pascalCase name}}Dialog = lazy(() =>
+    import("./Delete{{pascalCase name}}Dialog").then((m) => ({
+        default: m.Delete{{pascalCase name}}Dialog
+    }))
+);
+
+{{#if (eq layout 'dialog')}}
+registerDialog({
+    id: "create-{{kebabCase name}}",
+    component: Create{{pascalCase name}}Dialog
+});
+
+registerDialog({
+    id: "update-{{kebabCase name}}",
+    component: Update{{pascalCase name}}Dialog
+});
+{{/if}}
+
+registerDialog({
+    id: "delete-{{kebabCase name}}",
+    component: Delete{{pascalCase name}}Dialog
+});

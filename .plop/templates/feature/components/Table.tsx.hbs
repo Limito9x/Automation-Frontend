@@ -1,0 +1,27 @@
+import { useTranslation } from "react-i18next";
+import { BaseTable } from "@/components/table/BaseTable";
+import type { ColumnDef, Table } from "@tanstack/react-table";
+import type { {{pascalCase name}}Dto } from "@/gen/model";
+
+export interface {{pascalCase name}}TableProps {
+    table: Table<{{pascalCase name}}Dto>;
+    columns: ColumnDef<{{pascalCase name}}Dto>[];
+    isLoading: boolean;
+}
+
+export function {{pascalCase name}}Table({
+    table,
+    columns,
+    isLoading,
+}: {{pascalCase name}}TableProps) {
+    const { t } = useTranslation(["{{camelCase name}}s", "common"]);
+
+    return (
+        <BaseTable
+            table={table}
+            columns={columns}
+            isLoading={isLoading}
+            caption={t("table.caption", { defaultValue: "{{pascalCase name}} List" })}
+        />
+    );
+}

@@ -1,0 +1,59 @@
+import { {{pascalCase name}}Table } from "./components/{{pascalCase name}}Table";
+import { useResourceQuery, type ResourcePageProps } from "@/lib/useResourceQuery";
+import { ResourcePageShell } from "@/components/layout/ResourcePageShell";
+import { {{camelCase name}}FilterConfig } from "./components/{{camelCase name}}Filter";
+import { use{{pascalCase name}}s } from "./hooks/use{{pascalCase name}}s";
+import { use{{pascalCase name}}Table } from "./hooks/use{{pascalCase name}}Table";
+import { useTranslation } from "react-i18next";
+import { DataTableViewOptions } from "@/components/table/DataTableViewOptions";
+{{#if (eq layout 'dialog')}}
+import { useDialogStore } from "@/stores/dialogStore";
+{{/if}}
+
+import { useAuthStore } from "@/stores/authStore";
+
+export function {{pascalCase name}}Page({ useSearch, useNavigate }: ResourcePageProps) {
+    {{#if (eq layout 'dialog')}}
+    const openDialog = useDialogStore((state) => state.openDialog);
+    {{/if}}
+    const { t } = useTranslation("{{camelCase name}}s");
+    const hasPermission = useAuthStore((state) => state.hasPermission);
+
+    const search = useSearch();
+    const navigate = useNavigate();
+
+    const resourceQuery = useResourceQuery(search, navigate);
+
+    const { data, isLoading } = use{{pascalCase name}}s(search as any);
+
+    const { table, columns } = use{{pascalCase name}}Table({
+        data: data?.items ?? [],
+        totalCount: data?.totalCount ?? 0,
+        resource: resourceQuery,
+    });
+
+    const canCreate = hasPermission("{{camelCase name}}s:create");
+
+    return (
+        <ResourcePageShell
+            title={t("page.title", { defaultValue: "{{pascalCase name}} Management" })}
+            description={t("page.description", { defaultValue: "Manage all {{camelCase name}}s in the system." })}
+            {{#if (eq layout 'dialog')}}
+            onAdd={canCreate ? () => openDialog("create-{{kebabCase name}}") : undefined}
+            {{else}}
+            onAdd={canCreate ? () => navigate({ to: "/{{kebabCase name}}s/new" }) : undefined}
+            {{/if}}
+            addLabel={t("actions.create", { defaultValue: "Add {{pascalCase name}}" })}
+            resource={resourceQuery}
+            filterConfig={ {{camelCase name}}FilterConfig }
+            searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search {{camelCase name}}s..." })}
+            renderViewOptions={<DataTableViewOptions table={table} />}
+        >
+            <{{pascalCase name}}Table
+                table={table}
+                columns={columns}
+                isLoading={isLoading}
+            />
+        </ResourcePageShell>
+    );
+}

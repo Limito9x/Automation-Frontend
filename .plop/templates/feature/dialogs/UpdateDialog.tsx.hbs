@@ -1,0 +1,33 @@
+import { Update{{pascalCase name}}Form } from "../components/Update{{pascalCase name}}Form";
+import { BaseFormDialog } from "@/components/custom-ui/dialog/BaseFormDialog";
+import type { DialogProps } from "@/lib/dialog-registry";
+import { useTranslation } from "react-i18next";
+import { useUpdate{{pascalCase name}} } from "../hooks/use{{pascalCase name}}s";
+
+export function Update{{pascalCase name}}Dialog({ open, onOpenChange, data }: DialogProps<{ id: string }>) {
+    const { t } = useTranslation("{{camelCase name}}s");
+    const update{{pascalCase name}} = useUpdate{{pascalCase name}}();
+    const isPending = update{{pascalCase name}}.isPending;
+
+    if (!data?.id) return null;
+
+    return (
+        <BaseFormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("actions.update", { defaultValue: "Edit {{pascalCase name}}" })}
+            formId={`update-{{kebabCase name}}-form-${data.id}`}
+            isPending={isPending}
+            size="md"
+        >
+            <Update{{pascalCase name}}Form
+                id={data.id}
+                onSubmit={(values) => {
+                    update{{pascalCase name}}.mutate({ id: data.id, data: values }, {
+                        onSuccess: () => onOpenChange(false)
+                    });
+                }}
+            />
+        </BaseFormDialog>
+    );
+}

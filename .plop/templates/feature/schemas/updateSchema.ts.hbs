@@ -1,0 +1,8 @@
+import { z } from "zod";
+
+export const update{{pascalCase name}}Schema = z.object({
+    name: z.string().min(1),
+});
+
+export type Update{{pascalCase name}}Input = z.input<typeof update{{pascalCase name}}Schema>;
+export type Update{{pascalCase name}}Output = z.output<typeof update{{pascalCase name}}Schema>;

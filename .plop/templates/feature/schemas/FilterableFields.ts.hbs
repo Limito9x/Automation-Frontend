@@ -1,0 +1,7 @@
+import type { FilterField } from "@/gen/model";
+
+export const {{constantCase name}}_FILTERABLE_FIELDS = {
+    name: ['Contains', 'Equal'],
+} as const satisfies Record<string, FilterField['operator'][]>;
+
+export type {{pascalCase name}}FilterableField = keyof typeof {{constantCase name}}_FILTERABLE_FIELDS;
