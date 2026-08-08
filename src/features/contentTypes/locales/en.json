@@ -1,0 +1,17 @@
+{
+    "page": {
+        "title": "ContentType Management",
+        "description": "Manage all contentTypes in the system.",
+        "listCaption": "ContentType List",
+        "searchPlaceholder": "Search contentTypes..."
+    },
+    "actions": {
+        "create": "Create ContentType",
+        "update": "Edit ContentType",
+        "delete": "Delete ContentType",
+        "deleteConfirm": "Are you sure you want to delete this contentType? This action cannot be undone."
+    },
+    "fields": {
+        "name": "Name"
+    }
+}

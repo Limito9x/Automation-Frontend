@@ -1,6 +1,6 @@
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { FormPageShell } from "@/components/layout/FormPageShell";
+import { FormPageShell } from "@/components/layout/shells/FormPageShell";
 import { CreateUserForm } from "../components/CreateUserForm";
 import { useCreateUser } from "../hooks/useUsers";
 import type { CreateUserOutput } from "../schemas/createUserSchema";

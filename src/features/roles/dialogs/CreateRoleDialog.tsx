@@ -1,5 +1,5 @@
 import { CreateRoleForm } from "../components/CreateRoleForm";
-import { BaseFormDialog } from "@/components/custom-ui/dialog/BaseFormDialog";
+import { BaseFormDialog } from "@/components/custom-ui/overlays/dialog/BaseFormDialog";
 import type { DialogProps } from "@/lib/dialog-registry";
 import { useTranslation } from "react-i18next";
 import { useCreateRole } from "../hooks/useRoles";

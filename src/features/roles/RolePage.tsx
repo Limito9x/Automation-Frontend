@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ResourcePageShell } from "@/components/layout/ResourcePageShell";
+import { ResourcePageShell } from "@/components/layout/shells/ResourcePageShell";
 import { RoleTable } from "./components/RoleTable";
 import { roleFilterConfig } from "./components/roleFilter";
 import { useDialogStore } from "@/stores/dialogStore";
@@ -32,20 +32,20 @@ export function RolePage({ useSearch, useNavigate }: RolePageProps) {
 
     return (
         <ResourcePageShell
-                title={t("page.title", { defaultValue: "Role Management" })}
-                description={t("page.description", { defaultValue: "Manage your roles here." })}
-                onAdd={() => openDialog("create-role")}
-                addLabel={t("actions.create", { defaultValue: "Add Role" })}
-                resource={resourceQuery}
-                filterConfig={ roleFilterConfig }
-                searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search..." })}
-                renderViewOptions={<DataTableViewOptions table={table} />}
-            >
-                <RoleTable
-                    table={table}
-                    columns={columns}
-                    isLoading={isLoading}
-                />
-            </ResourcePageShell>
+            title={t("page.title", { defaultValue: "Role Management" })}
+            description={t("page.description", { defaultValue: "Manage your roles here." })}
+            onAdd={() => openDialog("create-role")}
+            addLabel={t("actions.create", { defaultValue: "Add Role" })}
+            resource={resourceQuery}
+            filterConfig={roleFilterConfig}
+            searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search..." })}
+            renderViewOptions={<DataTableViewOptions table={table} />}
+        >
+            <RoleTable
+                table={table}
+                columns={columns}
+                isLoading={isLoading}
+            />
+        </ResourcePageShell>
     );
 }

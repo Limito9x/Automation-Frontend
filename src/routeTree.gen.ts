@@ -13,6 +13,7 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as Layout403RouteImport } from './routes/_layout/403'
+import { Route as LayoutProjectsRouteImport } from './routes/_layout/projects'
 import { Route as LayoutRolesRouteImport } from './routes/_layout/roles'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutUsersRouteImport } from './routes/_layout/users'
@@ -21,6 +22,7 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-pas
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as LayoutProjectsIndexRouteImport } from './routes/_layout/projects/index'
 import { Route as LayoutRolesIndexRouteImport } from './routes/_layout/roles/index'
 import { Route as LayoutSettingsIndexRouteImport } from './routes/_layout/settings/index'
 import { Route as LayoutSettingsNotificationsRouteImport } from './routes/_layout/settings/notifications'
@@ -30,10 +32,19 @@ import { Route as LayoutSystemAuditLogsRouteImport } from './routes/_layout/syst
 import { Route as LayoutSystemSettingsRouteImport } from './routes/_layout/system/settings'
 import { Route as LayoutUsersIndexRouteImport } from './routes/_layout/users/index'
 import { Route as LayoutUsersNewRouteImport } from './routes/_layout/users/new'
+import { Route as LayoutProjectsIdAssetsRouteImport } from './routes/_layout/projects/$id/assets'
+import { Route as LayoutProjectsIdContentTypesRouteImport } from './routes/_layout/projects/$id/content-types'
+import { Route as LayoutProjectsIdContentsRouteImport } from './routes/_layout/projects/$id/contents'
+import { Route as LayoutProjectsIdOverviewRouteImport } from './routes/_layout/projects/$id/overview'
 import { Route as LayoutSystemAuditLogsIndexRouteImport } from './routes/_layout/system/audit-logs/index'
 import { Route as LayoutSystemAuditLogsIdRouteImport } from './routes/_layout/system/audit-logs/$id'
 import { Route as LayoutUsersIdIndexRouteImport } from './routes/_layout/users/$id/index'
 import { Route as LayoutUsersIdEditRouteImport } from './routes/_layout/users/$id/edit'
+import { Route as LayoutProjectsIdContentTypesIndexRouteImport } from './routes/_layout/projects/$id/content-types/index'
+import { Route as LayoutProjectsIdContentTypesNewRouteImport } from './routes/_layout/projects/$id/content-types/new'
+import { Route as LayoutProjectsIdContentsIndexRouteImport } from './routes/_layout/projects/$id/contents/index'
+import { Route as LayoutProjectsIdContentTypesIdIndexRouteImport } from './routes/_layout/projects/$id/content-types/$id/index'
+import { Route as LayoutProjectsIdContentTypesIdEditRouteImport } from './routes/_layout/projects/$id/content-types/$id/edit'
 
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
@@ -52,6 +63,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
 const Layout403Route = Layout403RouteImport.update({
   id: '/403',
   path: '/403',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutProjectsRoute = LayoutProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutRolesRoute = LayoutRolesRouteImport.update({
@@ -93,6 +109,11 @@ const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => AuthRoute,
+} as any)
+const LayoutProjectsIndexRoute = LayoutProjectsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutProjectsRoute,
 } as any)
 const LayoutRolesIndexRoute = LayoutRolesIndexRouteImport.update({
   id: '/',
@@ -140,6 +161,29 @@ const LayoutUsersNewRoute = LayoutUsersNewRouteImport.update({
   path: '/new',
   getParentRoute: () => LayoutUsersRoute,
 } as any)
+const LayoutProjectsIdAssetsRoute = LayoutProjectsIdAssetsRouteImport.update({
+  id: '/$id/assets',
+  path: '/$id/assets',
+  getParentRoute: () => LayoutProjectsRoute,
+} as any)
+const LayoutProjectsIdContentTypesRoute =
+  LayoutProjectsIdContentTypesRouteImport.update({
+    id: '/$id/content-types',
+    path: '/$id/content-types',
+    getParentRoute: () => LayoutProjectsRoute,
+  } as any)
+const LayoutProjectsIdContentsRoute =
+  LayoutProjectsIdContentsRouteImport.update({
+    id: '/$id/contents',
+    path: '/$id/contents',
+    getParentRoute: () => LayoutProjectsRoute,
+  } as any)
+const LayoutProjectsIdOverviewRoute =
+  LayoutProjectsIdOverviewRouteImport.update({
+    id: '/$id/overview',
+    path: '/$id/overview',
+    getParentRoute: () => LayoutProjectsRoute,
+  } as any)
 const LayoutSystemAuditLogsIndexRoute =
   LayoutSystemAuditLogsIndexRouteImport.update({
     id: '/',
@@ -161,11 +205,42 @@ const LayoutUsersIdEditRoute = LayoutUsersIdEditRouteImport.update({
   path: '/$id/edit',
   getParentRoute: () => LayoutUsersRoute,
 } as any)
+const LayoutProjectsIdContentTypesIndexRoute =
+  LayoutProjectsIdContentTypesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+  } as any)
+const LayoutProjectsIdContentTypesNewRoute =
+  LayoutProjectsIdContentTypesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+  } as any)
+const LayoutProjectsIdContentsIndexRoute =
+  LayoutProjectsIdContentsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => LayoutProjectsIdContentsRoute,
+  } as any)
+const LayoutProjectsIdContentTypesIdIndexRoute =
+  LayoutProjectsIdContentTypesIdIndexRouteImport.update({
+    id: '/$id/',
+    path: '/$id/',
+    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+  } as any)
+const LayoutProjectsIdContentTypesIdEditRoute =
+  LayoutProjectsIdContentTypesIdEditRouteImport.update({
+    id: '/$id/edit',
+    path: '/$id/edit',
+    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/403': typeof Layout403Route
+  '/projects': typeof LayoutProjectsRouteWithChildren
   '/roles': typeof LayoutRolesRouteWithChildren
   '/settings': typeof LayoutSettingsRouteWithChildren
   '/users': typeof LayoutUsersRouteWithChildren
@@ -180,13 +255,23 @@ export interface FileRoutesByFullPath {
   '/system/audit-logs': typeof LayoutSystemAuditLogsRouteWithChildren
   '/system/settings': typeof LayoutSystemSettingsRoute
   '/users/new': typeof LayoutUsersNewRoute
+  '/projects/': typeof LayoutProjectsIndexRoute
   '/roles/': typeof LayoutRolesIndexRoute
   '/settings/': typeof LayoutSettingsIndexRoute
   '/users/': typeof LayoutUsersIndexRoute
+  '/projects/$id/assets': typeof LayoutProjectsIdAssetsRoute
+  '/projects/$id/content-types': typeof LayoutProjectsIdContentTypesRouteWithChildren
+  '/projects/$id/contents': typeof LayoutProjectsIdContentsRouteWithChildren
+  '/projects/$id/overview': typeof LayoutProjectsIdOverviewRoute
   '/system/audit-logs/$id': typeof LayoutSystemAuditLogsIdRoute
   '/users/$id/edit': typeof LayoutUsersIdEditRoute
   '/system/audit-logs/': typeof LayoutSystemAuditLogsIndexRoute
   '/users/$id/': typeof LayoutUsersIdIndexRoute
+  '/projects/$id/content-types/new': typeof LayoutProjectsIdContentTypesNewRoute
+  '/projects/$id/content-types/': typeof LayoutProjectsIdContentTypesIndexRoute
+  '/projects/$id/contents/': typeof LayoutProjectsIdContentsIndexRoute
+  '/projects/$id/content-types/$id/edit': typeof LayoutProjectsIdContentTypesIdEditRoute
+  '/projects/$id/content-types/$id/': typeof LayoutProjectsIdContentTypesIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -202,19 +287,28 @@ export interface FileRoutesByTo {
   '/settings/security': typeof LayoutSettingsSecurityRoute
   '/system/settings': typeof LayoutSystemSettingsRoute
   '/users/new': typeof LayoutUsersNewRoute
+  '/projects': typeof LayoutProjectsIndexRoute
   '/roles': typeof LayoutRolesIndexRoute
   '/settings': typeof LayoutSettingsIndexRoute
   '/users': typeof LayoutUsersIndexRoute
+  '/projects/$id/assets': typeof LayoutProjectsIdAssetsRoute
+  '/projects/$id/overview': typeof LayoutProjectsIdOverviewRoute
   '/system/audit-logs/$id': typeof LayoutSystemAuditLogsIdRoute
   '/users/$id/edit': typeof LayoutUsersIdEditRoute
   '/system/audit-logs': typeof LayoutSystemAuditLogsIndexRoute
   '/users/$id': typeof LayoutUsersIdIndexRoute
+  '/projects/$id/content-types/new': typeof LayoutProjectsIdContentTypesNewRoute
+  '/projects/$id/content-types': typeof LayoutProjectsIdContentTypesIndexRoute
+  '/projects/$id/contents': typeof LayoutProjectsIdContentsIndexRoute
+  '/projects/$id/content-types/$id/edit': typeof LayoutProjectsIdContentTypesIdEditRoute
+  '/projects/$id/content-types/$id': typeof LayoutProjectsIdContentTypesIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/_layout/403': typeof Layout403Route
+  '/_layout/projects': typeof LayoutProjectsRouteWithChildren
   '/_layout/roles': typeof LayoutRolesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRouteWithChildren
   '/_layout/users': typeof LayoutUsersRouteWithChildren
@@ -230,13 +324,23 @@ export interface FileRoutesById {
   '/_layout/system/audit-logs': typeof LayoutSystemAuditLogsRouteWithChildren
   '/_layout/system/settings': typeof LayoutSystemSettingsRoute
   '/_layout/users/new': typeof LayoutUsersNewRoute
+  '/_layout/projects/': typeof LayoutProjectsIndexRoute
   '/_layout/roles/': typeof LayoutRolesIndexRoute
   '/_layout/settings/': typeof LayoutSettingsIndexRoute
   '/_layout/users/': typeof LayoutUsersIndexRoute
+  '/_layout/projects/$id/assets': typeof LayoutProjectsIdAssetsRoute
+  '/_layout/projects/$id/content-types': typeof LayoutProjectsIdContentTypesRouteWithChildren
+  '/_layout/projects/$id/contents': typeof LayoutProjectsIdContentsRouteWithChildren
+  '/_layout/projects/$id/overview': typeof LayoutProjectsIdOverviewRoute
   '/_layout/system/audit-logs/$id': typeof LayoutSystemAuditLogsIdRoute
   '/_layout/users/$id/edit': typeof LayoutUsersIdEditRoute
   '/_layout/system/audit-logs/': typeof LayoutSystemAuditLogsIndexRoute
   '/_layout/users/$id/': typeof LayoutUsersIdIndexRoute
+  '/_layout/projects/$id/content-types/new': typeof LayoutProjectsIdContentTypesNewRoute
+  '/_layout/projects/$id/content-types/': typeof LayoutProjectsIdContentTypesIndexRoute
+  '/_layout/projects/$id/contents/': typeof LayoutProjectsIdContentsIndexRoute
+  '/_layout/projects/$id/content-types/$id/edit': typeof LayoutProjectsIdContentTypesIdEditRoute
+  '/_layout/projects/$id/content-types/$id/': typeof LayoutProjectsIdContentTypesIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -244,6 +348,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/403'
+    | '/projects'
     | '/roles'
     | '/settings'
     | '/users'
@@ -258,13 +363,23 @@ export interface FileRouteTypes {
     | '/system/audit-logs'
     | '/system/settings'
     | '/users/new'
+    | '/projects/'
     | '/roles/'
     | '/settings/'
     | '/users/'
+    | '/projects/$id/assets'
+    | '/projects/$id/content-types'
+    | '/projects/$id/contents'
+    | '/projects/$id/overview'
     | '/system/audit-logs/$id'
     | '/users/$id/edit'
     | '/system/audit-logs/'
     | '/users/$id/'
+    | '/projects/$id/content-types/new'
+    | '/projects/$id/content-types/'
+    | '/projects/$id/contents/'
+    | '/projects/$id/content-types/$id/edit'
+    | '/projects/$id/content-types/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -280,18 +395,27 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/system/settings'
     | '/users/new'
+    | '/projects'
     | '/roles'
     | '/settings'
     | '/users'
+    | '/projects/$id/assets'
+    | '/projects/$id/overview'
     | '/system/audit-logs/$id'
     | '/users/$id/edit'
     | '/system/audit-logs'
     | '/users/$id'
+    | '/projects/$id/content-types/new'
+    | '/projects/$id/content-types'
+    | '/projects/$id/contents'
+    | '/projects/$id/content-types/$id/edit'
+    | '/projects/$id/content-types/$id'
   id:
     | '__root__'
     | '/_layout'
     | '/auth'
     | '/_layout/403'
+    | '/_layout/projects'
     | '/_layout/roles'
     | '/_layout/settings'
     | '/_layout/users'
@@ -307,13 +431,23 @@ export interface FileRouteTypes {
     | '/_layout/system/audit-logs'
     | '/_layout/system/settings'
     | '/_layout/users/new'
+    | '/_layout/projects/'
     | '/_layout/roles/'
     | '/_layout/settings/'
     | '/_layout/users/'
+    | '/_layout/projects/$id/assets'
+    | '/_layout/projects/$id/content-types'
+    | '/_layout/projects/$id/contents'
+    | '/_layout/projects/$id/overview'
     | '/_layout/system/audit-logs/$id'
     | '/_layout/users/$id/edit'
     | '/_layout/system/audit-logs/'
     | '/_layout/users/$id/'
+    | '/_layout/projects/$id/content-types/new'
+    | '/_layout/projects/$id/content-types/'
+    | '/_layout/projects/$id/contents/'
+    | '/_layout/projects/$id/content-types/$id/edit'
+    | '/_layout/projects/$id/content-types/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -349,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/403'
       fullPath: '/403'
       preLoaderRoute: typeof Layout403RouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/projects': {
+      id: '/_layout/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof LayoutProjectsRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/roles': {
@@ -406,6 +547,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/reset-password'
       preLoaderRoute: typeof AuthResetPasswordRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_layout/projects/': {
+      id: '/_layout/projects/'
+      path: '/'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof LayoutProjectsIndexRouteImport
+      parentRoute: typeof LayoutProjectsRoute
     }
     '/_layout/roles/': {
       id: '/_layout/roles/'
@@ -470,6 +618,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutUsersNewRouteImport
       parentRoute: typeof LayoutUsersRoute
     }
+    '/_layout/projects/$id/assets': {
+      id: '/_layout/projects/$id/assets'
+      path: '/$id/assets'
+      fullPath: '/projects/$id/assets'
+      preLoaderRoute: typeof LayoutProjectsIdAssetsRouteImport
+      parentRoute: typeof LayoutProjectsRoute
+    }
+    '/_layout/projects/$id/content-types': {
+      id: '/_layout/projects/$id/content-types'
+      path: '/$id/content-types'
+      fullPath: '/projects/$id/content-types'
+      preLoaderRoute: typeof LayoutProjectsIdContentTypesRouteImport
+      parentRoute: typeof LayoutProjectsRoute
+    }
+    '/_layout/projects/$id/contents': {
+      id: '/_layout/projects/$id/contents'
+      path: '/$id/contents'
+      fullPath: '/projects/$id/contents'
+      preLoaderRoute: typeof LayoutProjectsIdContentsRouteImport
+      parentRoute: typeof LayoutProjectsRoute
+    }
+    '/_layout/projects/$id/overview': {
+      id: '/_layout/projects/$id/overview'
+      path: '/$id/overview'
+      fullPath: '/projects/$id/overview'
+      preLoaderRoute: typeof LayoutProjectsIdOverviewRouteImport
+      parentRoute: typeof LayoutProjectsRoute
+    }
     '/_layout/system/audit-logs/': {
       id: '/_layout/system/audit-logs/'
       path: '/'
@@ -498,8 +674,101 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutUsersIdEditRouteImport
       parentRoute: typeof LayoutUsersRoute
     }
+    '/_layout/projects/$id/content-types/': {
+      id: '/_layout/projects/$id/content-types/'
+      path: '/'
+      fullPath: '/projects/$id/content-types/'
+      preLoaderRoute: typeof LayoutProjectsIdContentTypesIndexRouteImport
+      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+    }
+    '/_layout/projects/$id/content-types/new': {
+      id: '/_layout/projects/$id/content-types/new'
+      path: '/new'
+      fullPath: '/projects/$id/content-types/new'
+      preLoaderRoute: typeof LayoutProjectsIdContentTypesNewRouteImport
+      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+    }
+    '/_layout/projects/$id/contents/': {
+      id: '/_layout/projects/$id/contents/'
+      path: '/'
+      fullPath: '/projects/$id/contents/'
+      preLoaderRoute: typeof LayoutProjectsIdContentsIndexRouteImport
+      parentRoute: typeof LayoutProjectsIdContentsRoute
+    }
+    '/_layout/projects/$id/content-types/$id/': {
+      id: '/_layout/projects/$id/content-types/$id/'
+      path: '/$id'
+      fullPath: '/projects/$id/content-types/$id/'
+      preLoaderRoute: typeof LayoutProjectsIdContentTypesIdIndexRouteImport
+      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+    }
+    '/_layout/projects/$id/content-types/$id/edit': {
+      id: '/_layout/projects/$id/content-types/$id/edit'
+      path: '/$id/edit'
+      fullPath: '/projects/$id/content-types/$id/edit'
+      preLoaderRoute: typeof LayoutProjectsIdContentTypesIdEditRouteImport
+      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+    }
   }
 }
+
+interface LayoutProjectsIdContentTypesRouteChildren {
+  LayoutProjectsIdContentTypesNewRoute: typeof LayoutProjectsIdContentTypesNewRoute
+  LayoutProjectsIdContentTypesIndexRoute: typeof LayoutProjectsIdContentTypesIndexRoute
+  LayoutProjectsIdContentTypesIdEditRoute: typeof LayoutProjectsIdContentTypesIdEditRoute
+  LayoutProjectsIdContentTypesIdIndexRoute: typeof LayoutProjectsIdContentTypesIdIndexRoute
+}
+
+const LayoutProjectsIdContentTypesRouteChildren: LayoutProjectsIdContentTypesRouteChildren =
+  {
+    LayoutProjectsIdContentTypesNewRoute: LayoutProjectsIdContentTypesNewRoute,
+    LayoutProjectsIdContentTypesIndexRoute:
+      LayoutProjectsIdContentTypesIndexRoute,
+    LayoutProjectsIdContentTypesIdEditRoute:
+      LayoutProjectsIdContentTypesIdEditRoute,
+    LayoutProjectsIdContentTypesIdIndexRoute:
+      LayoutProjectsIdContentTypesIdIndexRoute,
+  }
+
+const LayoutProjectsIdContentTypesRouteWithChildren =
+  LayoutProjectsIdContentTypesRoute._addFileChildren(
+    LayoutProjectsIdContentTypesRouteChildren,
+  )
+
+interface LayoutProjectsIdContentsRouteChildren {
+  LayoutProjectsIdContentsIndexRoute: typeof LayoutProjectsIdContentsIndexRoute
+}
+
+const LayoutProjectsIdContentsRouteChildren: LayoutProjectsIdContentsRouteChildren =
+  {
+    LayoutProjectsIdContentsIndexRoute: LayoutProjectsIdContentsIndexRoute,
+  }
+
+const LayoutProjectsIdContentsRouteWithChildren =
+  LayoutProjectsIdContentsRoute._addFileChildren(
+    LayoutProjectsIdContentsRouteChildren,
+  )
+
+interface LayoutProjectsRouteChildren {
+  LayoutProjectsIndexRoute: typeof LayoutProjectsIndexRoute
+  LayoutProjectsIdAssetsRoute: typeof LayoutProjectsIdAssetsRoute
+  LayoutProjectsIdContentTypesRoute: typeof LayoutProjectsIdContentTypesRouteWithChildren
+  LayoutProjectsIdContentsRoute: typeof LayoutProjectsIdContentsRouteWithChildren
+  LayoutProjectsIdOverviewRoute: typeof LayoutProjectsIdOverviewRoute
+}
+
+const LayoutProjectsRouteChildren: LayoutProjectsRouteChildren = {
+  LayoutProjectsIndexRoute: LayoutProjectsIndexRoute,
+  LayoutProjectsIdAssetsRoute: LayoutProjectsIdAssetsRoute,
+  LayoutProjectsIdContentTypesRoute:
+    LayoutProjectsIdContentTypesRouteWithChildren,
+  LayoutProjectsIdContentsRoute: LayoutProjectsIdContentsRouteWithChildren,
+  LayoutProjectsIdOverviewRoute: LayoutProjectsIdOverviewRoute,
+}
+
+const LayoutProjectsRouteWithChildren = LayoutProjectsRoute._addFileChildren(
+  LayoutProjectsRouteChildren,
+)
 
 interface LayoutRolesRouteChildren {
   LayoutRolesIndexRoute: typeof LayoutRolesIndexRoute
@@ -566,6 +835,7 @@ const LayoutSystemAuditLogsRouteWithChildren =
 
 interface LayoutRouteChildren {
   Layout403Route: typeof Layout403Route
+  LayoutProjectsRoute: typeof LayoutProjectsRouteWithChildren
   LayoutRolesRoute: typeof LayoutRolesRouteWithChildren
   LayoutSettingsRoute: typeof LayoutSettingsRouteWithChildren
   LayoutUsersRoute: typeof LayoutUsersRouteWithChildren
@@ -576,6 +846,7 @@ interface LayoutRouteChildren {
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   Layout403Route: Layout403Route,
+  LayoutProjectsRoute: LayoutProjectsRouteWithChildren,
   LayoutRolesRoute: LayoutRolesRouteWithChildren,
   LayoutSettingsRoute: LayoutSettingsRouteWithChildren,
   LayoutUsersRoute: LayoutUsersRouteWithChildren,

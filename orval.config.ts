@@ -2,7 +2,7 @@ import { defineConfig } from 'orval';
 
 export default defineConfig({
   // Block 1: TanStack Query hooks + TypeScript types
-  backendModular: {
+  Automation: {
     input: {
       target: 'http://localhost:5189/openapi/v1.json',
     },
@@ -44,7 +44,7 @@ export default defineConfig({
   },
 
   // Block 2: Zod schemas (cùng spec, output vào cùng thư mục endpoints, tên file khác)
-  backendModularZod: {
+  AutomationZod: {
     input: {
       target: 'http://localhost:5189/openapi/v1.json',
     },

@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useGetAuditLogById } from "../../hooks/useAuditLogs";
-import { SinglePageShell } from "@/components/layout/SinglePageShell";
+import { SinglePageShell } from "@/components/layout/shells/SinglePageShell";
 import { Temporal } from "@js-temporal/polyfill";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";

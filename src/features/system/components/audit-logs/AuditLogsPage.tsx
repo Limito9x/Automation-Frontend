@@ -1,4 +1,4 @@
-import { ResourcePageShell } from "@/components/layout/ResourcePageShell";
+import { ResourcePageShell } from "@/components/layout/shells/ResourcePageShell";
 import { useResourceQuery, type ResourcePageProps } from "@/lib/useResourceQuery";
 import { useAuditLogs } from "../../hooks/useAuditLogs";
 import { useAuditLogTable } from "../../hooks/useAuditLogTable";

@@ -1,0 +1,16 @@
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { getAuthState } from '@/stores/authStore'
+
+export const Route = createFileRoute('/_layout/projects/$id/content-types')({
+  staticData: {
+    breadcrumb: 'ContentTypes',
+  },
+  beforeLoad: () => {
+    const permissions = getAuthState().permissions;
+    const hasAccess = permissions.some(p => p.startsWith('contentTypes:'));
+    if (!hasAccess) {
+      throw redirect({ to: '/403' });
+    }
+  },
+  component: () => <Outlet />,
+})

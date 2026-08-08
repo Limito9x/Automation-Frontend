@@ -1,0 +1,17 @@
+{
+    "page": {
+        "title": "Quản lý ContentItem",
+        "description": "Quản lý tất cả contentItem trong hệ thống.",
+        "listCaption": "Danh sách ContentItem",
+        "searchPlaceholder": "Tìm kiếm contentItem..."
+    },
+    "actions": {
+        "create": "Tạo ContentItem",
+        "update": "Sửa ContentItem",
+        "delete": "Xóa ContentItem",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa contentItem này? Hành động này không thể hoàn tác."
+    },
+    "fields": {
+        "name": "Tên"
+    }
+}

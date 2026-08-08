@@ -1,7 +1,7 @@
 import { UserTable } from "./components/UserTable";
 import { useDialogStore } from "@/stores/dialogStore";
 import { useResourceQuery, type ResourcePageProps } from "@/lib/useResourceQuery";
-import { ResourcePageShell } from "@/components/layout/ResourcePageShell";
+import { ResourcePageShell } from "@/components/layout/shells/ResourcePageShell";
 import { userFilterConfig } from "./components/userFilter";
 import { useUsers } from "./hooks/useUsers";
 import { useUserTable } from "./hooks/useUserTable";
@@ -21,7 +21,7 @@ export function UserPage({ useSearch, useNavigate }: ResourcePageProps) {
 
     // ── Data fetching
     const { data, isLoading } = useUsers(search);
-    
+
     // ── Table setup
     const { table, columns } = useUserTable({
         data: data?.items ?? [],

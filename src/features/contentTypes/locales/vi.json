@@ -1,0 +1,17 @@
+{
+    "page": {
+        "title": "Quản lý ContentType",
+        "description": "Quản lý tất cả contentType trong hệ thống.",
+        "listCaption": "Danh sách ContentType",
+        "searchPlaceholder": "Tìm kiếm contentType..."
+    },
+    "actions": {
+        "create": "Tạo ContentType",
+        "update": "Sửa ContentType",
+        "delete": "Xóa ContentType",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa contentType này? Hành động này không thể hoàn tác."
+    },
+    "fields": {
+        "name": "Tên"
+    }
+}

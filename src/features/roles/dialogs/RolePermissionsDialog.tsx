@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { SearchIcon, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BaseDialog } from "@/components/custom-ui/dialog/BaseDialog";
+import { BaseDialog } from "@/components/custom-ui/overlays/dialog/BaseDialog";
 import type { DialogProps } from "@/lib/dialog-registry";
 
 export function RolePermissionsDialog({ open, onOpenChange, data }: DialogProps<{ id: string }>) {

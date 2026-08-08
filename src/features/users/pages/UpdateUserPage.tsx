@@ -1,6 +1,6 @@
 import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { FormPageShell } from "@/components/layout/FormPageShell";
+import { FormPageShell } from "@/components/layout/shells/FormPageShell";
 import { UpdateUserForm } from "../components/UpdateUserForm";
 import { useUpdateUser } from "../hooks/useUsers";
 import type { UpdateUserValues } from "../schemas/updateUserSchema";

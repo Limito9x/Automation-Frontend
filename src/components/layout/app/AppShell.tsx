@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger, SidebarInset, useSidebar } from "@/components/ui/sidebar"
 import { AppSidebar } from "./Sidebar"
 import { AppBreadcrumb } from "./AppBreadcrumb"
-import { LanguageSwitcher } from "@/components/custom-ui/LanguageSwitcher"
+import { LanguageSwitcher } from "@/components/custom-ui/locales/LanguageSwitcher"
 import { Separator } from "@/components/ui/separator"
 import { useLocation } from "@tanstack/react-router"
 import { NotificationPopover } from "@/features/notifications/components/NotificationPopover"

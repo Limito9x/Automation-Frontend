@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { AppShell } from '@/components/layout/AppShell'
+import { AppShell } from '@/components/layout/app/AppShell'
 import { getAuthState, useAuthStore } from '@/stores/authStore'
 import { useGetProfile } from '@/features/settings/hooks/useProfile'
 import { useGetPermissions } from '@/gen/endpoints/auth/auth'

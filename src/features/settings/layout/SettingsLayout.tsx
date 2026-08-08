@@ -1,6 +1,6 @@
 import { Outlet, useRouterState } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
-import { SettingsSidebar } from './SettingsSidebar'
+import { SettingsSidebar } from './SettingsSidebar';
 
 export function SettingsLayout() {
   const routerState = useRouterState();

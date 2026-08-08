@@ -1,4 +1,4 @@
-import { BaseFormDialog } from "@/components/custom-ui/dialog/BaseFormDialog";
+import { BaseFormDialog } from "@/components/custom-ui/overlays/dialog/BaseFormDialog";
 import { Form, useForm, zodResolver } from "@/components/form";
 import { FormStaticCombobox } from "@/components/form-controls";
 import { useGetUserById, useAssignUserRoles } from "../hooks/useUsers";

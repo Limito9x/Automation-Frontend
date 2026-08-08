@@ -1,4 +1,4 @@
-import { BaseFormDialog } from "@/components/custom-ui/dialog/BaseFormDialog";
+import { BaseFormDialog } from "@/components/custom-ui/overlays/dialog/BaseFormDialog";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useGetSystemSettingById, useUpdateSystemSetting } from "../../hooks/useSystemSettings";

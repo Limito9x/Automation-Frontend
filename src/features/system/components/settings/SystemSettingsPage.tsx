@@ -1,6 +1,6 @@
 import { SystemSettingTable } from "./SystemSettingTable";
 import { useResourceQuery, type ResourcePageProps } from "@/lib/useResourceQuery";
-import { ResourcePageShell } from "@/components/layout/ResourcePageShell";
+import { ResourcePageShell } from "@/components/layout/shells/ResourcePageShell";
 import { systemSettingFilterConfig } from "./systemSettingFilter";
 import { useSystemSettings } from "../../hooks/useSystemSettings";
 import { useSystemSettingTable } from "../../hooks/useSystemSettingTable";
@@ -13,7 +13,7 @@ export function SystemSettingsPage({ useSearch, useNavigate }: ResourcePageProps
     const resourceQuery = useResourceQuery(search, navigate);
 
     const { data, isLoading } = useSystemSettings(search);
-    
+
     const { table, columns } = useSystemSettingTable({
         data: data?.items ?? [],
         totalCount: data?.totalCount ?? 0,

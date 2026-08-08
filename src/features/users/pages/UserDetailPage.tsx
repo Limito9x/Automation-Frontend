@@ -5,8 +5,8 @@ import { useDialogStore } from "@/stores/dialogStore";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DescriptionList, DescriptionListItem } from "@/components/custom-ui/DescriptionList";
-import { SinglePageShell } from "@/components/layout/SinglePageShell";
+import { DescriptionList, DescriptionListItem } from "@/components/custom-ui/data-display/DescriptionList";
+import { SinglePageShell } from "@/components/layout/shells/SinglePageShell";
 import { useGetUserById } from "../hooks/useUsers";
 
 export function UserDetailPage() {

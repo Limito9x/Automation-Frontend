@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import { Button } from '@/components/ui/button'
-import { BaseDialog } from '@/components/custom-ui/dialog/BaseDialog'
+import { BaseDialog } from '@/components/custom-ui/overlays/dialog/BaseDialog'
 import { getCroppedImg } from '../utils/cropImage'
 import { useTranslation } from 'react-i18next'
 import { Loader2 } from 'lucide-react'

@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { ConfirmDialog } from "@/components/custom-ui/dialog/ConfirmDialog";
+import { ConfirmDialog } from "@/components/custom-ui/overlays/dialog/ConfirmDialog";
 import { useDeleteUser } from "../hooks/useUsers";
 import type { DialogProps } from "@/lib/dialog-registry";
 

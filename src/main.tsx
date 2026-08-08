@@ -7,10 +7,10 @@ import './index.css'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { NotFoundPage } from './components/layout/NotFoundPage'
-import { ErrorPage } from './components/layout/ErrorPage'
+import { NotFoundPage } from './components/layout/errors/NotFoundPage'
+import { ErrorPage } from './components/layout/errors/ErrorPage'
 
-const router = createRouter({ 
+const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   defaultNotFoundComponent: NotFoundPage,
