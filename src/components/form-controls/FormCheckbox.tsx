@@ -41,7 +41,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "checkbox": {
             config: ExtractConfig<FormCheckboxProps<any>>,
-            rules: BaseFieldRules
+            rules: BaseFieldRules,
+            defaultValue: boolean
         }
     }
 }
@@ -54,5 +55,13 @@ registerField({
         if (rules.required) s = s.refine(val => val === true, reqMsg);
         if (!rules.required) return s.optional().nullable();
         return s;
-    }
+    },
+    builderFields: [
+        {
+            name: "required",
+            target: "rules",
+            fieldType: "switch",
+            label: "Required?"
+        }
+    ]
 });

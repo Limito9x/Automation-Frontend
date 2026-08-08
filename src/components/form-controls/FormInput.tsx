@@ -49,7 +49,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "text": {
             config: ExtractConfig<FormInputProps<any>>,
-            rules: FormInputRules
+            rules: FormInputRules,
+            defaultValue: string
         }
     }
 }
@@ -72,15 +73,15 @@ registerField({
     builderFields: [
         {
             name: "required",
-            type: "switch",
-            label: "Required?",
-            config: {}
+            target: "rules",
+            fieldType: "switch",
+            label: "Required?"
         },
         {
-            name: "maxLength",
-            type: "number",
-            label: "Max Length",
-            config: {}
+            name: "max",
+            target: "rules",
+            fieldType: "number",
+            label: "Max Length"
         }
     ]
 });

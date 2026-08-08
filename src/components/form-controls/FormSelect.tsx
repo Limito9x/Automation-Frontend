@@ -65,7 +65,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "select": {
             config: ExtractConfig<FormSelectProps<any>>,
-            rules: BaseFieldRules
+            rules: BaseFieldRules,
+            defaultValue: string
         }
     }
 }
@@ -82,22 +83,19 @@ registerField({
     builderFields: [
         {
             name: "placeholder",
-            type: "text",
-            label: "Placeholder",
-            config: {
-            }
+            target: "config",
+            fieldType: "text",
+            label: "Placeholder"
         },
         {
             name: "options",
-            type: "tags",
+            target: "config",
+            fieldType: "tags",
             label: "Options",
-            config: {
+            fieldConfig: {
                 placeholder: "Add options",
             },
-            rules: {
-                required: true,
-                requiredMsg: "Must have at least 1 option"
-            }
+            isRequired: true
         }
     ]
 });

@@ -13,10 +13,20 @@ export interface BaseFieldRules {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 export interface GlobalFieldRegistry {}
 
+export interface FieldBuilderSpec {
+  name: string
+  label?: string
+  description?: string
+  isRequired?: boolean
+  target: "config" | "rules"
+  fieldType: keyof GlobalFieldRegistry
+  fieldConfig?: Record<string, any>
+}
+
 export interface FieldRegistration {
   type: string
   component: ComponentType<any>
-  builderFields?: FieldDefinition<any, any>[]
+  builderFields?: FieldBuilderSpec[]
   buildSchema?: (rules: any) => ZodTypeAny
 }
 
@@ -60,7 +70,7 @@ export interface FieldDefinition<
   label?: string
   description?: string
   type: TType
-  defaultValue?: any
+  defaultValue?: GlobalFieldRegistry[TType] extends { defaultValue: infer D } ? D : any
   config?: GlobalFieldRegistry[TType] extends { config: infer C } ? C : any
   rules?: GlobalFieldRegistry[TType] extends { rules: infer R } ? R : any
 }

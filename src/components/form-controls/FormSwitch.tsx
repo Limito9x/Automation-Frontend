@@ -40,7 +40,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "switch": {
             config: ExtractConfig<FormSwitchProps<any>>,
-            rules: BaseFieldRules
+            rules: BaseFieldRules,
+            defaultValue: boolean
         }
     }
 }
@@ -51,5 +52,13 @@ registerField({
         let s = z.boolean();
         if (!rules.required) return s.optional().nullable();
         return s;
-    }
+    },
+    builderFields: [
+        {
+            name: "required",
+            target: "rules",
+            fieldType: "switch",
+            label: "Required?"
+        }
+    ]
 });

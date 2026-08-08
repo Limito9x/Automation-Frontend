@@ -35,7 +35,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "tags": {
             config: ExtractConfig<FormTagsInputProps<any>>,
-            rules: BaseFieldRules
+            rules: BaseFieldRules,
+            defaultValue: string[]
         }
     }
 }
@@ -48,5 +49,13 @@ registerField({
         if (rules.required) s = s.min(1, reqMsg);
         if (!rules.required) return s.optional().nullable();
         return s;
-    }
+    },
+    builderFields: [
+        {
+            name: "required",
+            target: "rules",
+            fieldType: "switch",
+            label: "Required?"
+        }
+    ]
 });

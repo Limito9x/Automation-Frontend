@@ -40,7 +40,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "textarea": {
             config: ExtractConfig<FormTextareaProps<any>>,
-            rules: BaseFieldRules
+            rules: BaseFieldRules,
+            defaultValue: string
         }
     }
 }
@@ -53,5 +54,13 @@ registerField({
         if (rules.required) s = s.min(1, reqMsg);
         if (!rules.required) return s.optional().nullable();
         return s;
-    }
+    },
+    builderFields: [
+        {
+            name: "required",
+            target: "rules",
+            fieldType: "switch",
+            label: "Required?"
+        }
+    ]
 });

@@ -54,7 +54,8 @@ declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "number": {
             config: ExtractConfig<FormNumberInputProps<any>>,
-            rules: FormNumberRules
+            rules: FormNumberRules,
+            defaultValue: number
         }
     }
 }
@@ -75,40 +76,39 @@ registerField({
     builderFields: [
         {
             name: "required",
-            type: "switch",
-            label: "Required?",
-            config: {}
+            target: "rules",
+            fieldType: "switch",
+            label: "Required?"
         },
         {
             name: "min",
-            type: "number",
-            label: "Minimum Value",
-            config: {}
+            target: "rules",
+            fieldType: "number",
+            label: "Minimum Value"
         },
         {
             name: "max",
-            type: "number",
-            label: "Maximum Value",
-            config: {}
+            target: "rules",
+            fieldType: "number",
+            label: "Maximum Value"
         },
         {
             name: "allowNegative",
-            type: "switch",
-            label: "Allow Negative?",
-            config: {},
-            defaultValue: false
+            target: "config",
+            fieldType: "switch",
+            label: "Allow Negative?"
         },
         {
             name: "decimalScale",
-            type: "number",
-            label: "Decimal Scale",
-            config: {}
+            target: "config",
+            fieldType: "number",
+            label: "Decimal Scale"
         },
         {
             name: "thousandSeparator",
-            type: "switch",
-            label: "Thousand Separator?",
-            config: {}
+            target: "config",
+            fieldType: "switch",
+            label: "Thousand Separator?"
         },
     ]
 });

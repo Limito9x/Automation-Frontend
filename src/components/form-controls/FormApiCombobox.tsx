@@ -1,8 +1,9 @@
 import { ApiCombobox, type ApiComboboxProps } from '@/components/custom-ui/inputs/combobox/ApiCombobox'
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
 import { BaseFormField } from './BaseFormField'
 import type { BaseFormControlProps } from './type'
 import type { FieldValues } from 'react-hook-form'
+import { z } from 'zod'
 
 export interface FormApiComboboxProps<TFieldValues extends FieldValues, TValue = any>
     extends BaseFormControlProps<TFieldValues>,
@@ -25,20 +26,9 @@ export function FormApiCombobox<TFieldValues extends FieldValues, TValue = any>(
                     id={field.field_id}
                     value={field.value}
                     onValueChange={field.onChange}
+                    useOptions={rest.useOptions || ((search: string) => ({ data: [], isLoading: false }))}
                 />
             )}
         />
     )
 }
-
-
-
-declare module "@/lib/field-registry" {
-    interface GlobalFieldRegistry {
-        "combobox": ExtractConfig<FormApiComboboxProps<any, any>>
-    }
-}
-registerField({
-    type: "combobox",
-    component: FormApiCombobox
-});
