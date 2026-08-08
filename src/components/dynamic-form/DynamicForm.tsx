@@ -5,10 +5,12 @@ import { Form } from "@/components/form/Form";
 import { FormRenderer } from "./FormRenderer";
 import type { FieldDefinition } from "@/lib/field-registry";
 import { Button } from "@/components/ui/button";
+import { buildDynamicSchema } from "@/lib/schema-builder";
+import { useMemo } from "react";
 
 export interface DynamicFormProps<T extends FieldValues> {
     /** Zod schema for form validation */
-    schema?: ZodType<any, any, any>;
+    schema?: ZodType<T>;
     /** Initial values for the form */
     defaultValues?: DefaultValues<T>;
     /** Array of field definitions */
@@ -28,13 +30,29 @@ export function DynamicForm<T extends FieldValues>({
     submitText = "Lưu thông tin",
     formId,
 }: DynamicFormProps<T>) {
+    // Tự động sinh schema nếu không được truyền vào từ bên ngoài
+    const finalSchema = useMemo(() => {
+        if (schema) return schema;
+        return buildDynamicSchema(fields) as unknown as ZodType<T>;
+    }, [schema, fields]);
+
+    const finalDefaultValues = useMemo(() => {
+        const defaults = { ...defaultValues } as Record<string, any>;
+        fields.forEach(f => {
+            if (f.defaultValue !== undefined && defaults[f.name] === undefined) {
+                defaults[f.name] = f.defaultValue;
+            }
+        });
+        return defaults as any;
+    }, [defaultValues, fields]);
+
     const form = useForm<T>({
-        resolver: schema ? zodResolver(schema) : undefined,
-        defaultValues,
+        resolver: zodResolver(finalSchema as any) as any,
+        defaultValues: finalDefaultValues,
     });
 
     return (
-        <Form form={form} onSubmit={onSubmit} formId={formId}>
+        <Form form={form as any} onSubmit={onSubmit as any} formId={formId}>
             <FormRenderer control={form.control} fields={fields} />
             <div className="flex justify-end mt-4">
                 <Button type="submit">

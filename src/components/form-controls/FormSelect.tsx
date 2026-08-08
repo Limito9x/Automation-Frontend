@@ -1,5 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { z } from "zod";
 import { BaseFormField } from "./BaseFormField";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
@@ -19,10 +20,15 @@ export interface SelectOption {
 export interface FormSelectProps<T extends FieldValues>
     extends BaseFormControlProps<T>,
     OmitFormProps<Omit<SelectRootProps, "autoComplete" | "className">> {
-    options: SelectOption[];
+    options: (SelectOption | string)[];
 }
 
-export function FormSelect<T extends FieldValues>({ options, ...rest }: FormSelectProps<T>) {
+export function FormSelect<T extends FieldValues>({ options = [], ...rest }: FormSelectProps<T>) {
+    // Cho phép options vừa là string[] (từ tags builder) vừa là object[]
+    const normalizedOptions = options.map(opt => 
+        typeof opt === "string" ? { label: opt, value: opt } : opt
+    );
+
     return (
         <BaseFormField
             {...rest}
@@ -38,7 +44,7 @@ export function FormSelect<T extends FieldValues>({ options, ...rest }: FormSele
                         </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                        {options.map((option) => (
+                        {normalizedOptions.map((option) => (
                             <SelectItem
                                 key={option.value}
                                 id={option.value}
@@ -57,10 +63,41 @@ export function FormSelect<T extends FieldValues>({ options, ...rest }: FormSele
 
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "select": ExtractConfig<FormSelectProps<any>>
+        "select": {
+            config: ExtractConfig<FormSelectProps<any>>,
+            rules: BaseFieldRules
+        }
     }
 }
 registerField({
     type: "select",
-    component: FormSelect
+    component: FormSelect,
+    buildSchema: (rules: BaseFieldRules) => {
+        const reqMsg = rules.requiredMsg || "Required";
+        let s = z.string({ message: reqMsg });
+        if (rules.required) s = s.min(1, reqMsg);
+        if (!rules.required) return s.optional().nullable();
+        return s;
+    },
+    builderFields: [
+        {
+            name: "placeholder",
+            type: "text",
+            label: "Placeholder",
+            config: {
+            }
+        },
+        {
+            name: "options",
+            type: "tags",
+            label: "Options",
+            config: {
+                placeholder: "Add options",
+            },
+            rules: {
+                required: true,
+                requiredMsg: "Must have at least 1 option"
+            }
+        }
+    ]
 });

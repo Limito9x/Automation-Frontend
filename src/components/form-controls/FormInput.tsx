@@ -1,9 +1,16 @@
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+
+export interface FormInputRules extends BaseFieldRules {
+    min?: number;
+    max?: number;
+    email?: boolean;
+}
 
 export interface FormInputProps<T extends FieldValues>
     extends BaseFormControlProps<T>,
@@ -40,10 +47,40 @@ export function FormInput<T extends FieldValues>({
 
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "text": ExtractConfig<FormInputProps<any>>
+        "text": {
+            config: ExtractConfig<FormInputProps<any>>,
+            rules: FormInputRules
+        }
     }
 }
 registerField({
     type: "text",
-    component: FormInput
+    component: FormInput,
+    buildSchema: (rules: FormInputRules) => {
+        const reqMsg = rules.requiredMsg || "Required";
+        let s = z.string({ message: reqMsg });
+        if (rules.required) s = s.min(1, reqMsg);
+        if (rules.min) s = s.min(rules.min, `Min length is ${rules.min}`);
+        if (rules.max) s = s.max(rules.max, `Max length is ${rules.max}`);
+        if (rules.email) s = s.email("Invalid email");
+
+        if (!rules.required) {
+            return s.optional().nullable();
+        }
+        return s;
+    },
+    builderFields: [
+        {
+            name: "required",
+            type: "switch",
+            label: "Required?",
+            config: {}
+        },
+        {
+            name: "maxLength",
+            type: "number",
+            label: "Max Length",
+            config: {}
+        }
+    ]
 });

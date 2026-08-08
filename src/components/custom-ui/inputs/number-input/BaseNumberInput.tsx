@@ -12,11 +12,10 @@ export const BaseNumberInput = React.forwardRef<HTMLInputElement, BaseNumberInpu
     ({ className, error, onChange, ...props }, ref) => {
         return (
             <NumericFormat
+                thousandSeparator=","
                 {...props}
                 getInputRef={ref}
                 customInput={Input}
-                thousandSeparator=","
-                allowNegative={false}
                 className={cn(className)}
                 onValueChange={(value) => {
                     onChange(value.floatValue ?? null);

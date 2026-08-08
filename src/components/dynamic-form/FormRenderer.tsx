@@ -14,7 +14,11 @@ export function FormRenderer<T extends FieldValues>({
     return (
         <div className="space-y-4">
             {fields.map((field) => (
-                <DynamicField key={field.name} control={control} field={field} />
+                <DynamicField 
+                    key={field.name} 
+                    control={control} 
+                    field={field}
+                />
             ))}
         </div>
     )

@@ -1,9 +1,10 @@
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
-import { BaseFormField } from "./BaseFormField";
+import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
 import { cn } from "@/lib/utils";
+import { BaseFormField } from "./BaseFormField";
 
 export interface FormTextareaProps<T extends FieldValues>
     extends BaseFormControlProps<T>,
@@ -37,10 +38,20 @@ export function FormTextarea<T extends FieldValues>({
 
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "textarea": ExtractConfig<FormTextareaProps<any>>
+        "textarea": {
+            config: ExtractConfig<FormTextareaProps<any>>,
+            rules: BaseFieldRules
+        }
     }
 }
 registerField({
     type: "textarea",
-    component: FormTextarea
+    component: FormTextarea,
+    buildSchema: (rules: BaseFieldRules) => {
+        const reqMsg = rules.requiredMsg || "Required";
+        let s = z.string({ message: reqMsg });
+        if (rules.required) s = s.min(1, reqMsg);
+        if (!rules.required) return s.optional().nullable();
+        return s;
+    }
 });

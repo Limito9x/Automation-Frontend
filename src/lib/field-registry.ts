@@ -1,8 +1,14 @@
 import type { ComponentType } from "react";
 import type { FieldValues, Path } from "react-hook-form";
+import type { ZodTypeAny } from "zod";
 import type { BaseFormControlProps } from "@/components/form-controls/type";
 
 export type ExtractConfig<TProps> = Omit<TProps, keyof BaseFormControlProps<any>>
+
+export interface BaseFieldRules {
+  required?: boolean;
+  requiredMsg?: string;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 export interface GlobalFieldRegistry {}
@@ -10,10 +16,12 @@ export interface GlobalFieldRegistry {}
 export interface FieldRegistration {
   type: string
   component: ComponentType<any>
+  builderFields?: FieldDefinition<any, any>[]
+  buildSchema?: (rules: any) => ZodTypeAny
 }
 
 // eslint-disable-next-line no-var
-var _fieldRegistry: Map<string, ComponentType<any>> | undefined;
+var _fieldRegistry: Map<string, FieldRegistration> | undefined;
 
 function getInternalRegistry() {
   if (!_fieldRegistry) {
@@ -28,7 +36,11 @@ export function registerField(registration: FieldRegistration) {
     console.warn(`Field "${registration.type}" already registered — skipping`);
     return;
   }
-  registry.set(registration.type, registration.component);
+  registry.set(registration.type, registration);
+}
+
+export function getFieldRegistration(type: string) {
+  return getInternalRegistry().get(type);
 }
 
 export function getFieldRegistry() {
@@ -48,5 +60,7 @@ export interface FieldDefinition<
   label?: string
   description?: string
   type: TType
-  config: GlobalFieldRegistry[TType]
+  defaultValue?: any
+  config?: GlobalFieldRegistry[TType] extends { config: infer C } ? C : any
+  rules?: GlobalFieldRegistry[TType] extends { rules: infer R } ? R : any
 }

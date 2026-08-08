@@ -12,3 +12,4 @@ export * from "./FormTextarea";
 export * from "./FormCheckbox";
 export * from "./FormColorPicker";
 export * from "./FormIconPicker";
+export * from './FormTagsInput';

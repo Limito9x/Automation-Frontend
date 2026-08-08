@@ -29,6 +29,7 @@ export function BaseFormField<T extends FieldValues>({
     label,
     description,
     autoComplete,
+    isRequired,
     render,
     ...rest
 }: BaseFormFieldProps<T> & Record<string, any>) {
@@ -45,6 +46,7 @@ export function BaseFormField<T extends FieldValues>({
                     {label && (
                         <FieldLabel htmlFor={field_id}>
                             {label}
+                            {isRequired && <span className="text-destructive ml-1">*</span>}
                         </FieldLabel>
                     )}
                     {render({
