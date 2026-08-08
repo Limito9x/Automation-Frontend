@@ -1,34 +1,40 @@
 import { Form, FormGrid, zodResolver, useForm } from "@/components/form";
-import { FormInput } from "@/components/form-controls";
+import { FormInput, FormTextarea, FormIconPicker } from "@/components/form-controls";
 import { updateContentTypeSchema, type UpdateContentTypeInput, type UpdateContentTypeOutput } from "../schemas/updateContentTypeSchema";
 import { useTranslation } from "react-i18next";
-// import { useGetContentTypeById } from "../hooks/useContentTypes";
+import { useEffect } from "react";
+import { SchemaBuilder } from "./SchemaBuilder";
 
 interface ContentTypeFormProps {
-    id: string;
+    initialData?: Partial<UpdateContentTypeInput>;
     onSubmit: (data: UpdateContentTypeOutput) => void;
 }
 
-export function UpdateContentTypeForm({ id, onSubmit }: ContentTypeFormProps) {
+export function UpdateContentTypeForm({ initialData, onSubmit }: ContentTypeFormProps) {
     const { t } = useTranslation("contentTypes");
-    
-    // TODO: Bỏ comment khi API get by id khả dụng
-    // const { data: contentType } = useGetContentTypeById(id);
-    const contentType: any = null;
-
     const form = useForm<UpdateContentTypeInput, any, UpdateContentTypeOutput>({
         resolver: zodResolver(updateContentTypeSchema),
-        values: contentType ? {
-            name: contentType.name || "",
-        } : undefined,
         defaultValues: {
-            name: "",
+            name: initialData?.name || "",
+            displayName: initialData?.displayName || "",
+            description: initialData?.description || "",
+            icon: initialData?.icon || "",
+            color: initialData?.color || "",
+            sortOrder: initialData?.sortOrder || 0,
+            fieldsConfig: initialData?.fieldsConfig || [],
+            displayConfig: initialData?.displayConfig || {},
         }
     });
 
+    useEffect(() => {
+        if (initialData) {
+            form.reset(initialData);
+        }
+    }, [initialData, form]);
+
     return (
-        <Form form={form} formId={`update-content-type-form-${id}`} onSubmit={onSubmit}>
-            <FormGrid cols={1}>
+        <Form form={form} formId={"update-content-type-form"} onSubmit={onSubmit}>
+            <FormGrid cols={2}>
                 <FormInput
                     control={form.control}
                     label={t("fields.name", { defaultValue: "Name" })}
@@ -36,7 +42,21 @@ export function UpdateContentTypeForm({ id, onSubmit }: ContentTypeFormProps) {
                     type="text"
                     placeholder="Enter name"
                 />
+                <FormIconPicker
+                    control={form.control}
+                    label={t("fields.icon", { defaultValue: "Icon (optional)" })}
+                    name="icon"
+                />
             </FormGrid>
+            <div className="mt-4">
+                <FormTextarea
+                    control={form.control}
+                    label={t("fields.description", { defaultValue: "Description" })}
+                    name="description"
+                    placeholder="Describe this content type..."
+                />
+            </div>
+            <SchemaBuilder />
         </Form>
     );
 }

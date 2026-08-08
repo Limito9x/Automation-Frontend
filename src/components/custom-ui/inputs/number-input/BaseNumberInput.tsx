@@ -17,7 +17,7 @@ export const BaseNumberInput = React.forwardRef<HTMLInputElement, BaseNumberInpu
                 customInput={Input}
                 thousandSeparator=","
                 allowNegative={false}
-                className={cn("text-right", className)}
+                className={cn(className)}
                 onValueChange={(value) => {
                     onChange(value.floatValue ?? null);
                 }}

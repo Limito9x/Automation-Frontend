@@ -1,0 +1,171 @@
+import { startTransition } from "react";
+import { useAuthStore } from "@/stores/authStore";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarGroupAction,
+} from "@/components/ui/sidebar";
+import { LayoutDashboard, Users, Settings2, Shield, Settings, MonitorCog, Logs, Folder, Plus } from "lucide-react";
+import { NavUser } from "./NavUser";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useProjects } from "@/features/projects/hooks/useProjects";
+import { useDialogStore } from "@/stores/dialogStore";
+
+const projectName = import.meta.env.VITE_PROJECT_NAME;
+
+const navItems = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: LayoutDashboard
+  },
+  {
+    title: "Identity",
+    icon: Settings2,
+    items: [
+      { title: "Users", url: "/users", icon: Users, featurePrefix: "users:" },
+      { title: "Roles", url: "/roles", icon: Shield, featurePrefix: "roles:" },
+    ]
+  },
+  {
+    title: "System",
+    icon: MonitorCog,
+    items: [
+      { title: "Audit Logs", url: "/system/audit-logs", icon: Logs, featurePrefix: "auditlogs:" },
+      { title: "Settings", url: "/system/settings", icon: Settings, featurePrefix: "systemsettings:" },
+    ]
+  }
+] as const;
+
+export function GlobalSidebar() {
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  
+  const hasAnyPermission = useAuthStore(state => state.hasAnyPermission);
+  const { data: projectsData } = useProjects({ pageSize: 10, page: 1 });
+
+  const handleNav = (url: string) => {
+    startTransition(() => {
+      navigate({ to: url });
+    });
+  };
+
+  return (
+    <Sidebar>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <span className="font-bold">{projectName[0]}</span>
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">{projectName}</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        {/* Projects Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarGroupAction title="Create Project" onClick={() => useDialogStore.getState().openDialog("create-project")}>
+            <Plus /> <span className="sr-only">Create Project</span>
+          </SidebarGroupAction>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton isActive={pathname === "/projects"} onPress={() => handleNav("/projects")}>
+                  <LayoutDashboard />
+                  <span>All Projects</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {projectsData?.items?.map(project => (
+                <SidebarMenuItem key={project.id}>
+                  <SidebarMenuButton isActive={pathname.startsWith(`/projects/${project.id}`)} onPress={() => handleNav(`/projects/${project.id}/overview`)}>
+                    <Folder />
+                    <span>{project.name}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Application Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => {
+                const Icon = item.icon;
+
+                if (!("items" in item)) {
+                  if (item.featurePrefix && !hasAnyPermission(item.featurePrefix)) {
+                    return null;
+                  }
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        isActive={pathname === item.url}
+                        onPress={() => handleNav(item.url)}
+                      >
+                        <Icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                }
+
+                const visibleSubItems = item.items.filter(subItem => {
+                   return !subItem.featurePrefix || hasAnyPermission(subItem.featurePrefix);
+                });
+
+                if (visibleSubItems.length === 0) {
+                  return null;
+                }
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton>
+                      <Icon />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                    <SidebarMenuSub>
+                      {visibleSubItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton
+                            isActive={pathname.startsWith(subItem.url)}
+                            onPress={() => handleNav(subItem.url)}
+                          >
+                            <subItem.icon />
+                            <span>{subItem.title}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
+    </Sidebar>
+  );
+}

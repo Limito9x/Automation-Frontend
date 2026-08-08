@@ -1,5 +1,5 @@
 import { BaseFormField } from "./BaseFormField";
-import { BaseNumberInput, type BaseNumberInputProps } from "../custom-ui/number-input/BaseNumberInput";
+import { BaseNumberInput, type BaseNumberInputProps } from "@/components/custom-ui/inputs/number-input/BaseNumberInput";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ export function FormNumberInput<T extends FieldValues>({
                     allowNegative={allowNegative}
                     decimalScale={decimalScale}
                     thousandSeparator={thousandSeparator}
-                    value={field.value ?? null}
+                    value={field.value ?? ""}
                     className={cn("w-full", className)}
                 />
             )}

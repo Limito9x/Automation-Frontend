@@ -13,6 +13,7 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as Layout403RouteImport } from './routes/_layout/403'
+import { Route as LayoutDevRouteImport } from './routes/_layout/dev'
 import { Route as LayoutProjectsRouteImport } from './routes/_layout/projects'
 import { Route as LayoutRolesRouteImport } from './routes/_layout/roles'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
@@ -63,6 +64,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
 const Layout403Route = Layout403RouteImport.update({
   id: '/403',
   path: '/403',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutDevRoute = LayoutDevRouteImport.update({
+  id: '/dev',
+  path: '/dev',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutProjectsRoute = LayoutProjectsRouteImport.update({
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/403': typeof Layout403Route
+  '/dev': typeof LayoutDevRoute
   '/projects': typeof LayoutProjectsRouteWithChildren
   '/roles': typeof LayoutRolesRouteWithChildren
   '/settings': typeof LayoutSettingsRouteWithChildren
@@ -276,6 +283,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/403': typeof Layout403Route
+  '/dev': typeof LayoutDevRoute
   '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/_layout': typeof LayoutRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/_layout/403': typeof Layout403Route
+  '/_layout/dev': typeof LayoutDevRoute
   '/_layout/projects': typeof LayoutProjectsRouteWithChildren
   '/_layout/roles': typeof LayoutRolesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRouteWithChildren
@@ -348,6 +357,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/403'
+    | '/dev'
     | '/projects'
     | '/roles'
     | '/settings'
@@ -384,6 +394,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/403'
+    | '/dev'
     | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/_layout'
     | '/auth'
     | '/_layout/403'
+    | '/_layout/dev'
     | '/_layout/projects'
     | '/_layout/roles'
     | '/_layout/settings'
@@ -483,6 +495,13 @@ declare module '@tanstack/react-router' {
       path: '/403'
       fullPath: '/403'
       preLoaderRoute: typeof Layout403RouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/dev': {
+      id: '/_layout/dev'
+      path: '/dev'
+      fullPath: '/dev'
+      preLoaderRoute: typeof LayoutDevRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/projects': {
@@ -835,6 +854,7 @@ const LayoutSystemAuditLogsRouteWithChildren =
 
 interface LayoutRouteChildren {
   Layout403Route: typeof Layout403Route
+  LayoutDevRoute: typeof LayoutDevRoute
   LayoutProjectsRoute: typeof LayoutProjectsRouteWithChildren
   LayoutRolesRoute: typeof LayoutRolesRouteWithChildren
   LayoutSettingsRoute: typeof LayoutSettingsRouteWithChildren
@@ -846,6 +866,7 @@ interface LayoutRouteChildren {
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   Layout403Route: Layout403Route,
+  LayoutDevRoute: LayoutDevRoute,
   LayoutProjectsRoute: LayoutProjectsRouteWithChildren,
   LayoutRolesRoute: LayoutRolesRouteWithChildren,
   LayoutSettingsRoute: LayoutSettingsRouteWithChildren,

@@ -1,7 +1,7 @@
 import { keepPreviousData } from "@tanstack/react-query";
 import { createMutationHook } from "@/lib/query-utils";
-import * as ContentTypesApi from "@/gen/endpoints/contentTypes/contentTypes";
-import { GetContentTypesQueryParams } from "@/gen/endpoints/contentTypes/contentTypes.zod";
+import * as ContentTypesApi from "@/gen/endpoints/content-types/content-types";
+import { GetContentTypesQueryParams } from "@/gen/endpoints/content-types/content-types.zod";
 import { z } from "zod";
 
 type contentTypeQuery = z.infer<typeof GetContentTypesQueryParams>;

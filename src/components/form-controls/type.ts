@@ -14,5 +14,5 @@ export interface BaseFormControlProps<T extends FieldValues> {
 // Loại bỏ các thuộc tính của HTML Element trùng với React Hook Form để tránh xung đột
 export type OmitFormProps<TProps> = Omit<
   TProps,
-  "name" | "defaultValue" | "value" | "onChange" | "onBlur"
+  "name" | "defaultValue" | "value" | "onChange" | "onBlur" | "autoComplete"
 >;

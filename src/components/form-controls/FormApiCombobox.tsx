@@ -1,4 +1,4 @@
-import { ApiCombobox, type ApiComboboxProps } from '../custom-ui/combobox/ApiCombobox'
+import { ApiCombobox, type ApiComboboxProps } from '@/components/custom-ui/inputs/combobox/ApiCombobox'
 import { BaseFormField } from './BaseFormField'
 import type { BaseFormControlProps } from './type'
 import type { FieldValues } from 'react-hook-form'

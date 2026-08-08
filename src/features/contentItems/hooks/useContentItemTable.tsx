@@ -38,12 +38,12 @@ export function useContentItemTable({ data, totalCount, resource }: UseContentIt
                 cell: ({ row }) => {
                     const item = row.original;
                     const actions = [
-                        hasPermission("contentItems:update") && {
+                        hasPermission("contentitems:update") && {
                             label: t("common:edit", { defaultValue: "Edit" }),
                             icon: EditIcon,
                             onClick: () => openDialog("update-content-item", { id: item.id! }),
                         },
-                        hasPermission("contentItems:delete") && {
+                        hasPermission("contentitems:delete") && {
                             label: t("common:delete", { defaultValue: "Delete" }),
                             icon: TrashIcon,
                             onClick: () => openDialog("delete-content-item", { id: item.id! }),

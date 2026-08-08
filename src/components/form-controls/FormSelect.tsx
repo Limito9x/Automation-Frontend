@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BaseFormField } from "./BaseFormField";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";

@@ -1,4 +1,4 @@
-import { StaticCombobox, type StaticComboboxProps } from '../custom-ui/combobox/StaticCombobox'
+import { StaticCombobox, type StaticComboboxProps } from '@/components/custom-ui/inputs/combobox/StaticCombobox'
 import { BaseFormField } from './BaseFormField'
 import type { BaseFormControlProps } from './type'
 import type { FieldValues } from 'react-hook-form'

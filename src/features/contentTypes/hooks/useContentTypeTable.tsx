@@ -2,13 +2,13 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useDialogStore } from "@/stores/dialogStore";
 import { useAuthStore } from "@/stores/authStore";
-import { useNavigate } from "@tanstack/react-router";
 import { DataTableRowActions, type ActionItem } from "@/components/table/DataTableRowActions";
 import type { BaseSearchParams, useResourceQuery } from "@/lib/useResourceQuery";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ContentTypeDto } from "@/gen/model";
-import { EditIcon, TrashIcon, TypeIcon } from "lucide-react";
+import { EditIcon, TrashIcon, TypeIcon, KeyIcon, FileTextIcon } from "lucide-react";
 import { useDataTable } from "@/lib/useDataTable";
+import { useRouter } from "@tanstack/react-router";
 
 export interface UseContentTypeTableOptions {
     data: ContentTypeDto[];
@@ -20,19 +20,34 @@ export function useContentTypeTable({ data, totalCount, resource }: UseContentTy
     const { t } = useTranslation(["contentTypes", "common"]);
     const openDialog = useDialogStore((state) => state.openDialog);
     const hasPermission = useAuthStore((state) => state.hasPermission);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const columns = useMemo<ColumnDef<ContentTypeDto>[]>(
         () => [
             {
-                accessorKey: "name",
-                header: () => t("fields.name", { defaultValue: "Name" }),
-                meta: { label: t("fields.name", { defaultValue: "Name" }), icon: TypeIcon },
-                cell: (info) => (
-                    <span className="font-semibold text-foreground">
-                        {info.getValue() as string}
-                    </span>
-                ),
+                accessorKey: "displayName",
+                header: () => t("fields.displayName", { defaultValue: "Display Name" }),
+                meta: { label: t("fields.displayName", { defaultValue: "Display Name" }), icon: TypeIcon },
+                cell: ({ row }) => {
+                    return (
+                        <div className="flex items-center space-x-2">
+                            <span className="font-semibold text-foreground">{row.original.displayName}</span>
+                        </div>
+                    );
+                },
+            },
+            {
+                accessorKey: "key",
+                header: () => t("fields.key", { defaultValue: "Key" }),
+                meta: { label: t("fields.key", { defaultValue: "Key" }), icon: KeyIcon },
+            },
+            {
+                accessorKey: "description",
+                header: () => t("fields.description", { defaultValue: "Description" }),
+                meta: { label: t("fields.description", { defaultValue: "Description" }), icon: FileTextIcon },
+                cell: ({ row }) => {
+                    return <span className="text-muted-foreground truncate max-w-[300px] inline-block">{row.original.description}</span>;
+                },
             },
             {
                 id: "actions",
@@ -40,17 +55,17 @@ export function useContentTypeTable({ data, totalCount, resource }: UseContentTy
                 cell: ({ row }) => {
                     const item = row.original;
                     const actions = [
-                        {
-                            label: t("common:viewDetails", { defaultValue: "View Details" }),
-                            icon: EditIcon, // Using EditIcon or EyeIcon
-                            onClick: () => navigate({ to: "/content-types/$id", params: { id: item.id! } }),
-                        },
-                        hasPermission("contentTypes:update") && {
+                        hasPermission("contenttypes:update") && {
                             label: t("common:edit", { defaultValue: "Edit" }),
                             icon: EditIcon,
-                            onClick: () => navigate({ to: "/content-types/$id/edit", params: { id: item.id! } }),
+                            onClick: () => {
+                                router.navigate({
+                                    to: `/projects/$id/content-types/${item.id}/edit`,
+                                    params: { id: item.projectId! }
+                                });
+                            },
                         },
-                        hasPermission("contentTypes:delete") && {
+                        hasPermission("contenttypes:delete") && {
                             label: t("common:delete", { defaultValue: "Delete" }),
                             icon: TrashIcon,
                             onClick: () => openDialog("delete-content-type", { id: item.id! }),
@@ -63,7 +78,7 @@ export function useContentTypeTable({ data, totalCount, resource }: UseContentTy
                 },
             },
         ],
-        [openDialog, hasPermission, t, navigate]
+        [openDialog, hasPermission, t, router]
     );
 
     const table = useDataTable({ data, columns, totalCount, resource });

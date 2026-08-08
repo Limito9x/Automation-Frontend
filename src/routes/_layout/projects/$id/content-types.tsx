@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_layout/projects/$id/content-types')({
   },
   beforeLoad: () => {
     const permissions = getAuthState().permissions;
-    const hasAccess = permissions.some(p => p.startsWith('contentTypes:'));
+    const hasAccess = permissions.some(p => p.startsWith('contenttypes:'));
     if (!hasAccess) {
       throw redirect({ to: '/403' });
     }

@@ -28,7 +28,7 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
         resource: resourceQuery,
     });
 
-    const canCreate = hasPermission("contentItems:create");
+    const canCreate = hasPermission("contentitems:create");
 
     return (
         <ResourcePageShell

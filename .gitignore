@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 .env.*
+
+dev.tsx
+dev.*.tsx

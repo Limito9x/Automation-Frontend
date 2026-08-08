@@ -30,7 +30,8 @@ export function BaseFormField<T extends FieldValues>({
     description,
     autoComplete,
     render,
-}: BaseFormFieldProps<T>) {
+    ...rest
+}: BaseFormFieldProps<T> & Record<string, any>) {
     const formId = useFormId();
     const field_id = formId ? `${formId}_${name}` : name
     const resolvedinput_name = autoComplete ?? (formId ? `${formId}_${name}` : name)
@@ -48,6 +49,7 @@ export function BaseFormField<T extends FieldValues>({
                     )}
                     {render({
                         ...field,
+                        ...rest,
                         field_id,
                         autoComplete,
                         input_name: resolvedinput_name,
