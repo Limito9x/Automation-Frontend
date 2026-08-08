@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Textarea } from "../ui/textarea";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -32,3 +33,14 @@ export function FormTextarea<T extends FieldValues>({
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "textarea": ExtractConfig<FormTextareaProps<any>>
+    }
+}
+registerField({
+    type: "textarea",
+    component: FormTextarea
+});

@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -112,3 +113,14 @@ export function FormIconPicker<T extends FieldValues>({
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "icon": ExtractConfig<FormIconPickerProps<any>>
+    }
+}
+registerField({
+    type: "icon",
+    component: FormIconPicker
+});

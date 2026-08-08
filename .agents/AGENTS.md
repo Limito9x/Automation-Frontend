@@ -38,6 +38,7 @@
 - **`build_frontend_form`** (`.agents/skills/build_frontend_form/SKILL.md`): Kích hoạt skill này khi cần xây dựng Form thêm mới/cập nhật dữ liệu và nhúng vào Dialog (hiểu rõ cơ chế formId, BaseFormDialog).
 - **`build_frontend_hook`** (`.agents/skills/build_frontend_hook/SKILL.md`): Kích hoạt skill này để biết cách viết custom query/mutation hook (dùng `createMutationHook`, `keepPreviousData`) bọc các API tự sinh cho Feature.
 - **`create-frontend-feature`** (`.agents/skills/create-frontend-feature/SKILL.md`): Hướng dẫn quy trình chuẩn để tạo một Feature CRUD mới (Dialog hoặc Page layout) bằng cách chạy lệnh Plop và hoàn thiện logic.
+- **`create_form_control`** (`.agents/skills/create_form_control/SKILL.md`): Hướng dẫn quy trình chuẩn để tạo một Form Control mới hỗ trợ cơ chế auto-scan registry và dynamic form.
 
 
 ## 5. Table & Dialog Architecture
@@ -68,5 +69,11 @@
 - **Reuse Existing Base Components:** Before creating new UI structures or raw components, you MUST inspect the `src/components/` directory (especially `src/components/custom-ui/` and `src/components/layout/`) to reuse existing robust components (e.g., `BaseDialog`, `BaseFormDialog`, `ResourcePageShell`, `FormSubmitButton`). Do not reinvent standard dialogs or page shells.
 - **CodeGraph Usage:** It is highly encouraged to use the `codegraph_explore` MCP tool (or `codegraph explore` shell command) to quickly understand how existing custom components are constructed and utilized in the codebase. This ensures architectural consistency.
 
-## 12. Codebase Exploration & Planning with CodeGraph
-- **Planning & Dependency Analysis:** Khi thực hiện nghiên cứu lập kế hoạch (planning phase) hoặc phân tích sự phụ thuộc của code (dependency mapping), bắt buộc phải ưu tiên sử dụng `codegraph_explore` MCP (hoặc lệnh CLI `codegraph explore`) để có cái nhìn toàn diện trước khi dùng grep tìm kiếm thô hoặc mở hàng loạt file thủ công.
+## 12. Codebase Exploration & Planning with CodeGraph (MANDATORY)
+- **TỐI HẬU THƯ:** BẠN BẮT BUỘC PHẢI DÙNG `codegraph_explore` MCP (hoặc lệnh CLI `codegraph explore`) là công cụ ĐẦU TIÊN để phân tích kiến trúc, dò tìm file, hoặc xem references.
+- **NGHIÊM CẤM:** KHÔNG ĐƯỢC dùng `grep_search`, `list_dir`, hoặc `view_file` để đi "mò" từng file khi chưa dùng CodeGraph để có bức tranh tổng thể (trừ khi hệ thống báo lỗi không có file `.codegraph`). Tốc độ và sự chính xác là ưu tiên số 1.
+
+## 13. Dynamic Form & Form Control Architecture
+- **Phân biệt Thuật Ngữ**: Luôn sử dụng `FormRenderer` (vẽ Form cho End-User từ JSON) và `FormBuilder` (Giao diện cấu hình cho Admin).
+- **Zod Validation**: Các giới hạn logic như `min`, `max` (cho số) bắt buộc phải cấu hình bằng Zod schema (`z.number().min()`), TUYỆT ĐỐI KHÔNG cấu hình qua HTML prop trong form động vì các component như `react-number-format` render ra thẻ `<input type="text">` và sẽ bỏ qua HTML min/max.
+- **BaseFormField Config**: Mọi Form Control phải bọc qua `BaseFormField` và dùng `OmitFormProps` để tránh xung đột Type với React Hook Form. Thuộc tính `config` sinh ra để chứa các HTML prop native (như `maxLength`) và prop riêng của component.

@@ -2,7 +2,7 @@ import { useForm, type DefaultValues, type FieldValues, type SubmitHandler } fro
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ZodType } from "zod";
 import { Form } from "@/components/form/Form";
-import { FormBuilder } from "./FormBuilder";
+import { FormRenderer } from "./FormRenderer";
 import type { FieldDefinition } from "@/lib/field-registry";
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +35,7 @@ export function DynamicForm<T extends FieldValues>({
 
     return (
         <Form form={form} onSubmit={onSubmit} formId={formId}>
-            <FormBuilder control={form.control} fields={fields} />
+            <FormRenderer control={form.control} fields={fields} />
             <div className="flex justify-end mt-4">
                 <Button type="submit">
                     {submitText}

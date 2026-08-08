@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { DateRangePicker, type DateRangePickerProps } from "../ui/date-range-picker";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -29,3 +30,14 @@ export function FormDateRange<T extends FieldValues>({
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "dateRange": ExtractConfig<FormDateRangeProps<any>>
+    }
+}
+registerField({
+    type: "dateRange",
+    component: FormDateRange
+});

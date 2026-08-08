@@ -1,4 +1,5 @@
 import { StaticCombobox, type StaticComboboxProps } from '@/components/custom-ui/inputs/combobox/StaticCombobox'
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from './BaseFormField'
 import type { BaseFormControlProps } from './type'
 import type { FieldValues } from 'react-hook-form'
@@ -29,3 +30,14 @@ export function FormStaticCombobox<TFieldValues extends FieldValues, TValue = an
         />
     )
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "staticCombobox": ExtractConfig<FormStaticComboboxProps<any, any>>
+    }
+}
+registerField({
+    type: "staticCombobox",
+    component: FormStaticCombobox
+});

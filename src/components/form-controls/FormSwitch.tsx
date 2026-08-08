@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Switch } from "../ui/switch";
 import type { BaseFormControlProps } from "./type";
@@ -31,3 +32,14 @@ export function FormSwitch<T extends FieldValues>({
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "switch": ExtractConfig<FormSwitchProps<any>>
+    }
+}
+registerField({
+    type: "switch",
+    component: FormSwitch
+});

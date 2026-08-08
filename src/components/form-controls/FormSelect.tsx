@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
@@ -52,3 +53,14 @@ export function FormSelect<T extends FieldValues>({ options, ...rest }: FormSele
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "select": ExtractConfig<FormSelectProps<any>>
+    }
+}
+registerField({
+    type: "select",
+    component: FormSelect
+});

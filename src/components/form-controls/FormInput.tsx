@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -36,3 +37,13 @@ export function FormInput<T extends FieldValues>({
         />
     );
 }
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "text": ExtractConfig<FormInputProps<any>>
+    }
+}
+registerField({
+    type: "text",
+    component: FormInput
+});

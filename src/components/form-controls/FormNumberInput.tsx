@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { BaseNumberInput, type BaseNumberInputProps } from "@/components/custom-ui/inputs/number-input/BaseNumberInput";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -40,3 +41,13 @@ export function FormNumberInput<T extends FieldValues>({
         />
     );
 }
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "number": ExtractConfig<FormNumberInputProps<any>>
+    }
+}
+registerField({
+    type: "number",
+    component: FormNumberInput
+});

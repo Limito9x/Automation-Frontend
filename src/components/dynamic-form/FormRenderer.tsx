@@ -2,15 +2,15 @@ import { DynamicField } from "./DynamicField";
 import type { Control, FieldValues } from "react-hook-form";
 import type { FieldDefinition } from "@/lib/field-registry";
 
-export interface FormBuilderProps<T extends FieldValues> {
+export interface FormRendererProps<T extends FieldValues> {
     control: Control<T>;
     fields: FieldDefinition<T>[];
 }
 
-export function FormBuilder<T extends FieldValues>({
+export function FormRenderer<T extends FieldValues>({
     control,
     fields
-}: FormBuilderProps<T>) {
+}: FormRendererProps<T>) {
     return (
         <div className="space-y-4">
             {fields.map((field) => (

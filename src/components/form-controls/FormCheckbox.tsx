@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Checkbox } from "../ui/checkbox";
 import type { BaseFormControlProps } from "./type";
@@ -31,3 +32,14 @@ export function FormCheckbox<T extends FieldValues>({
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "checkbox": ExtractConfig<FormCheckboxProps<any>>
+    }
+}
+registerField({
+    type: "checkbox",
+    component: FormCheckbox
+});

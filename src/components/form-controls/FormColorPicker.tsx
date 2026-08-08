@@ -1,3 +1,4 @@
+import { registerField, type ExtractConfig } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import type { BaseFormControlProps } from "./type";
@@ -44,3 +45,14 @@ export function FormColorPicker<T extends FieldValues>({
         />
     );
 }
+
+
+declare module "@/lib/field-registry" {
+    interface GlobalFieldRegistry {
+        "color": ExtractConfig<FormColorPickerProps<any>>
+    }
+}
+registerField({
+    type: "color",
+    component: FormColorPicker
+});

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SlidersHorizontalIcon } from "lucide-react";
 import type { FieldDefinition } from "@/lib/field-registry";
 import type { FieldValues, UseFormReturn } from "react-hook-form";
-import { FormBuilder } from "../dynamic-form/FormBuilder";
+import { FormRenderer } from "../dynamic-form/FormRenderer";
 import { Form } from "@/components/form/Form";
 
 interface AdvancedFiltersProps<T extends FieldValues> {
@@ -69,7 +69,7 @@ export function AdvancedFilters<T extends FieldValues>({
                     )}
                 </div>
                 <Form form={form} onSubmit={handleApply}>
-                    <FormBuilder control={form.control as any} fields={fields as any} />
+                    <FormRenderer control={form.control as any} fields={fields as any} />
                     <div className="flex justify-end mt-4">
                         <Button type="submit">
                             Apply Filters
