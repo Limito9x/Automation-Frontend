@@ -1,4 +1,4 @@
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -36,11 +36,17 @@ export function FormTextarea<T extends FieldValues>({
 }
 
 
+export interface FormTextareaProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    placeholder?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "textarea": {
-            config: ExtractConfig<FormTextareaProps<any>>,
-            rules: BaseFieldRules,
+            properties: FormTextareaProperties,
             defaultValue: string
         }
     }
@@ -48,19 +54,12 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "textarea",
     component: FormTextarea,
-    buildSchema: (rules: BaseFieldRules) => {
-        const reqMsg = rules.requiredMsg || "Required";
+    buildSchema: (p: FormTextareaProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
         let s = z.string({ message: reqMsg });
-        if (rules.required) s = s.min(1, reqMsg);
-        if (!rules.required) return s.optional().nullable();
+        if (p.required) s = s.min(1, reqMsg);
+        if (!p.required) return s.optional().nullable();
         return s;
     },
-    builderFields: [
-        {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
-        }
-    ]
+    builderFields: []
 });

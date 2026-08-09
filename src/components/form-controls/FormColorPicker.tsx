@@ -1,4 +1,5 @@
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
+import { z } from "zod";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import type { BaseFormControlProps } from "./type";
@@ -47,12 +48,29 @@ export function FormColorPicker<T extends FieldValues>({
 }
 
 
+export interface FormColorPickerProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "color": ExtractConfig<FormColorPickerProps<any>>
+        "color": {
+            properties: FormColorPickerProperties,
+            defaultValue: string
+        }
     }
 }
 registerField({
     type: "color",
-    component: FormColorPicker
+    component: FormColorPicker,
+    buildSchema: (p: FormColorPickerProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
+        let s = z.string({ message: reqMsg });
+        if (p.required) s = s.min(1, reqMsg);
+        if (!p.required) return s.optional().nullable();
+        return s;
+    },
+    builderFields: []
 });

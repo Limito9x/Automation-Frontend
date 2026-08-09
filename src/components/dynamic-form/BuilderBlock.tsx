@@ -4,6 +4,7 @@ import { getFieldRegistration, getFieldRegistry } from '@/lib/field-registry'
 import { FormInput } from '@/components/form-controls/FormInput'
 import { FormSelect } from '@/components/form-controls/FormSelect'
 import { FormTextarea } from '@/components/form-controls/FormTextarea'
+import { FormSwitch } from '@/components/form-controls/FormSwitch'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { Trash2, GripVertical, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -41,7 +42,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
 
     const satisfiedRequired = useMemo(() => {
         return requiredSpecs.filter(s => {
-            const val = currentField?.[s.target]?.[s.name];
+            const val = currentField?.properties?.[s.name] ?? currentField?.config?.[s.name] ?? currentField?.rules?.[s.name];
             if (Array.isArray(val)) return val.length > 0;
             return val !== undefined && val !== null && val !== "";
         }).length;
@@ -101,12 +102,14 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                         placeholder="Mô tả trường này làm gì..."
                         className="min-h-[40px] resize-none"
                     />
-                    <FormInput
-                        control={control}
-                        name={`fields.${index}.defaultValue`}
-                        label="Default Value"
-                        placeholder="Giá trị mặc định"
-                    />
+                    <div className="flex flex-col gap-4">
+
+                        <FormSwitch
+                            control={control}
+                            name={`fields.${index}.properties.required`}
+                            label="Required field?"
+                        />
+                    </div>
                 </div>
 
                 {/* Advanced Config Collapsible */}
@@ -138,7 +141,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                         <CollapsibleContent className="px-4 pb-4 pt-2">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {builderFields.map((spec) => {
-                                    const fieldPath = `fields.${index}.${spec.target}.${spec.name}`;
+                                    const fieldPath = `fields.${index}.properties.${spec.name}`;
                                     const fieldReg = getFieldRegistration(spec.fieldType);
                                     if (!fieldReg) return <div key={spec.name} className="text-red-500 text-sm">Error: Unknown fieldType "{spec.fieldType}"</div>;
 

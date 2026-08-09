@@ -30,7 +30,7 @@ export function DynamicBuilderForm({
             name: "label",
             type: "text",
             label: "Display Label",
-            rules: {
+            properties: {
                 required: true
             }
         },
@@ -40,13 +40,9 @@ export function DynamicBuilderForm({
             label: "Description"
         },
         {
-            name: "defaultValue",
-            // Đối với select hoặc các trường cần data phụ thuộc (options), ta dùng text input cho an toàn
-            type: (type === "select") ? "text" : type as any,
-            label: "Default Value",
-            description: type === "select"
-                ? "Nhập chính xác 1 giá trị (value) có trong Options"
-                : "Giá trị mặc định ban đầu"
+            name: "properties.required",
+            type: "switch",
+            label: "Required field?"
         }
     ];
 

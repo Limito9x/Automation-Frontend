@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { z } from "zod";
 import { BaseFormField } from "./BaseFormField";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -25,7 +25,7 @@ export interface FormSelectProps<T extends FieldValues>
 
 export function FormSelect<T extends FieldValues>({ options = [], ...rest }: FormSelectProps<T>) {
     // Cho phép options vừa là string[] (từ tags builder) vừa là object[]
-    const normalizedOptions = options.map(opt => 
+    const normalizedOptions = options.map(opt =>
         typeof opt === "string" ? { label: opt, value: opt } : opt
     );
 
@@ -61,11 +61,18 @@ export function FormSelect<T extends FieldValues>({ options = [], ...rest }: For
 }
 
 
+export interface FormSelectProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    placeholder?: string;
+    disabled?: boolean;
+    options?: (SelectOption | string)[];
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "select": {
-            config: ExtractConfig<FormSelectProps<any>>,
-            rules: BaseFieldRules,
+            properties: FormSelectProperties,
             defaultValue: string
         }
     }
@@ -73,29 +80,27 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "select",
     component: FormSelect,
-    buildSchema: (rules: BaseFieldRules) => {
-        const reqMsg = rules.requiredMsg || "Required";
+    buildSchema: (p: FormSelectProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
         let s = z.string({ message: reqMsg });
-        if (rules.required) s = s.min(1, reqMsg);
-        if (!rules.required) return s.optional().nullable();
+        if (p.required) s = s.min(1, reqMsg);
+        if (!p.required) return s.optional().nullable();
         return s;
     },
     builderFields: [
         {
             name: "placeholder",
-            target: "config",
             fieldType: "text",
             label: "Placeholder"
         },
         {
             name: "options",
-            target: "config",
             fieldType: "tags",
             label: "Options",
             fieldConfig: {
                 placeholder: "Add options",
             },
-            isRequired: true
+            isRequired: true,
         }
     ]
 });

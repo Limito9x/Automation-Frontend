@@ -1,5 +1,5 @@
 import { BaseFormField } from "./BaseFormField";
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { z } from "zod";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
@@ -31,11 +31,16 @@ export function FormTagsInput<T extends FieldValues>({
     );
 }
 
+export interface FormTagsProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "tags": {
-            config: ExtractConfig<FormTagsInputProps<any>>,
-            rules: BaseFieldRules,
+            properties: FormTagsProperties,
             defaultValue: string[]
         }
     }
@@ -43,19 +48,12 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "tags",
     component: FormTagsInput,
-    buildSchema: (rules: BaseFieldRules) => {
-        const reqMsg = rules.requiredMsg || "Required";
+    buildSchema: (p: FormTagsProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
         let s = z.array(z.string(), { message: reqMsg });
-        if (rules.required) s = s.min(1, reqMsg);
-        if (!rules.required) return s.optional().nullable();
+        if (p.required) s = s.min(1, reqMsg);
+        if (!p.required) return s.optional().nullable();
         return s;
     },
-    builderFields: [
-        {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
-        }
-    ]
+    builderFields: []
 });

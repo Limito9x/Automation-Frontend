@@ -1,16 +1,10 @@
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-
-export interface FormInputRules extends BaseFieldRules {
-    min?: number;
-    max?: number;
-    email?: boolean;
-}
 
 export interface FormInputProps<T extends FieldValues>
     extends BaseFormControlProps<T>,
@@ -45,11 +39,21 @@ export function FormInput<T extends FieldValues>({
     );
 }
 
+export interface FormInputProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    min?: number;
+    max?: number;
+    email?: boolean;
+    placeholder?: string;
+    type?: React.HTMLInputTypeAttribute;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "text": {
-            config: ExtractConfig<FormInputProps<any>>,
-            rules: FormInputRules,
+            properties: FormInputProperties,
             defaultValue: string
         }
     }
@@ -57,31 +61,29 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "text",
     component: FormInput,
-    buildSchema: (rules: FormInputRules) => {
-        const reqMsg = rules.requiredMsg || "Required";
+    buildSchema: (p: FormInputProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
         let s = z.string({ message: reqMsg });
-        if (rules.required) s = s.min(1, reqMsg);
-        if (rules.min) s = s.min(rules.min, `Min length is ${rules.min}`);
-        if (rules.max) s = s.max(rules.max, `Max length is ${rules.max}`);
-        if (rules.email) s = s.email("Invalid email");
+        if (p.required) s = s.min(1, reqMsg);
+        if (p.min) s = s.min(p.min, `Min length is ${p.min}`);
+        if (p.max) s = s.max(p.max, `Max length is ${p.max}`);
+        if (p.email) s = s.email("Invalid email");
 
-        if (!rules.required) {
+        if (!p.required) {
             return s.optional().nullable();
         }
         return s;
     },
     builderFields: [
         {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
+            name: "max",
+            fieldType: "number",
+            label: "Max Length",
         },
         {
-            name: "max",
-            target: "rules",
-            fieldType: "number",
-            label: "Max Length"
+            name: "placeholder",
+            fieldType: "text",
+            label: "Placeholder",
         }
     ]
 });

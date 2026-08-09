@@ -1,4 +1,4 @@
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
 import { BaseFormField } from "./BaseFormField";
 import { BaseNumberInput, type BaseNumberInputProps } from "@/components/custom-ui/inputs/number-input/BaseNumberInput";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -50,11 +50,22 @@ export function FormNumberInput<T extends FieldValues>({
     );
 }
 
+export interface FormNumberProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    min?: number;
+    max?: number;
+    allowNegative?: boolean;
+    decimalScale?: number;
+    thousandSeparator?: boolean;
+    placeholder?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "number": {
-            config: ExtractConfig<FormNumberInputProps<any>>,
-            rules: FormNumberRules,
+            properties: FormNumberProperties,
             defaultValue: number
         }
     }
@@ -62,51 +73,40 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "number",
     component: FormNumberInput,
-    buildSchema: (rules: FormNumberRules) => {
-        const reqMsg = rules.requiredMsg || "Required";
+    buildSchema: (p: FormNumberProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
         let s = z.number({ message: reqMsg });
-        if (rules.min !== undefined) s = s.min(rules.min, `Min is ${rules.min}`);
-        if (rules.max !== undefined) s = s.max(rules.max, `Max is ${rules.max}`);
+        if (p.min !== undefined) s = s.min(p.min, `Min is ${p.min}`);
+        if (p.max !== undefined) s = s.max(p.max, `Max is ${p.max}`);
 
-        if (!rules.required) {
+        if (!p.required) {
             return s.optional().nullable();
         }
         return s;
     },
     builderFields: [
         {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
-        },
-        {
             name: "min",
-            target: "rules",
             fieldType: "number",
             label: "Minimum Value"
         },
         {
             name: "max",
-            target: "rules",
             fieldType: "number",
             label: "Maximum Value"
         },
         {
             name: "allowNegative",
-            target: "config",
             fieldType: "switch",
             label: "Allow Negative?"
         },
         {
             name: "decimalScale",
-            target: "config",
             fieldType: "number",
             label: "Decimal Scale"
         },
         {
             name: "thousandSeparator",
-            target: "config",
             fieldType: "switch",
             label: "Thousand Separator?"
         },

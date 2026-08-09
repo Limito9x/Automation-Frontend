@@ -1,15 +1,16 @@
 import { StaticCombobox, type StaticComboboxProps } from '@/components/custom-ui/inputs/combobox/StaticCombobox'
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { BaseFormField } from './BaseFormField'
 import type { BaseFormControlProps } from './type'
 import type { FieldValues } from 'react-hook-form'
 import { z } from 'zod'
+import type { OptionItem } from '@/components/custom-ui/inputs/combobox/BaseCombobox';
 
 export interface FormStaticComboboxProps<TFieldValues extends FieldValues, TValue = any>
     extends BaseFormControlProps<TFieldValues>,
-    Omit<StaticComboboxProps<TValue>, 'value' | 'onValueChange' | 'useOptions'> {
-    useOptions?: () => { data?: any[]; isLoading: boolean }
-    options?: (any | string)[];
+    Omit<StaticComboboxProps<TValue>, 'value' | 'onValueChange' | 'options'> {
+    options?: (OptionItem<TValue> | string)[];
+    isLoading?: boolean;
 }
 
 /**
@@ -18,18 +19,13 @@ export interface FormStaticComboboxProps<TFieldValues extends FieldValues, TValu
  */
 export function FormStaticCombobox<TFieldValues extends FieldValues, TValue = any>({
     options,
-    useOptions,
+    isLoading,
     ...rest
 }: FormStaticComboboxProps<TFieldValues, TValue>) {
-    
-    // Nếu truyền options (từ Builder/JSON), biến nó thành useOptions giả.
-    // Nếu truyền useOptions, ưu tiên dùng nó.
-    const resolvedUseOptions = useOptions || (() => {
-        const normalizedOptions = (options || []).map(opt => 
-            typeof opt === "string" ? { label: opt, value: opt } : opt
-        );
-        return { data: normalizedOptions, isLoading: false };
-    });
+
+    const normalizedOptions = (options || []).map(opt =>
+        typeof opt === "string" ? { label: opt, value: opt as unknown as TValue } : opt
+    );
 
     return (
         <BaseFormField
@@ -40,53 +36,66 @@ export function FormStaticCombobox<TFieldValues extends FieldValues, TValue = an
                     id={field.field_id}
                     value={field.value}
                     onValueChange={field.onChange}
-                    useOptions={resolvedUseOptions}
+                    options={normalizedOptions}
+                    isLoading={isLoading}
                 />
             )}
         />
     )
 }
 
+export interface StaticComboboxProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    multiple?: boolean;
+    placeholder?: string;
+    disabled?: boolean;
+    options?: (OptionItem<any> | string)[];
+    dataSource?: any; // FieldDataSource
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "staticCombobox": {
-            config: ExtractConfig<FormStaticComboboxProps<any, any>>,
-            rules: BaseFieldRules,
-            defaultValue: string
+        "combobox": {
+            properties: StaticComboboxProperties,
+            defaultValue: string | string[]
         }
     }
 }
 registerField({
-    type: "staticCombobox",
+    type: "combobox",
     component: FormStaticCombobox,
-    buildSchema: (rules: BaseFieldRules) => {
-        let s = z.string({ message: rules.requiredMsg || "Required" });
-        if (rules.required) s = s.min(1, rules.requiredMsg || "Required");
-        if (!rules.required) return s.optional().nullable();
+    buildSchema: (p: StaticComboboxProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
+        if (p.multiple) {
+            let s = z.array(z.string());
+            if (p.required) s = s.min(1, reqMsg);
+            return p.required ? s : s.optional();
+        }
+        let s = z.string({ message: reqMsg });
+        if (p.required) s = s.min(1, reqMsg);
+        if (!p.required) return s.optional().nullable();
         return s;
     },
     builderFields: [
         {
             name: "placeholder",
-            target: "config",
             fieldType: "text",
             label: "Placeholder"
         },
         {
+            name: "multiple",
+            fieldType: "switch",
+            label: "Multiple Select?"
+        },
+        {
             name: "options",
-            target: "config",
             fieldType: "tags",
-            label: "Options",
+            label: "Static Options",
             fieldConfig: {
                 placeholder: "Add options",
             },
             isRequired: true
-        },
-        {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
         }
     ]
 });

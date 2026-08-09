@@ -7,33 +7,34 @@ export type StaticComboboxProps<TValue = unknown> = DistributiveOmit<
     BaseComboboxProps<TValue>,
     'items' | 'onSearch'
 > & {
-    useOptions: () => { data?: OptionItem<TValue>[]; isLoading: boolean }
+    options: OptionItem<TValue>[]
+    isLoading?: boolean
     loadingText?: string
 }
 
 /**
  * StaticCombobox
- * Component xử lý logic gọi API tự động một lần cho dữ liệu tĩnh, filter phía client.
+ * Component xử lý filter phía client cho dữ liệu tĩnh.
  * Độc lập hoàn toàn với Form.
  */
 export function StaticCombobox<TValue = unknown>({
-    useOptions,
+    options,
+    isLoading = false,
     loadingText = 'Loading...',
     emptyText = 'No results found.',
     onValueChange,
     ...rest
 }: StaticComboboxProps<TValue>) {
     const [search, setSearch] = useState('');
-    const { data, isLoading } = useOptions();
 
-    const options = (data ?? []).filter(item => 
+    const filteredOptions = (options || []).filter(item => 
         item.label.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
         <BaseCombobox
             {...rest as any}
-            items={options}
+            items={filteredOptions}
             onValueChange={onValueChange as any}
             onSearch={setSearch}
             emptyText={isLoading ? loadingText : emptyText}

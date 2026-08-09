@@ -1,4 +1,4 @@
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { z } from "zod";
 import { Switch } from "../ui/switch";
 import type { BaseFormControlProps } from "./type";
@@ -36,11 +36,16 @@ export function FormSwitch<T extends FieldValues>({
 }
 
 
+export interface FormSwitchProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "switch": {
-            config: ExtractConfig<FormSwitchProps<any>>,
-            rules: BaseFieldRules,
+            properties: FormSwitchProperties,
             defaultValue: boolean
         }
     }
@@ -48,17 +53,10 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "switch",
     component: FormSwitch,
-    buildSchema: (rules: BaseFieldRules) => {
+    buildSchema: (p: FormSwitchProperties, field?: any) => {
         let s = z.boolean();
-        if (!rules.required) return s.optional().nullable();
+        if (!p.required) return s.optional().nullable();
         return s;
     },
-    builderFields: [
-        {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
-        }
-    ]
+    builderFields: []
 });

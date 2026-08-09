@@ -15,8 +15,8 @@ export function buildDynamicSchema(fields: FieldDefinition<any, any>[]): z.ZodOb
         let fieldSchema: z.ZodTypeAny;
 
         if (registration?.buildSchema) {
-            // Nhường quyền quyết định cho Component tự nặn ra schema
-            fieldSchema = registration.buildSchema(field.rules || {});
+            const props = field.properties;
+            fieldSchema = registration.buildSchema(props as any, field);
         } else {
             // Fallback an toàn nếu Component quên không khai báo buildSchema
             fieldSchema = z.any();

@@ -1,9 +1,6 @@
 import type { ComponentType } from "react";
 import type { FieldValues, Path } from "react-hook-form";
-import type { ZodTypeAny } from "zod";
-import type { BaseFormControlProps } from "@/components/form-controls/type";
-
-export type ExtractConfig<TProps> = Omit<TProps, keyof BaseFormControlProps<any>>
+import type { ZodType } from "zod";
 
 export interface BaseFieldRules {
   required?: boolean;
@@ -18,8 +15,7 @@ export interface FieldBuilderSpec {
   label?: string
   description?: string
   isRequired?: boolean
-  target: "config" | "rules"
-  fieldType: keyof GlobalFieldRegistry
+  fieldType: keyof GlobalFieldRegistry | string // Allow string for fallback
   fieldConfig?: Record<string, any>
 }
 
@@ -27,7 +23,8 @@ export interface FieldRegistration {
   type: string
   component: ComponentType<any>
   builderFields?: FieldBuilderSpec[]
-  buildSchema?: (rules: any) => ZodTypeAny
+  buildSchema?: (properties: any, field?: FieldDefinition<any, any>) => ZodType
+  resolveProps?: (properties: any) => Record<string, any>
 }
 
 // eslint-disable-next-line no-var
@@ -69,8 +66,11 @@ export interface FieldDefinition<
   name: Path<T>
   label?: string
   description?: string
-  type: TType
-  defaultValue?: GlobalFieldRegistry[TType] extends { defaultValue: infer D } ? D : any
-  config?: GlobalFieldRegistry[TType] extends { config: infer C } ? C : any
-  rules?: GlobalFieldRegistry[TType] extends { rules: infer R } ? R : any
+  type: TType | string
+  defaultValue?: GlobalFieldRegistry[TType extends keyof GlobalFieldRegistry ? TType : never] extends { defaultValue: infer D } ? D : any
+  properties?: GlobalFieldRegistry[TType extends keyof GlobalFieldRegistry ? TType : never] extends { properties: infer P } ? P : any
+  
+  // Backward compatibility during migration (optional, can be removed once all fields migrated)
+  config?: any
+  rules?: any
 }

@@ -11,14 +11,23 @@ export function DynamicField<T extends FieldValues>({
         return <div className="text-destructive">Field type "{field.type as string}" is not registered.</div>
     }
 
+    const resolvedExecutableProps = registration.resolveProps
+        ? registration.resolveProps(field.properties)
+        : {};
+
+    const finalProps = {
+        ...field.properties,
+        ...resolvedExecutableProps
+    };
+
     return (
         <Component
             control={control}
             name={field.name}
             label={field.label}
             description={field.description}
-            isRequired={!!field.rules?.required}
-            {...field.config}
+            isRequired={field.properties?.required}
+            {...finalProps}
         />
     )
 }

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
+import { z } from "zod";
 import { BaseFormField } from "./BaseFormField";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -115,12 +116,29 @@ export function FormIconPicker<T extends FieldValues>({
 }
 
 
+export interface FormIconPickerProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "icon": ExtractConfig<FormIconPickerProps<any>>
+        "icon": {
+            properties: FormIconPickerProperties,
+            defaultValue: string
+        }
     }
 }
 registerField({
     type: "icon",
-    component: FormIconPicker
+    component: FormIconPicker,
+    buildSchema: (p: FormIconPickerProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
+        let s = z.string({ message: reqMsg });
+        if (p.required) s = s.min(1, reqMsg);
+        if (!p.required) return s.optional().nullable();
+        return s;
+    },
+    builderFields: []
 });

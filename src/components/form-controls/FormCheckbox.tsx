@@ -1,4 +1,4 @@
-import { registerField, type ExtractConfig, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField, type BaseFieldRules } from "@/lib/field-registry";
 import { z } from "zod";
 import { Checkbox } from "../ui/checkbox";
 import type { BaseFormControlProps } from "./type";
@@ -37,11 +37,16 @@ export function FormCheckbox<T extends FieldValues>({
 }
 
 
+export interface FormCheckboxProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
         "checkbox": {
-            config: ExtractConfig<FormCheckboxProps<any>>,
-            rules: BaseFieldRules,
+            properties: FormCheckboxProperties,
             defaultValue: boolean
         }
     }
@@ -49,19 +54,12 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "checkbox",
     component: FormCheckbox,
-    buildSchema: (rules: BaseFieldRules) => {
-        const reqMsg = rules.requiredMsg || "Required";
+    buildSchema: (p: FormCheckboxProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
         let s = z.boolean({ message: reqMsg });
-        if (rules.required) s = s.refine(val => val === true, reqMsg);
-        if (!rules.required) return s.optional().nullable();
+        if (p.required) s = s.refine(val => val === true, reqMsg);
+        if (!p.required) return s.optional().nullable();
         return s;
     },
-    builderFields: [
-        {
-            name: "required",
-            target: "rules",
-            fieldType: "switch",
-            label: "Required?"
-        }
-    ]
+    builderFields: []
 });

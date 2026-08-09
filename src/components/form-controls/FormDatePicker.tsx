@@ -1,4 +1,6 @@
-import { registerField, type ExtractConfig } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
+import { z } from "zod";
+import { Temporal } from "@js-temporal/polyfill";
 import { BaseFormField } from "./BaseFormField";
 import { DatePicker, type DatePickerProps } from "../ui/date-picker";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
@@ -32,12 +34,29 @@ export function FormDatePicker<T extends FieldValues>({
 }
 
 
+export interface FormDatePickerProperties {
+    required?: boolean;
+    requiredMsg?: string;
+    placeholder?: string;
+    disabled?: boolean;
+}
+
 declare module "@/lib/field-registry" {
     interface GlobalFieldRegistry {
-        "date": ExtractConfig<FormDatePickerProps<any>>
+        "date": {
+            properties: FormDatePickerProperties,
+            defaultValue: Temporal.PlainDate
+        }
     }
 }
 registerField({
     type: "date",
-    component: FormDatePicker
+    component: FormDatePicker,
+    buildSchema: (p: FormDatePickerProperties, field?: any) => {
+        const reqMsg = p.requiredMsg || `${field?.label || field?.name || 'This field'} is required`;
+        let s = z.instanceof(Temporal.PlainDate, { message: reqMsg });
+        if (!p.required) return s.optional().nullable();
+        return s;
+    },
+    builderFields: []
 });
