@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IEnumerableOfAuditLogDto } from './iEnumerableOfAuditLogDto';
+import type { IEnumerableOfAuditLogDto } from "./iEnumerableOfAuditLogDto";
 
 export interface PagedResultOfAuditLogDto {
   items?: IEnumerableOfAuditLogDto;

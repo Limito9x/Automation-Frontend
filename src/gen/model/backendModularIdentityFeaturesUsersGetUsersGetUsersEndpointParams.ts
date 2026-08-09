@@ -6,26 +6,25 @@
  */
 import type { FilterField } from "./filterField";
 
-export type AutomationIdentityFeaturesUsersGetUsersGetUsersEndpointParams =
-  {
-    /**
-     * @nullable
-     */
-    page?: number | null;
-    /**
-     * @nullable
-     */
-    pageSize?: number | null;
-    /**
-     * @nullable
-     */
-    sort?: null | { [key: string]: boolean };
-    /**
-     * @nullable
-     */
-    filters?: FilterField[] | null;
-    /**
-     * @nullable
-     */
-    globalKeyword?: string | null;
-  };
+export type AutomationIdentityFeaturesUsersGetUsersGetUsersEndpointParams = {
+  /**
+   * @nullable
+   */
+  page?: number | null;
+  /**
+   * @nullable
+   */
+  pageSize?: number | null;
+  /**
+   * @nullable
+   */
+  sort?: null | { [key: string]: boolean };
+  /**
+   * @nullable
+   */
+  filters?: FilterField[] | null;
+  /**
+   * @nullable
+   */
+  globalKeyword?: string | null;
+};

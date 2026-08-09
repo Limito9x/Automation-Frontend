@@ -7,9 +7,9 @@
 
 export interface RegisterCommand {
   /**
-     * @minLength 1
-     * @pattern ^[^@]+@[^@]+$
-     */
+   * @minLength 1
+   * @pattern ^[^@]+@[^@]+$
+   */
   email: string;
   /** @minLength 6 */
   password: string;

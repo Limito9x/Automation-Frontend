@@ -4,12 +4,12 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { JsonDocument } from './jsonDocument';
+import type { JsonDocument } from "./jsonDocument";
 
 export interface ContentItemDto {
-  id: string;
-  contentTypeId: string;
-  projectId: string;
-  name: string;
-  values: JsonDocument;
+  id?: string;
+  contentTypeId?: string;
+  projectId?: string;
+  name?: string;
+  values?: JsonDocument;
 }

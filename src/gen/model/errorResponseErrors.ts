@@ -5,4 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ErrorResponseErrors = {[key: string]: string[]};
+export type ErrorResponseErrors = { [key: string]: string[] };

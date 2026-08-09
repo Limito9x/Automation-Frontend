@@ -39,7 +39,7 @@ export default defineConfig({
       },
     },
     hooks: {
-      afterAllFilesWrite: 'prettier --write',
+      afterAllFilesWrite: 'pnpm exec prettier --write',
     },
   },
 

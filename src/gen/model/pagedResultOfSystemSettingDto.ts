@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IEnumerableOfSystemSettingDto } from './iEnumerableOfSystemSettingDto';
+import type { IEnumerableOfSystemSettingDto } from "./iEnumerableOfSystemSettingDto";
 
 export interface PagedResultOfSystemSettingDto {
   items?: IEnumerableOfSystemSettingDto;

@@ -4,10 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,8 +17,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   ContentTypeDto,
@@ -29,20 +26,21 @@ import type {
   ErrorResponse,
   GetContentTypesParams,
   PagedResultOfContentTypeDto,
-  UpdateContentTypeCommand
-} from '../../model';
+  UpdateContentTypeCommand,
+  UpdateContentTypeSchemaCommand,
+} from "../../model";
 
-import { customInstance } from '../../../lib/api-client';
+import { customInstance } from "../../../lib/api-client";
 
-
-
-
-const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
+const withQueryKey = <T extends object, K>(
+  query: T,
+  queryKey: K,
+): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -52,349 +50,624 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+export const deleteContentType = (id: string, signal?: AbortSignal) => {
+  return customInstance<void>({
+    url: `/api/content-types/${id}`,
+    method: "DELETE",
+    signal,
+  });
+};
+
+export const getDeleteContentTypeMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteContentType>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteContentType>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["deleteContentType"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteContentType>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteContentType(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteContentTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteContentType>>
+>;
+
+export type DeleteContentTypeMutationError = void;
+
+export const useDeleteContentType = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteContentType>>,
+      TError,
+      { id: string },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteContentType>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getDeleteContentTypeMutationOptions(options), queryClient);
+};
+export const updateContentTypeSchema = (
+  id: string,
+  updateContentTypeSchemaCommand: UpdateContentTypeSchemaCommand,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>({
+    url: `/api/content-types/${id}/schema`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: updateContentTypeSchemaCommand,
+    signal,
+  });
+};
+
+export const getUpdateContentTypeSchemaMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateContentTypeSchema>>,
+    TError,
+    { id: string; data: UpdateContentTypeSchemaCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateContentTypeSchema>>,
+  TError,
+  { id: string; data: UpdateContentTypeSchemaCommand },
+  TContext
+> => {
+  const mutationKey = ["updateContentTypeSchema"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateContentTypeSchema>>,
+    { id: string; data: UpdateContentTypeSchemaCommand }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateContentTypeSchema(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateContentTypeSchemaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateContentTypeSchema>>
+>;
+export type UpdateContentTypeSchemaMutationBody =
+  UpdateContentTypeSchemaCommand;
+export type UpdateContentTypeSchemaMutationError = void;
+
+export const useUpdateContentTypeSchema = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateContentTypeSchema>>,
+      TError,
+      { id: string; data: UpdateContentTypeSchemaCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateContentTypeSchema>>,
+  TError,
+  { id: string; data: UpdateContentTypeSchemaCommand },
+  TContext
+> => {
+  return useMutation(
+    getUpdateContentTypeSchemaMutationOptions(options),
+    queryClient,
+  );
+};
 export const createContentType = (
-    createContentTypeCommand: CreateContentTypeCommand,
- signal?: AbortSignal
+  projectId: string,
+  createContentTypeCommand: CreateContentTypeCommand,
+  signal?: AbortSignal,
 ) => {
+  return customInstance<ContentTypeDto>({
+    url: `/api/projects/${projectId}/content-types`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: createContentTypeCommand,
+    signal,
+  });
+};
 
+export const getCreateContentTypeMutationOptions = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createContentType>>,
+    TError,
+    { projectId: string; data: CreateContentTypeCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createContentType>>,
+  TError,
+  { projectId: string; data: CreateContentTypeCommand },
+  TContext
+> => {
+  const mutationKey = ["createContentType"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-      return customInstance<ContentTypeDto>(
-      {url: `/api/contenttypes`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createContentTypeCommand, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createContentType>>,
+    { projectId: string; data: CreateContentTypeCommand }
+  > = (props) => {
+    const { projectId, data } = props ?? {};
 
+    return createContentType(projectId, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type CreateContentTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createContentType>>
+>;
+export type CreateContentTypeMutationBody = CreateContentTypeCommand;
+export type CreateContentTypeMutationError = ErrorResponse | void;
 
-export const getCreateContentTypeMutationOptions = <TError = ErrorResponse | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createContentType>>, TError,{data: CreateContentTypeCommand}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof createContentType>>, TError,{data: CreateContentTypeCommand}, TContext> => {
+export const useCreateContentType = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createContentType>>,
+      TError,
+      { projectId: string; data: CreateContentTypeCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof createContentType>>,
+  TError,
+  { projectId: string; data: CreateContentTypeCommand },
+  TContext
+> => {
+  return useMutation(getCreateContentTypeMutationOptions(options), queryClient);
+};
+export const getContentTypes = (
+  projectId: string,
+  params?: GetContentTypesParams,
+  signal?: AbortSignal,
+) => {
+  return customInstance<PagedResultOfContentTypeDto>({
+    url: `/api/projects/${projectId}/content-types`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
 
-const mutationKey = ['createContentType'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const getGetContentTypesQueryKey = (
+  projectId: string,
+  params?: GetContentTypesParams,
+) => {
+  return [
+    `/api/projects/${projectId}/content-types`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createContentType>>, {data: CreateContentTypeCommand}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createContentType(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateContentTypeMutationResult = NonNullable<Awaited<ReturnType<typeof createContentType>>>
-    export type CreateContentTypeMutationBody = CreateContentTypeCommand
-    export type CreateContentTypeMutationError = ErrorResponse | void
-
-    export const useCreateContentType = <TError = ErrorResponse | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createContentType>>, TError,{data: CreateContentTypeCommand}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createContentType>>,
+export const getGetContentTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getContentTypes>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: GetContentTypesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getContentTypes>>,
         TError,
-        {data: CreateContentTypeCommand},
-        TContext
-      > => {
-      return useMutation(getCreateContentTypeMutationOptions(options), queryClient);
-    }
-    export const getContentTypes = (
-    params: GetContentTypesParams,
- signal?: AbortSignal
+        TData
+      >
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ?? getGetContentTypesQueryKey(projectId, params);
 
-      return customInstance<PagedResultOfContentTypeDto>(
-      {url: `/api/contenttypes`, method: 'GET',
-        params, signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getContentTypes>>> = ({
+    signal,
+  }) => getContentTypes(projectId, params, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: projectId !== null && projectId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getContentTypes>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetContentTypesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getContentTypes>>
+>;
+export type GetContentTypesQueryError = void;
 
-
-export const getGetContentTypesQueryKey = (params?: GetContentTypesParams,) => {
-    return [
-    `/api/contenttypes`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetContentTypesQueryOptions = <TData = Awaited<ReturnType<typeof getContentTypes>>, TError = void>(params: GetContentTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypes>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetContentTypesQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContentTypes>>> = ({ signal }) => getContentTypes(params, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getContentTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetContentTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getContentTypes>>>
-export type GetContentTypesQueryError = void
-
-
-export function useGetContentTypes<TData = Awaited<ReturnType<typeof getContentTypes>>, TError = void>(
- params: GetContentTypesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypes>>, TError, TData>> & Pick<
+export function useGetContentTypes<
+  TData = Awaited<ReturnType<typeof getContentTypes>>,
+  TError = void,
+>(
+  projectId: string,
+  params: undefined | GetContentTypesParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getContentTypes>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getContentTypes>>,
           TError,
           Awaited<ReturnType<typeof getContentTypes>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetContentTypes<TData = Awaited<ReturnType<typeof getContentTypes>>, TError = void>(
- params: GetContentTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypes>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetContentTypes<
+  TData = Awaited<ReturnType<typeof getContentTypes>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: GetContentTypesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getContentTypes>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getContentTypes>>,
           TError,
           Awaited<ReturnType<typeof getContentTypes>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetContentTypes<TData = Awaited<ReturnType<typeof getContentTypes>>, TError = void>(
- params: GetContentTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypes>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useGetContentTypes<TData = Awaited<ReturnType<typeof getContentTypes>>, TError = void>(
- params: GetContentTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypes>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetContentTypesQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-export const deleteContentType = (
-    id: string,
- signal?: AbortSignal
-) => {
-
-
-      return customInstance<void>(
-      {url: `/api/contenttypes/${id}`, method: 'DELETE', signal
-    },
-      );
-    }
-
-
-
-
-export const getDeleteContentTypeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteContentType>>, TError,{id: string}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteContentType>>, TError,{id: string}, TContext> => {
-
-const mutationKey = ['deleteContentType'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteContentType>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteContentType(id,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteContentTypeMutationResult = NonNullable<Awaited<ReturnType<typeof deleteContentType>>>
-
-    export type DeleteContentTypeMutationError = void
-
-    export const useDeleteContentType = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteContentType>>, TError,{id: string}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteContentType>>,
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetContentTypes<
+  TData = Awaited<ReturnType<typeof getContentTypes>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: GetContentTypesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getContentTypes>>,
         TError,
-        {id: string},
-        TContext
-      > => {
-      return useMutation(getDeleteContentTypeMutationOptions(options), queryClient);
-    }
-    export const getContentTypeById = (
-    id: string,
- signal?: AbortSignal
-) => {
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 
+export function useGetContentTypes<
+  TData = Awaited<ReturnType<typeof getContentTypes>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: GetContentTypesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getContentTypes>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetContentTypesQueryOptions(
+    projectId,
+    params,
+    options,
+  );
 
-      return customInstance<ContentTypeDto>(
-      {url: `/api/contenttypes/${id}`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
-
-export const getGetContentTypeByIdQueryKey = (id: string,) => {
-    return [
-    `/api/contenttypes/${id}`
-    ] as const;
-    }
-
-
-export const getGetContentTypeByIdQueryOptions = <TData = Awaited<ReturnType<typeof getContentTypeById>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypeById>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetContentTypeByIdQueryKey(id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContentTypeById>>> = ({ signal }) => getContentTypeById(id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getContentTypeById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetContentTypeByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getContentTypeById>>>
-export type GetContentTypeByIdQueryError = void
-
-
-export function useGetContentTypeById<TData = Awaited<ReturnType<typeof getContentTypeById>>, TError = void>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypeById>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getContentTypeById>>,
-          TError,
-          Awaited<ReturnType<typeof getContentTypeById>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetContentTypeById<TData = Awaited<ReturnType<typeof getContentTypeById>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypeById>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getContentTypeById>>,
-          TError,
-          Awaited<ReturnType<typeof getContentTypeById>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetContentTypeById<TData = Awaited<ReturnType<typeof getContentTypeById>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypeById>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useGetContentTypeById<TData = Awaited<ReturnType<typeof getContentTypeById>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContentTypeById>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetContentTypeByIdQueryOptions(id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const getContentType = (
+  projectId: string,
+  key: string,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ContentTypeDto>({
+    url: `/api/projects/${projectId}/content-types/${key}`,
+    method: "GET",
+    signal,
+  });
+};
 
+export const getGetContentTypeQueryKey = (projectId: string, key: string) => {
+  return [`/api/projects/${projectId}/content-types/${key}`] as const;
+};
 
+export const getGetContentTypeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getContentType>>,
+  TError = void,
+>(
+  projectId: string,
+  key: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getContentType>>, TError, TData>
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ?? getGetContentTypeQueryKey(projectId, key);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getContentType>>> = ({
+    signal,
+  }) => getContentType(projectId, key, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled:
+      projectId !== null &&
+      projectId !== undefined &&
+      key !== null &&
+      key !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getContentType>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetContentTypeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getContentType>>
+>;
+export type GetContentTypeQueryError = void;
+
+export function useGetContentType<
+  TData = Awaited<ReturnType<typeof getContentType>>,
+  TError = void,
+>(
+  projectId: string,
+  key: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getContentType>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getContentType>>,
+          TError,
+          Awaited<ReturnType<typeof getContentType>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetContentType<
+  TData = Awaited<ReturnType<typeof getContentType>>,
+  TError = void,
+>(
+  projectId: string,
+  key: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getContentType>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getContentType>>,
+          TError,
+          Awaited<ReturnType<typeof getContentType>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetContentType<
+  TData = Awaited<ReturnType<typeof getContentType>>,
+  TError = void,
+>(
+  projectId: string,
+  key: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getContentType>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetContentType<
+  TData = Awaited<ReturnType<typeof getContentType>>,
+  TError = void,
+>(
+  projectId: string,
+  key: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getContentType>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetContentTypeQueryOptions(projectId, key, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
 
 export const updateContentType = (
-    id: string,
-    updateContentTypeCommand: UpdateContentTypeCommand,
- signal?: AbortSignal
+  id: string,
+  updateContentTypeCommand: UpdateContentTypeCommand,
+  signal?: AbortSignal,
 ) => {
+  return customInstance<ContentTypeDto>({
+    url: `/api/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: updateContentTypeCommand,
+    signal,
+  });
+};
 
+export const getUpdateContentTypeMutationOptions = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateContentType>>,
+    TError,
+    { id: string; data: UpdateContentTypeCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateContentType>>,
+  TError,
+  { id: string; data: UpdateContentTypeCommand },
+  TContext
+> => {
+  const mutationKey = ["updateContentType"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-      return customInstance<ContentTypeDto>(
-      {url: `/api/contenttypes/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updateContentTypeCommand, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateContentType>>,
+    { id: string; data: UpdateContentTypeCommand }
+  > = (props) => {
+    const { id, data } = props ?? {};
 
+    return updateContentType(id, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateContentTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateContentType>>
+>;
+export type UpdateContentTypeMutationBody = UpdateContentTypeCommand;
+export type UpdateContentTypeMutationError = ErrorResponse | void;
 
-export const getUpdateContentTypeMutationOptions = <TError = ErrorResponse | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateContentType>>, TError,{id: string;data: UpdateContentTypeCommand}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateContentType>>, TError,{id: string;data: UpdateContentTypeCommand}, TContext> => {
-
-const mutationKey = ['updateContentType'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateContentType>>, {id: string;data: UpdateContentTypeCommand}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  updateContentType(id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateContentTypeMutationResult = NonNullable<Awaited<ReturnType<typeof updateContentType>>>
-    export type UpdateContentTypeMutationBody = UpdateContentTypeCommand
-    export type UpdateContentTypeMutationError = ErrorResponse | void
-
-    export const useUpdateContentType = <TError = ErrorResponse | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateContentType>>, TError,{id: string;data: UpdateContentTypeCommand}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateContentType>>,
-        TError,
-        {id: string;data: UpdateContentTypeCommand},
-        TContext
-      > => {
-      return useMutation(getUpdateContentTypeMutationOptions(options), queryClient);
-    }
+export const useUpdateContentType = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateContentType>>,
+      TError,
+      { id: string; data: UpdateContentTypeCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateContentType>>,
+  TError,
+  { id: string; data: UpdateContentTypeCommand },
+  TContext
+> => {
+  return useMutation(getUpdateContentTypeMutationOptions(options), queryClient);
+};

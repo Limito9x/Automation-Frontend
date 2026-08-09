@@ -4,21 +4,21 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { JsonDocument } from './jsonDocument';
+import type { JsonDocument } from "./jsonDocument";
 
 export interface ContentTypeDto {
-  id: string;
-  projectId: string;
-  key: string;
-  name: string;
-  displayName: string;
+  id?: string;
+  projectId?: string;
+  key?: string;
+  name?: string;
+  displayName?: string;
   /** @nullable */
-  description: string | null;
+  description?: string | null;
   /** @nullable */
-  icon: string | null;
+  icon?: string | null;
   /** @nullable */
-  color: string | null;
-  sortOrder: number;
-  fieldsConfig: JsonDocument;
-  displayConfig: JsonDocument;
+  color?: string | null;
+  sortOrder?: number;
+  fieldsConfig?: JsonDocument;
+  displayConfig?: JsonDocument;
 }

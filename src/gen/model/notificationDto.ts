@@ -4,8 +4,8 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { JsonDocument } from './jsonDocument';
-import type { NotificationSeverity } from './notificationSeverity';
+import type { JsonDocument } from "./jsonDocument";
+import type { NotificationSeverity } from "./notificationSeverity";
 
 export interface NotificationDto {
   id: string;

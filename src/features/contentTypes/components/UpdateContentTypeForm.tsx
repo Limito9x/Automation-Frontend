@@ -1,9 +1,8 @@
 import { Form, FormGrid, zodResolver, useForm } from "@/components/form";
-import { FormInput, FormTextarea, FormIconPicker } from "@/components/form-controls";
+import { FormInput, FormTextarea, FormIconPicker, FormSelect } from "@/components/form-controls";
 import { updateContentTypeSchema, type UpdateContentTypeInput, type UpdateContentTypeOutput } from "../schemas/updateContentTypeSchema";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { SchemaBuilder } from "./SchemaBuilder";
 
 interface ContentTypeFormProps {
     initialData?: Partial<UpdateContentTypeInput>;
@@ -21,8 +20,7 @@ export function UpdateContentTypeForm({ initialData, onSubmit }: ContentTypeForm
             icon: initialData?.icon || "",
             color: initialData?.color || "",
             sortOrder: initialData?.sortOrder || 0,
-            fieldsConfig: initialData?.fieldsConfig || [],
-            displayConfig: initialData?.displayConfig || {},
+            displayConfig: initialData?.displayConfig || { mode: "table" },
         }
     });
 
@@ -55,8 +53,16 @@ export function UpdateContentTypeForm({ initialData, onSubmit }: ContentTypeForm
                     name="description"
                     placeholder="Describe this content type..."
                 />
+                <FormSelect
+                    control={form.control}
+                    label="Display Mode"
+                    name="displayConfig.mode"
+                    options={[
+                        { label: "Table", value: "table" },
+                        { label: "List Card", value: "list-card" }
+                    ]}
+                />
             </div>
-            <SchemaBuilder />
         </Form>
     );
 }

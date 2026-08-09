@@ -4,35 +4,27 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { FilterField } from './filterField';
+import type { FilterField } from "./filterField";
 
 export type GetContentItemsParams = {
-/**
- * @nullable
- */
-projectId?: string | null;
-/**
- * @nullable
- */
-contentTypeId?: string | null;
-/**
- * @nullable
- */
-page?: number | null;
-/**
- * @nullable
- */
-pageSize?: number | null;
-/**
- * @nullable
- */
-sort?: null | {[key: string]: boolean};
-/**
- * @nullable
- */
-filters?: FilterField[] | null;
-/**
- * @nullable
- */
-globalKeyword?: string | null;
+  /**
+   * @nullable
+   */
+  page?: number | null;
+  /**
+   * @nullable
+   */
+  pageSize?: number | null;
+  /**
+   * @nullable
+   */
+  sort?: null | { [key: string]: boolean };
+  /**
+   * @nullable
+   */
+  filters?: FilterField[] | null;
+  /**
+   * @nullable
+   */
+  globalKeyword?: string | null;
 };

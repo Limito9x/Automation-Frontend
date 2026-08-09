@@ -61,7 +61,7 @@
 - **User Control:** Trả lại hoàn toàn quyền kiểm soát terminal cho User sau khi xác nhận code hoạt động. User sẽ tự chạy server trên IDE của họ để tiện theo dõi log.
 
 ## 9. Code Verification
-- **TypeScript Check:** LUÔN LUÔN chạy lệnh kiểm tra lỗi type của TypeScript (`pnpm tsc --noEmit` hoặc tương tự tuỳ script cấu hình trong package.json) sau khi hoàn thành việc viết code, trước khi báo cáo hoàn thành cho User. Bất cứ lỗi TypeScript nào xuất hiện cũng phải được sửa ngay lập tức.
+- **TypeScript Check:** LUÔN LUÔN chạy lệnh kiểm tra lỗi type của TypeScript (`pnpm tsc --project tsconfig.app.json --noEmit` hoặc `pnpm tsc -b`) sau khi hoàn thành việc viết code, trước khi báo cáo hoàn thành cho User. Do cấu trúc project Vite sử dụng references, lệnh `pnpm tsc --noEmit` cơ bản sẽ bị pass ảo (không soi vào thư mục src). Bất cứ lỗi TypeScript nào xuất hiện cũng phải được sửa ngay lập tức.
 
 ## 10. React Aria Components & Reusability
 - **Custom Shadcn Stack:** This project uses a specialized version of Shadcn built on **React Aria Components**, NOT standard Radix UI. Component structures (like Dialog, Select, Checkbox) differ significantly from standard Shadcn documentation.

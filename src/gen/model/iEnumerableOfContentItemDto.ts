@@ -4,6 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContentItemDto } from './contentItemDto';
+import type { ContentItemDto } from "./contentItemDto";
 
 export type IEnumerableOfContentItemDto = ContentItemDto[];

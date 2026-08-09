@@ -7,9 +7,25 @@
 import * as zod from 'zod/mini';
 
 
+export const DeleteContentTypeParams = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid()
+})
 
-export const createContentTypeBodyKeyMin = 0;
-export const createContentTypeBodyKeyMax = 100;
+export const DeleteContentTypeResponse = /*#__PURE__*/ zod.void()
+
+export const UpdateContentTypeSchemaParams = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid()
+})
+
+export const UpdateContentTypeSchemaBody = /*#__PURE__*/ zod.object({
+  "fieldsConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+})
+
+export const UpdateContentTypeSchemaResponse = /*#__PURE__*/ zod.void()
+
+export const CreateContentTypeParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
+})
 
 export const createContentTypeBodyNameMin = 0;
 export const createContentTypeBodyNameMax = 255;
@@ -29,34 +45,34 @@ export const createContentTypeBodyColorMax = 50;
 
 
 export const CreateContentTypeBody = /*#__PURE__*/ zod.object({
-  "projectId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "key": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyKeyMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyKeyMax)),
   "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyNameMax)),
   "displayName": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyDisplayNameMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyDisplayNameMax)),
-  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyDescriptionMax))),
-  "icon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyIconMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyIconMax))),
-  "color": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyColorMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyColorMax))),
-  "sortOrder": /*#__PURE__*/ zod.int(),
-  "fieldsConfig": /*#__PURE__*/ zod.unknown(),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyDescriptionMax))),
+  "icon": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyIconMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyIconMax))),
+  "color": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentTypeBodyColorMin)).check(/*#__PURE__*/ zod.maxLength(createContentTypeBodyColorMax))),
+  "sortOrder": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
   "displayConfig": /*#__PURE__*/ zod.unknown()
 })
 
 export const CreateContentTypeResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "projectId": /*#__PURE__*/ zod.uuid(),
-  "key": /*#__PURE__*/ zod.string(),
-  "name": /*#__PURE__*/ zod.string(),
-  "displayName": /*#__PURE__*/ zod.string(),
-  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "icon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "color": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "sortOrder": /*#__PURE__*/ zod.int(),
-  "fieldsConfig": /*#__PURE__*/ zod.unknown(),
-  "displayConfig": /*#__PURE__*/ zod.unknown()
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "key": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "displayName": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "icon": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "color": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "sortOrder": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "fieldsConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "displayConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+})
+
+export const GetContentTypesParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
 })
 
 export const GetContentTypesQueryParams = /*#__PURE__*/ zod.object({
-  "projectId": /*#__PURE__*/ zod.uuid(),
   "page": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
   "pageSize": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
   "filters": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
@@ -69,17 +85,17 @@ export const GetContentTypesQueryParams = /*#__PURE__*/ zod.object({
 
 export const GetContentTypesResponse = /*#__PURE__*/ zod.object({
   "items": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "projectId": /*#__PURE__*/ zod.uuid(),
-  "key": /*#__PURE__*/ zod.string(),
-  "name": /*#__PURE__*/ zod.string(),
-  "displayName": /*#__PURE__*/ zod.string(),
-  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "icon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "color": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "sortOrder": /*#__PURE__*/ zod.int(),
-  "fieldsConfig": /*#__PURE__*/ zod.unknown(),
-  "displayConfig": /*#__PURE__*/ zod.unknown()
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "key": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "displayName": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "icon": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "color": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "sortOrder": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "fieldsConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "displayConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
 }))),
   "totalCount": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
   "page": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
@@ -89,28 +105,23 @@ export const GetContentTypesResponse = /*#__PURE__*/ zod.object({
   "hasNextPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean())
 })
 
-export const DeleteContentTypeParams = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid()
-})
-
-export const DeleteContentTypeResponse = /*#__PURE__*/ zod.void()
-
-export const GetContentTypeByIdParams = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid()
-})
-
-export const GetContentTypeByIdResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
+export const GetContentTypeParams = /*#__PURE__*/ zod.object({
   "projectId": /*#__PURE__*/ zod.uuid(),
-  "key": /*#__PURE__*/ zod.string(),
-  "name": /*#__PURE__*/ zod.string(),
-  "displayName": /*#__PURE__*/ zod.string(),
-  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "icon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "color": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "sortOrder": /*#__PURE__*/ zod.int(),
-  "fieldsConfig": /*#__PURE__*/ zod.unknown(),
-  "displayConfig": /*#__PURE__*/ zod.unknown()
+  "key": /*#__PURE__*/ zod.string()
+})
+
+export const GetContentTypeResponse = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "key": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "displayName": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "icon": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "color": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "sortOrder": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "fieldsConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "displayConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
 })
 
 export const UpdateContentTypeParams = /*#__PURE__*/ zod.object({
@@ -137,25 +148,24 @@ export const updateContentTypeBodyColorMax = 50;
 export const UpdateContentTypeBody = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyNameMax)),
   "displayName": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyDisplayNameMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyDisplayNameMax)),
-  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyDescriptionMax))),
-  "icon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyIconMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyIconMax))),
-  "color": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyColorMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyColorMax))),
-  "sortOrder": /*#__PURE__*/ zod.int(),
-  "fieldsConfig": /*#__PURE__*/ zod.unknown(),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyDescriptionMax))),
+  "icon": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyIconMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyIconMax))),
+  "color": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentTypeBodyColorMin)).check(/*#__PURE__*/ zod.maxLength(updateContentTypeBodyColorMax))),
+  "sortOrder": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
   "displayConfig": /*#__PURE__*/ zod.unknown()
 })
 
 export const UpdateContentTypeResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "projectId": /*#__PURE__*/ zod.uuid(),
-  "key": /*#__PURE__*/ zod.string(),
-  "name": /*#__PURE__*/ zod.string(),
-  "displayName": /*#__PURE__*/ zod.string(),
-  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "icon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "color": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "sortOrder": /*#__PURE__*/ zod.int(),
-  "fieldsConfig": /*#__PURE__*/ zod.unknown(),
-  "displayConfig": /*#__PURE__*/ zod.unknown()
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "key": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "displayName": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "icon": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "color": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "sortOrder": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "fieldsConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "displayConfig": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
 })
 

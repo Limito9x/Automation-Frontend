@@ -6,9 +6,9 @@
  */
 
 export type GetNotificationsParams = {
-limit?: number;
-/**
- * @nullable
- */
-cursor?: string | null;
+  limit?: number;
+  /**
+   * @nullable
+   */
+  cursor?: string | null;
 };

@@ -9,14 +9,14 @@ import { useGetContentTypeById } from "@/gen/endpoints/content-types/content-typ
 export function UpdateContentTypePage() {
     const { t } = useTranslation("contentTypes");
     const navigate = useNavigate();
-    const { id, projectId } = useParams({ strict: false }) as { id: string, projectId: string };
+    const { id: projectId, contentTypeId } = useParams({ strict: false }) as { id: string, contentTypeId: string };
 
-    const { data: contentType, isLoading } = useGetContentTypeById(id);
-    const { mutate, isPending } = useUpdateContentType();
+    const { data: contentType, isLoading } = useGetContentTypeById(projectId, contentTypeId);
+    const { mutate, isPending } = useUpdateContentType({ projectId });
 
     const handleSubmit = (data: UpdateContentTypeOutput) => {
         mutate(
-            { id, data },
+            { projectId, id: contentTypeId, data },
             {
                 onSuccess: () => navigate({ to: "/projects/$id/content-types", params: { id: projectId } }),
             }

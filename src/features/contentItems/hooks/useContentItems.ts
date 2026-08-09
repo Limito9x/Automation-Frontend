@@ -1,13 +1,15 @@
-import { keepPreviousData } from "@tanstack/react-query";
-import { createMutationHook } from "@/lib/query-utils";
-import * as ContentItemsApi from "@/gen/endpoints/contentItems/contentItems";
-import { GetContentItemsQueryParams } from "@/gen/endpoints/contentItems/contentItems.zod";
+import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
+import * as ContentItemsApi from "@/gen/endpoints/content-items/content-items";
+import { GetContentItemsQueryParams } from "@/gen/endpoints/content-items/content-items.zod";
 import { z } from "zod";
 
 type contentItemQuery = z.infer<typeof GetContentItemsQueryParams>;
 
-export const useContentItems = (params: contentItemQuery) => {
-    return ContentItemsApi.useGetContentItems(params, {
+export const useContentItems = (params: contentItemQuery, { projectId, contentTypeKey}: {
+    projectId: string
+    contentTypeKey: string
+}) => {
+    return ContentItemsApi.useGetContentItems(projectId, contentTypeKey, params, {
         query: {
             placeholderData: keepPreviousData,
         }
@@ -15,13 +17,49 @@ export const useContentItems = (params: contentItemQuery) => {
 };
 
 export const useGetContentItemById = (id: string) => {
-    return ContentItemsApi.useGetContentItemById(id, {
+    return ContentItemsApi.useGetContentItemById( id, {
         query: {
             enabled: !!id,
         }
     });
 };
 
-export const useCreateContentItem = createMutationHook(ContentItemsApi.useCreateContentItem, [ContentItemsApi.getGetContentItemsQueryKey()]);
-export const useUpdateContentItem = createMutationHook(ContentItemsApi.useUpdateContentItem, [ContentItemsApi.getGetContentItemsQueryKey()]);
-export const useDeleteContentItem = createMutationHook(ContentItemsApi.useDeleteContentItem, [ContentItemsApi.getGetContentItemsQueryKey()]);
+
+export const useCreateContentItem = ({projectId, contentTypeKey}: {projectId: string, contentTypeKey: string}) => {
+    const queryClient = useQueryClient();
+    return ContentItemsApi.useCreateContentItem({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                });
+            }
+        }
+    });
+};
+
+export const useUpdateContentItem = ({projectId, contentTypeKey}: {projectId: string, contentTypeKey: string}) => {
+    const queryClient = useQueryClient();
+    return ContentItemsApi.useUpdateContentItem({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                });
+            }
+        }
+    });
+};
+
+export const useDeleteContentItem = ({projectId, contentTypeKey}:{projectId: string, contentTypeKey: string}) => {
+    const queryClient = useQueryClient();
+    return ContentItemsApi.useDeleteContentItem({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                });
+            }
+        }
+    });
+};

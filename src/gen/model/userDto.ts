@@ -4,9 +4,9 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IEnumerableOfGuid } from './iEnumerableOfGuid';
-import type { IEnumerableOfString } from './iEnumerableOfString';
-import type { UserStatus } from './userStatus';
+import type { IEnumerableOfGuid } from "./iEnumerableOfGuid";
+import type { IEnumerableOfString } from "./iEnumerableOfString";
+import type { UserStatus } from "./userStatus";
 
 export interface UserDto {
   id: string;

@@ -1,0 +1,1 @@
+import { createFileRoute } from "@tanstack/react-router"; export const Route = createFileRoute("/_protected/_project/projects/$projectId/assets")({ component: () => <div>Assets</div> });

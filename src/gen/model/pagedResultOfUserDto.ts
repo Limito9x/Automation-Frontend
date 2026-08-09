@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IEnumerableOfUserDto } from './iEnumerableOfUserDto';
+import type { IEnumerableOfUserDto } from "./iEnumerableOfUserDto";
 
 export interface PagedResultOfUserDto {
   items?: IEnumerableOfUserDto;

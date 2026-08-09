@@ -7,57 +7,6 @@
 import * as zod from 'zod/mini';
 
 
-
-
-export const createContentItemBodyNameMin = 0;
-export const createContentItemBodyNameMax = 255;
-
-
-
-export const CreateContentItemBody = /*#__PURE__*/ zod.object({
-  "contentTypeId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "projectId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentItemBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createContentItemBodyNameMax)),
-  "values": /*#__PURE__*/ zod.unknown()
-})
-
-export const CreateContentItemResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "contentTypeId": /*#__PURE__*/ zod.uuid(),
-  "projectId": /*#__PURE__*/ zod.uuid(),
-  "name": /*#__PURE__*/ zod.string(),
-  "values": /*#__PURE__*/ zod.unknown()
-})
-
-export const GetContentItemsQueryParams = /*#__PURE__*/ zod.object({
-  "projectId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
-  "contentTypeId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
-  "page": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
-  "pageSize": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
-  "filters": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "field": /*#__PURE__*/ zod.string(),
-  "operator": /*#__PURE__*/ zod.enum(['Equal', 'NotEqual', 'Contains', 'GreaterThan', 'GreaterThanOrEqual', 'LessThan', 'LessThanOrEqual']),
-  "value": /*#__PURE__*/ zod.string()
-}))),
-  "globalKeyword": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
-})
-
-export const GetContentItemsResponse = /*#__PURE__*/ zod.object({
-  "items": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "contentTypeId": /*#__PURE__*/ zod.uuid(),
-  "projectId": /*#__PURE__*/ zod.uuid(),
-  "name": /*#__PURE__*/ zod.string(),
-  "values": /*#__PURE__*/ zod.unknown()
-}))),
-  "totalCount": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
-  "page": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
-  "pageSize": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
-  "totalPages": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
-  "hasPreviousPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
-  "hasNextPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean())
-})
-
 export const DeleteContentItemParams = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid()
 })
@@ -69,11 +18,11 @@ export const GetContentItemByIdParams = /*#__PURE__*/ zod.object({
 })
 
 export const GetContentItemByIdResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "contentTypeId": /*#__PURE__*/ zod.uuid(),
-  "projectId": /*#__PURE__*/ zod.uuid(),
-  "name": /*#__PURE__*/ zod.string(),
-  "values": /*#__PURE__*/ zod.unknown()
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
 })
 
 export const UpdateContentItemParams = /*#__PURE__*/ zod.object({
@@ -91,10 +40,66 @@ export const UpdateContentItemBody = /*#__PURE__*/ zod.object({
 })
 
 export const UpdateContentItemResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid(),
-  "contentTypeId": /*#__PURE__*/ zod.uuid(),
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+})
+
+export const CreateContentItemParams = /*#__PURE__*/ zod.object({
   "projectId": /*#__PURE__*/ zod.uuid(),
-  "name": /*#__PURE__*/ zod.string(),
-  "values": /*#__PURE__*/ zod.unknown()
+  "key": /*#__PURE__*/ zod.string()
+})
+
+export const createContentItemBodyNameMin = 0;
+export const createContentItemBodyNameMax = 255;
+
+
+
+export const CreateContentItemBody = /*#__PURE__*/ zod.object({
+  "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentItemBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createContentItemBodyNameMax)),
+  "values": /*#__PURE__*/ zod.unknown(),
+  "key": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string())
+})
+
+export const CreateContentItemResponse = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+})
+
+export const GetContentItemsParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid(),
+  "key": /*#__PURE__*/ zod.string()
+})
+
+export const GetContentItemsQueryParams = /*#__PURE__*/ zod.object({
+  "page": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
+  "pageSize": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
+  "filters": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "field": /*#__PURE__*/ zod.string(),
+  "operator": /*#__PURE__*/ zod.enum(['Equal', 'NotEqual', 'Contains', 'GreaterThan', 'GreaterThanOrEqual', 'LessThan', 'LessThanOrEqual']),
+  "value": /*#__PURE__*/ zod.string()
+}))),
+  "globalKeyword": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+})
+
+export const GetContentItemsResponse = /*#__PURE__*/ zod.object({
+  "items": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+}))),
+  "totalCount": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "page": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "pageSize": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "totalPages": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "hasPreviousPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
+  "hasNextPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean())
 })
 

@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IEnumerableOfContentItemDto } from './iEnumerableOfContentItemDto';
+import type { IEnumerableOfContentItemDto } from "./iEnumerableOfContentItemDto";
 
 export interface PagedResultOfContentItemDto {
   items?: IEnumerableOfContentItemDto;

@@ -7,9 +7,9 @@
 
 export interface UploadRequestItemDto {
   /**
-     * @minLength 64
-     * @maxLength 64
-     */
+   * @minLength 64
+   * @maxLength 64
+   */
   hashSha256: string;
   /** @minLength 1 */
   extension: string;

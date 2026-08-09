@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponseErrors } from './errorResponseErrors';
+import type { ErrorResponseErrors } from "./errorResponseErrors";
 
 /**
  * the dto used to send an error response to the client

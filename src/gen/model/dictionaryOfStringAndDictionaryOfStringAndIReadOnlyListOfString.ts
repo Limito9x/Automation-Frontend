@@ -4,6 +4,8 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { DictionaryOfStringAndIReadOnlyListOfString } from './dictionaryOfStringAndIReadOnlyListOfString';
+import type { DictionaryOfStringAndIReadOnlyListOfString } from "./dictionaryOfStringAndIReadOnlyListOfString";
 
-export interface DictionaryOfStringAndDictionaryOfStringAndIReadOnlyListOfString {[key: string]: DictionaryOfStringAndIReadOnlyListOfString}
+export interface DictionaryOfStringAndDictionaryOfStringAndIReadOnlyListOfString {
+  [key: string]: DictionaryOfStringAndIReadOnlyListOfString;
+}

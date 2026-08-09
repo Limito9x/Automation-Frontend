@@ -5,15 +5,15 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type FilterOperator = typeof FilterOperator[keyof typeof FilterOperator];
-
+export type FilterOperator =
+  (typeof FilterOperator)[keyof typeof FilterOperator];
 
 export const FilterOperator = {
-  Equal: 'Equal',
-  NotEqual: 'NotEqual',
-  Contains: 'Contains',
-  GreaterThan: 'GreaterThan',
-  GreaterThanOrEqual: 'GreaterThanOrEqual',
-  LessThan: 'LessThan',
-  LessThanOrEqual: 'LessThanOrEqual',
+  Equal: "Equal",
+  NotEqual: "NotEqual",
+  Contains: "Contains",
+  GreaterThan: "GreaterThan",
+  GreaterThanOrEqual: "GreaterThanOrEqual",
+  LessThan: "LessThan",
+  LessThanOrEqual: "LessThanOrEqual",
 } as const;

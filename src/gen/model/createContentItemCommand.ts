@@ -4,17 +4,14 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { JsonDocument } from './jsonDocument';
+import type { JsonDocument } from "./jsonDocument";
 
 export interface CreateContentItemCommand {
-  /** @minLength 1 */
-  contentTypeId: string;
-  /** @minLength 1 */
-  projectId: string;
   /**
-     * @minLength 0
-     * @maxLength 255
-     */
+   * @minLength 0
+   * @maxLength 255
+   */
   name: string;
   values: JsonDocument;
+  key?: string;
 }

@@ -4,10 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,28 +17,28 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   ErrorResponse,
   GetSystemSettingsParams,
   PagedResultOfSystemSettingDto,
   SystemSettingDto,
-  UpdateSystemSettingCommand
-} from '../../model';
+  UpdateSystemSettingCommand,
+} from "../../model";
 
-import { customInstance } from '../../../lib/api-client';
+import { customInstance } from "../../../lib/api-client";
 
-
-
-
-const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
+const withQueryKey = <T extends object, K>(
+  query: T,
+  queryKey: K,
+): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -52,234 +49,387 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const getSystemSettings = (
-    params?: GetSystemSettingsParams,
- signal?: AbortSignal
+  params?: GetSystemSettingsParams,
+  signal?: AbortSignal,
 ) => {
+  return customInstance<PagedResultOfSystemSettingDto>({
+    url: `/api/systemsettings`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
 
-
-      return customInstance<PagedResultOfSystemSettingDto>(
-      {url: `/api/systemsettings`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-
-
-
-
-export const getGetSystemSettingsQueryKey = (params?: GetSystemSettingsParams,) => {
-    return [
-    `/api/systemsettings`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetSystemSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getSystemSettings>>, TError = void>(params?: GetSystemSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettings>>, TError, TData>>, }
+export const getGetSystemSettingsQueryKey = (
+  params?: GetSystemSettingsParams,
 ) => {
+  return [`/api/systemsettings`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetSystemSettingsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSystemSettings>>,
+  TError = void,
+>(
+  params?: GetSystemSettingsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettings>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetSystemSettingsQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getGetSystemSettingsQueryKey(params);
 
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getSystemSettings>>
+  > = ({ signal }) => getSystemSettings(params, signal);
 
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSystemSettings>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSystemSettings>>> = ({ signal }) => getSystemSettings(params, signal);
+export type GetSystemSettingsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSystemSettings>>
+>;
+export type GetSystemSettingsQueryError = void;
 
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSystemSettings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetSystemSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getSystemSettings>>>
-export type GetSystemSettingsQueryError = void
-
-
-export function useGetSystemSettings<TData = Awaited<ReturnType<typeof getSystemSettings>>, TError = void>(
- params: undefined |  GetSystemSettingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettings>>, TError, TData>> & Pick<
+export function useGetSystemSettings<
+  TData = Awaited<ReturnType<typeof getSystemSettings>>,
+  TError = void,
+>(
+  params: undefined | GetSystemSettingsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettings>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSystemSettings>>,
           TError,
           Awaited<ReturnType<typeof getSystemSettings>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSystemSettings<TData = Awaited<ReturnType<typeof getSystemSettings>>, TError = void>(
- params?: GetSystemSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettings>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSystemSettings<
+  TData = Awaited<ReturnType<typeof getSystemSettings>>,
+  TError = void,
+>(
+  params?: GetSystemSettingsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettings>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSystemSettings>>,
           TError,
           Awaited<ReturnType<typeof getSystemSettings>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSystemSettings<TData = Awaited<ReturnType<typeof getSystemSettings>>, TError = void>(
- params?: GetSystemSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettings>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSystemSettings<
+  TData = Awaited<ReturnType<typeof getSystemSettings>>,
+  TError = void,
+>(
+  params?: GetSystemSettingsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettings>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 
-export function useGetSystemSettings<TData = Awaited<ReturnType<typeof getSystemSettings>>, TError = void>(
- params?: GetSystemSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettings>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetSystemSettings<
+  TData = Awaited<ReturnType<typeof getSystemSettings>>,
+  TError = void,
+>(
+  params?: GetSystemSettingsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettings>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetSystemSettingsQueryOptions(params, options);
 
-  const queryOptions = getGetSystemSettingsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const updateSystemSetting = (
-    id: string,
-    updateSystemSettingCommand: UpdateSystemSettingCommand,
- signal?: AbortSignal
+  id: string,
+  updateSystemSettingCommand: UpdateSystemSettingCommand,
+  signal?: AbortSignal,
 ) => {
+  return customInstance<SystemSettingDto>({
+    url: `/api/systemsettings/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: updateSystemSettingCommand,
+    signal,
+  });
+};
 
+export const getUpdateSystemSettingMutationOptions = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateSystemSetting>>,
+    TError,
+    { id: string; data: UpdateSystemSettingCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateSystemSetting>>,
+  TError,
+  { id: string; data: UpdateSystemSettingCommand },
+  TContext
+> => {
+  const mutationKey = ["updateSystemSetting"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-      return customInstance<SystemSettingDto>(
-      {url: `/api/systemsettings/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updateSystemSettingCommand, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateSystemSetting>>,
+    { id: string; data: UpdateSystemSettingCommand }
+  > = (props) => {
+    const { id, data } = props ?? {};
 
+    return updateSystemSetting(id, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateSystemSettingMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateSystemSetting>>
+>;
+export type UpdateSystemSettingMutationBody = UpdateSystemSettingCommand;
+export type UpdateSystemSettingMutationError = ErrorResponse | void;
 
-export const getUpdateSystemSettingMutationOptions = <TError = ErrorResponse | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSystemSetting>>, TError,{id: string;data: UpdateSystemSettingCommand}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateSystemSetting>>, TError,{id: string;data: UpdateSystemSettingCommand}, TContext> => {
+export const useUpdateSystemSetting = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateSystemSetting>>,
+      TError,
+      { id: string; data: UpdateSystemSettingCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateSystemSetting>>,
+  TError,
+  { id: string; data: UpdateSystemSettingCommand },
+  TContext
+> => {
+  return useMutation(
+    getUpdateSystemSettingMutationOptions(options),
+    queryClient,
+  );
+};
+export const getSystemSettingById = (id: string, signal?: AbortSignal) => {
+  return customInstance<SystemSettingDto>({
+    url: `/api/systemsettings/${id}`,
+    method: "GET",
+    signal,
+  });
+};
 
-const mutationKey = ['updateSystemSetting'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const getGetSystemSettingByIdQueryKey = (id: string) => {
+  return [`/api/systemsettings/${id}`] as const;
+};
 
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSystemSetting>>, {id: string;data: UpdateSystemSettingCommand}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  updateSystemSetting(id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateSystemSettingMutationResult = NonNullable<Awaited<ReturnType<typeof updateSystemSetting>>>
-    export type UpdateSystemSettingMutationBody = UpdateSystemSettingCommand
-    export type UpdateSystemSettingMutationError = ErrorResponse | void
-
-    export const useUpdateSystemSetting = <TError = ErrorResponse | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSystemSetting>>, TError,{id: string;data: UpdateSystemSettingCommand}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateSystemSetting>>,
+export const getGetSystemSettingByIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSystemSettingById>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettingById>>,
         TError,
-        {id: string;data: UpdateSystemSettingCommand},
-        TContext
-      > => {
-      return useMutation(getUpdateSystemSettingMutationOptions(options), queryClient);
-    }
-    export const getSystemSettingById = (
-    id: string,
- signal?: AbortSignal
+        TData
+      >
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ?? getGetSystemSettingByIdQueryKey(id);
 
-      return customInstance<SystemSettingDto>(
-      {url: `/api/systemsettings/${id}`, method: 'GET', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getSystemSettingById>>
+  > = ({ signal }) => getSystemSettingById(id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSystemSettingById>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetSystemSettingByIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSystemSettingById>>
+>;
+export type GetSystemSettingByIdQueryError = void;
 
-
-export const getGetSystemSettingByIdQueryKey = (id: string,) => {
-    return [
-    `/api/systemsettings/${id}`
-    ] as const;
-    }
-
-
-export const getGetSystemSettingByIdQueryOptions = <TData = Awaited<ReturnType<typeof getSystemSettingById>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettingById>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetSystemSettingByIdQueryKey(id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSystemSettingById>>> = ({ signal }) => getSystemSettingById(id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSystemSettingById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetSystemSettingByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getSystemSettingById>>>
-export type GetSystemSettingByIdQueryError = void
-
-
-export function useGetSystemSettingById<TData = Awaited<ReturnType<typeof getSystemSettingById>>, TError = void>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettingById>>, TError, TData>> & Pick<
+export function useGetSystemSettingById<
+  TData = Awaited<ReturnType<typeof getSystemSettingById>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettingById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSystemSettingById>>,
           TError,
           Awaited<ReturnType<typeof getSystemSettingById>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSystemSettingById<TData = Awaited<ReturnType<typeof getSystemSettingById>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettingById>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSystemSettingById<
+  TData = Awaited<ReturnType<typeof getSystemSettingById>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettingById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSystemSettingById>>,
           TError,
           Awaited<ReturnType<typeof getSystemSettingById>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSystemSettingById<TData = Awaited<ReturnType<typeof getSystemSettingById>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettingById>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSystemSettingById<
+  TData = Awaited<ReturnType<typeof getSystemSettingById>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettingById>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 
-export function useGetSystemSettingById<TData = Awaited<ReturnType<typeof getSystemSettingById>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSystemSettingById>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetSystemSettingById<
+  TData = Awaited<ReturnType<typeof getSystemSettingById>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSystemSettingById>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetSystemSettingByIdQueryOptions(id, options);
 
-  const queryOptions = getGetSystemSettingByIdQueryOptions(id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

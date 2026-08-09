@@ -8,14 +8,18 @@ import type { CreateContentTypeOutput } from "../schemas/createContentTypeSchema
 export function CreateContentTypePage() {
     const { t } = useTranslation("contentTypes");
     const navigate = useNavigate();
-    const { id: projectId } = useParams({ strict: false }) as { id: string };
-    const { mutate, isPending } = useCreateContentType();
+
+    const { projectId } = useParams({
+        from: "/_protected/_project/projects/$projectId/content-types/new"
+    }) as { projectId: string };
+
+    const { mutate, isPending } = useCreateContentType({ projectId });
 
     const handleSubmit = (data: CreateContentTypeOutput) => {
         mutate(
-            { data },
+            { data, projectId },
             {
-                onSuccess: () => navigate({ to: "/projects/$id/content-types", params: { id: projectId } }),
+                onSuccess: () => navigate({ to: "/projects/$projectId/content-types", params: { projectId } }),
             }
         );
     };
@@ -27,7 +31,7 @@ export function CreateContentTypePage() {
             formId="create-content-type-form"
             isPending={isPending}
             submitLabel={t("actions.create", { defaultValue: "Create" })}
-            onCancel={() => navigate({ to: "/projects/$id/content-types", params: { id: projectId } })}
+            onCancel={() => navigate({ to: "/projects/$projectId/content-types", params: { projectId } })}
             cancelLabel={t("common:cancel", { defaultValue: "Cancel" })}
         >
             <CreateContentTypeForm onSubmit={handleSubmit} projectId={projectId} />

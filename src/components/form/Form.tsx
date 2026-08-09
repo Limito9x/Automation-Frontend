@@ -26,7 +26,7 @@ export function Form<
     return (
         <FormIdContext.Provider value={id}>
             <FormProvider {...form}>
-                <form className='w-full flex flex-col gap-6 @container' id={id} {...props} onSubmit={form.handleSubmit(onSubmit as any)}>
+                <form className='w-full flex flex-col gap-6 @container' id={id} {...props} onSubmit={form.handleSubmit(onSubmit as any, (errors) => console.error("Form validation failed:", errors))}>
                     {children}
                 </form>
             </FormProvider>

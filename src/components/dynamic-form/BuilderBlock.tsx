@@ -21,16 +21,19 @@ interface BuilderBlockProps {
     control: Control<any>
     index: number
     onRemove: () => void
+    availableTypes?: { label: string; value: string }[]
+    namePrefix?: string
 }
 
-export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
-    const currentField = useWatch({ control, name: `fields.${index}` });
+export function BuilderBlock({ control, index, onRemove, availableTypes, namePrefix = "fields" }: BuilderBlockProps) {
+    const currentField = useWatch({ control, name: `${namePrefix}.${index}` });
     const type = currentField?.type;
     const registration = getFieldRegistration(type || "text");
 
-    const availableTypes = useMemo(() => {
+    const resolvedAvailableTypes = useMemo(() => {
+        if (availableTypes) return availableTypes;
         return Array.from(getFieldRegistry().keys()).map(k => ({ label: normalizeTypeName(k), value: k }));
-    }, []);
+    }, [availableTypes]);
 
     const builderFields = useMemo(() => {
         const fields = registration?.builderFields || [];
@@ -69,7 +72,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                     <div className="flex-1">
                         <FormInput
                             control={control}
-                            name={`fields.${index}.label`}
+                            name={`${namePrefix}.${index}.label`}
                             label="Label"
                             placeholder="Tên hiển thị..."
                         />
@@ -77,7 +80,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                             <span className="text-muted-foreground font-mono">Key:</span>
                             <FormInput
                                 control={control}
-                                name={`fields.${index}.name`}
+                                name={`${namePrefix}.${index}.name`}
                                 className="h-7 text-xs px-2 py-0 font-mono w-[200px] bg-muted/50 border-transparent hover:border-input focus:border-input transition-colors"
                             />
                         </div>
@@ -86,9 +89,9 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                     <div className="w-[220px] shrink-0">
                         <FormSelect
                             control={control}
-                            name={`fields.${index}.type`}
+                            name={`${namePrefix}.${index}.type`}
                             label="Field Type"
-                            options={availableTypes}
+                            options={resolvedAvailableTypes}
                         />
                     </div>
                 </div>
@@ -97,7 +100,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormTextarea
                         control={control}
-                        name={`fields.${index}.description`}
+                        name={`${namePrefix}.${index}.description`}
                         label="Description (Optional)"
                         placeholder="Mô tả trường này làm gì..."
                         className="min-h-[40px] resize-none"
@@ -106,7 +109,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
 
                         <FormSwitch
                             control={control}
-                            name={`fields.${index}.properties.required`}
+                            name={`${namePrefix}.${index}.properties.required`}
                             label="Required field?"
                         />
                     </div>
@@ -141,7 +144,7 @@ export function BuilderBlock({ control, index, onRemove }: BuilderBlockProps) {
                         <CollapsibleContent className="px-4 pb-4 pt-2">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {builderFields.map((spec) => {
-                                    const fieldPath = `fields.${index}.properties.${spec.name}`;
+                                    const fieldPath = `${namePrefix}.${index}.properties.${spec.name}`;
                                     const fieldReg = getFieldRegistration(spec.fieldType);
                                     if (!fieldReg) return <div key={spec.name} className="text-red-500 text-sm">Error: Unknown fieldType "{spec.fieldType}"</div>;
 

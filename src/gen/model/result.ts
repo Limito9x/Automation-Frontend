@@ -4,9 +4,9 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IReadOnlyListOfIError } from './iReadOnlyListOfIError';
-import type { IReadOnlyListOfISuccess } from './iReadOnlyListOfISuccess';
-import type { ListOfIReason } from './listOfIReason';
+import type { IReadOnlyListOfIError } from "./iReadOnlyListOfIError";
+import type { IReadOnlyListOfISuccess } from "./iReadOnlyListOfISuccess";
+import type { ListOfIReason } from "./listOfIReason";
 
 export interface Result {
   isFailed?: boolean;

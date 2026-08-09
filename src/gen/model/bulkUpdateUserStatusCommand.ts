@@ -4,8 +4,8 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ListOfGuid } from './listOfGuid';
-import type { UserStatus } from './userStatus';
+import type { ListOfGuid } from "./listOfGuid";
+import type { UserStatus } from "./userStatus";
 
 export interface BulkUpdateUserStatusCommand {
   userIds: ListOfGuid;

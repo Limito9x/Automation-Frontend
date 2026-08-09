@@ -4,74 +4,86 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation
-} from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 import type {
   MutationFunction,
   QueryClient,
   UseMutationOptions,
-  UseMutationResult
-} from '@tanstack/react-query';
+  UseMutationResult,
+} from "@tanstack/react-query";
 
-import { customInstance } from '../../../lib/api-client';
+import { customInstance } from "../../../lib/api-client";
 
+export const automationApiDevTestNotification = (signal?: AbortSignal) => {
+  return customInstance<void>({
+    url: `/api/dev/test-notification`,
+    method: "POST",
+    signal,
+  });
+};
 
+export const getAutomationApiDevTestNotificationMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof automationApiDevTestNotification>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof automationApiDevTestNotification>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["automationApiDevTestNotification"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof automationApiDevTestNotification>>,
+    void
+  > = () => {
+    return automationApiDevTestNotification();
+  };
 
-export const automationApiDevTestNotification = (
+  return { mutationFn, ...mutationOptions };
+};
 
- signal?: AbortSignal
-) => {
+export type AutomationApiDevTestNotificationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof automationApiDevTestNotification>>
+>;
 
+export type AutomationApiDevTestNotificationMutationError = void;
 
-      return customInstance<void>(
-      {url: `/api/dev/test-notification`, method: 'POST', signal
-    },
-      );
-    }
-
-
-
-
-export const getAutomationApiDevTestNotificationMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof automationApiDevTestNotification>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof automationApiDevTestNotification>>, TError,void, TContext> => {
-
-const mutationKey = ['automationApiDevTestNotification'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof automationApiDevTestNotification>>, void> = () => {
-
-
-          return  automationApiDevTestNotification()
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AutomationApiDevTestNotificationMutationResult = NonNullable<Awaited<ReturnType<typeof automationApiDevTestNotification>>>
-
-    export type AutomationApiDevTestNotificationMutationError = void
-
-    export const useAutomationApiDevTestNotification = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof automationApiDevTestNotification>>, TError,void, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof automationApiDevTestNotification>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getAutomationApiDevTestNotificationMutationOptions(options), queryClient);
-    }
+export const useAutomationApiDevTestNotification = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof automationApiDevTestNotification>>,
+      TError,
+      void,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof automationApiDevTestNotification>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(
+    getAutomationApiDevTestNotificationMutationOptions(options),
+    queryClient,
+  );
+};

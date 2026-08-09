@@ -1,27 +1,75 @@
-import { keepPreviousData } from "@tanstack/react-query";
-import { createMutationHook } from "@/lib/query-utils";
+import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import * as ContentTypesApi from "@/gen/endpoints/content-types/content-types";
 import { GetContentTypesQueryParams } from "@/gen/endpoints/content-types/content-types.zod";
 import { z } from "zod";
 
 type contentTypeQuery = z.infer<typeof GetContentTypesQueryParams>;
 
-export const useContentTypes = (params: contentTypeQuery) => {
-    return ContentTypesApi.useGetContentTypes(params, {
+export const useContentTypes = (params: contentTypeQuery, projectId: string) => {
+    return ContentTypesApi.useGetContentTypes(projectId, params, {
         query: {
             placeholderData: keepPreviousData,
         }
     });
 };
 
-export const useGetContentTypeById = (id: string) => {
-    return ContentTypesApi.useGetContentTypeById(id, {
+// Lấy content type theo id hay key đều đc
+export const useGetContentType = (projectId: string, key: string) => {
+    return ContentTypesApi.useGetContentType(projectId, key, {
         query: {
-            enabled: !!id,
+            enabled: !!key,
         }
     });
 };
 
-export const useCreateContentType = createMutationHook(ContentTypesApi.useCreateContentType, [ContentTypesApi.getGetContentTypesQueryKey()]);
-export const useUpdateContentType = createMutationHook(ContentTypesApi.useUpdateContentType, [ContentTypesApi.getGetContentTypesQueryKey()]);
-export const useDeleteContentType = createMutationHook(ContentTypesApi.useDeleteContentType, [ContentTypesApi.getGetContentTypesQueryKey()]);
+export const useCreateContentType = ({ projectId }: { projectId: string }) => {
+    const queryClient = useQueryClient();
+    return ContentTypesApi.useCreateContentType({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentTypesApi.getGetContentTypesQueryKey(projectId),
+                });
+            }
+        }
+    });
+};
+
+export const useUpdateContentType = ({ projectId }: { projectId: string }) => {
+    const queryClient = useQueryClient();
+    return ContentTypesApi.useUpdateContentType({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentTypesApi.getGetContentTypesQueryKey(projectId),
+                });
+            }
+        }
+    });
+};
+
+export const useDeleteContentType = ({ projectId }: { projectId: string }) => {
+    const queryClient = useQueryClient();
+    return ContentTypesApi.useDeleteContentType({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentTypesApi.getGetContentTypesQueryKey(projectId),
+                });
+            }
+        }
+    });
+};
+
+export const useUpdateContentTypeSchema = ({ projectId }: { projectId: string }) => {
+    const queryClient = useQueryClient();
+    return ContentTypesApi.useUpdateContentTypeSchema({
+        mutation: {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ContentTypesApi.getGetContentTypesQueryKey(projectId),
+                });
+            }
+        }
+    });
+};

@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ListOfUploadRequestItemDto } from './listOfUploadRequestItemDto';
+import type { ListOfUploadRequestItemDto } from "./listOfUploadRequestItemDto";
 
 export interface RequestUploadCommand {
   items: ListOfUploadRequestItemDto;

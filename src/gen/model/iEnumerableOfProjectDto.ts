@@ -4,6 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ProjectDto } from './projectDto';
+import type { ProjectDto } from "./projectDto";
 
 export type IEnumerableOfProjectDto = ProjectDto[];

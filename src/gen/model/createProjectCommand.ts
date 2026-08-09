@@ -7,8 +7,8 @@
 
 export interface CreateProjectCommand {
   /**
-     * @minLength 0
-     * @maxLength 255
-     */
+   * @minLength 0
+   * @maxLength 255
+   */
   name: string;
 }

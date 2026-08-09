@@ -9,46 +9,52 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
-import { Route as Layout403RouteImport } from './routes/_layout/403'
-import { Route as LayoutDevRouteImport } from './routes/_layout/dev'
-import { Route as LayoutProjectsRouteImport } from './routes/_layout/projects'
-import { Route as LayoutRolesRouteImport } from './routes/_layout/roles'
-import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
-import { Route as LayoutUsersRouteImport } from './routes/_layout/users'
+import { Route as ProtectedLayoutRouteImport } from './routes/_protected/_layout'
+import { Route as ProtectedProjectRouteImport } from './routes/_protected/_project'
 import { Route as AuthAcceptInviteRouteImport } from './routes/auth/accept-invite'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
-import { Route as LayoutProjectsIndexRouteImport } from './routes/_layout/projects/index'
-import { Route as LayoutRolesIndexRouteImport } from './routes/_layout/roles/index'
-import { Route as LayoutSettingsIndexRouteImport } from './routes/_layout/settings/index'
-import { Route as LayoutSettingsNotificationsRouteImport } from './routes/_layout/settings/notifications'
-import { Route as LayoutSettingsProfileRouteImport } from './routes/_layout/settings/profile'
-import { Route as LayoutSettingsSecurityRouteImport } from './routes/_layout/settings/security'
-import { Route as LayoutSystemAuditLogsRouteImport } from './routes/_layout/system/audit-logs'
-import { Route as LayoutSystemSettingsRouteImport } from './routes/_layout/system/settings'
-import { Route as LayoutUsersIndexRouteImport } from './routes/_layout/users/index'
-import { Route as LayoutUsersNewRouteImport } from './routes/_layout/users/new'
-import { Route as LayoutProjectsIdAssetsRouteImport } from './routes/_layout/projects/$id/assets'
-import { Route as LayoutProjectsIdContentTypesRouteImport } from './routes/_layout/projects/$id/content-types'
-import { Route as LayoutProjectsIdContentsRouteImport } from './routes/_layout/projects/$id/contents'
-import { Route as LayoutProjectsIdOverviewRouteImport } from './routes/_layout/projects/$id/overview'
-import { Route as LayoutSystemAuditLogsIndexRouteImport } from './routes/_layout/system/audit-logs/index'
-import { Route as LayoutSystemAuditLogsIdRouteImport } from './routes/_layout/system/audit-logs/$id'
-import { Route as LayoutUsersIdIndexRouteImport } from './routes/_layout/users/$id/index'
-import { Route as LayoutUsersIdEditRouteImport } from './routes/_layout/users/$id/edit'
-import { Route as LayoutProjectsIdContentTypesIndexRouteImport } from './routes/_layout/projects/$id/content-types/index'
-import { Route as LayoutProjectsIdContentTypesNewRouteImport } from './routes/_layout/projects/$id/content-types/new'
-import { Route as LayoutProjectsIdContentsIndexRouteImport } from './routes/_layout/projects/$id/contents/index'
-import { Route as LayoutProjectsIdContentTypesIdIndexRouteImport } from './routes/_layout/projects/$id/content-types/$id/index'
-import { Route as LayoutProjectsIdContentTypesIdEditRouteImport } from './routes/_layout/projects/$id/content-types/$id/edit'
+import { Route as ProtectedLayoutIndexRouteImport } from './routes/_protected/_layout/index'
+import { Route as ProtectedLayout403RouteImport } from './routes/_protected/_layout/403'
+import { Route as ProtectedLayoutDevRouteImport } from './routes/_protected/_layout/dev'
+import { Route as ProtectedLayoutProjectsRouteRouteImport } from './routes/_protected/_layout/projects/route'
+import { Route as ProtectedLayoutRolesRouteRouteImport } from './routes/_protected/_layout/roles/route'
+import { Route as ProtectedLayoutSettingsRouteRouteImport } from './routes/_protected/_layout/settings/route'
+import { Route as ProtectedLayoutUsersRouteRouteImport } from './routes/_protected/_layout/users/route'
+import { Route as ProtectedLayoutProjectsIndexRouteImport } from './routes/_protected/_layout/projects/index'
+import { Route as ProtectedLayoutRolesIndexRouteImport } from './routes/_protected/_layout/roles/index'
+import { Route as ProtectedLayoutSettingsIndexRouteImport } from './routes/_protected/_layout/settings/index'
+import { Route as ProtectedLayoutSettingsNotificationsRouteImport } from './routes/_protected/_layout/settings/notifications'
+import { Route as ProtectedLayoutSettingsProfileRouteImport } from './routes/_protected/_layout/settings/profile'
+import { Route as ProtectedLayoutSettingsSecurityRouteImport } from './routes/_protected/_layout/settings/security'
+import { Route as ProtectedLayoutSystemAuditLogsRouteImport } from './routes/_protected/_layout/system/audit-logs'
+import { Route as ProtectedLayoutSystemSettingsRouteImport } from './routes/_protected/_layout/system/settings'
+import { Route as ProtectedLayoutUsersIndexRouteImport } from './routes/_protected/_layout/users/index'
+import { Route as ProtectedLayoutUsersNewRouteImport } from './routes/_protected/_layout/users/new'
+import { Route as ProtectedProjectProjectsProjectIdRouteRouteImport } from './routes/_protected/_project/projects/$projectId/route'
+import { Route as ProtectedLayoutSystemAuditLogsIndexRouteImport } from './routes/_protected/_layout/system/audit-logs/index'
+import { Route as ProtectedLayoutSystemAuditLogsIdRouteImport } from './routes/_protected/_layout/system/audit-logs/$id'
+import { Route as ProtectedLayoutUsersIdIndexRouteImport } from './routes/_protected/_layout/users/$id/index'
+import { Route as ProtectedLayoutUsersIdEditRouteImport } from './routes/_protected/_layout/users/$id/edit'
+import { Route as ProtectedProjectProjectsProjectIdAssetsRouteImport } from './routes/_protected/_project/projects/$projectId/assets'
+import { Route as ProtectedProjectProjectsProjectIdContentTypesRouteImport } from './routes/_protected/_project/projects/$projectId/content-types'
+import { Route as ProtectedProjectProjectsProjectIdOverviewRouteImport } from './routes/_protected/_project/projects/$projectId/overview'
+import { Route as ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/index'
+import { Route as ProtectedProjectProjectsProjectIdContentTypesNewRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/new'
+import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey'
+import { Route as ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/$contentTypeId/index'
+import { Route as ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder'
+import { Route as ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit'
+import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey/index'
+import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyNewRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey/new'
+import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey/$contentItemId/edit'
 
-const LayoutRoute = LayoutRouteImport.update({
-  id: '/_layout',
+const ProtectedRoute = ProtectedRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -56,40 +62,13 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutIndexRoute = LayoutIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LayoutRoute,
+const ProtectedLayoutRoute = ProtectedLayoutRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => ProtectedRoute,
 } as any)
-const Layout403Route = Layout403RouteImport.update({
-  id: '/403',
-  path: '/403',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutDevRoute = LayoutDevRouteImport.update({
-  id: '/dev',
-  path: '/dev',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutProjectsRoute = LayoutProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutRolesRoute = LayoutRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutUsersRoute = LayoutUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => LayoutRoute,
+const ProtectedProjectRoute = ProtectedProjectRouteImport.update({
+  id: '/_project',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const AuthAcceptInviteRoute = AuthAcceptInviteRouteImport.update({
   id: '/accept-invite',
@@ -116,257 +95,356 @@ const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => AuthRoute,
 } as any)
-const LayoutProjectsIndexRoute = LayoutProjectsIndexRouteImport.update({
+const ProtectedLayoutIndexRoute = ProtectedLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutProjectsRoute,
+  getParentRoute: () => ProtectedLayoutRoute,
 } as any)
-const LayoutRolesIndexRoute = LayoutRolesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LayoutRolesRoute,
+const ProtectedLayout403Route = ProtectedLayout403RouteImport.update({
+  id: '/403',
+  path: '/403',
+  getParentRoute: () => ProtectedLayoutRoute,
 } as any)
-const LayoutSettingsIndexRoute = LayoutSettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LayoutSettingsRoute,
+const ProtectedLayoutDevRoute = ProtectedLayoutDevRouteImport.update({
+  id: '/dev',
+  path: '/dev',
+  getParentRoute: () => ProtectedLayoutRoute,
 } as any)
-const LayoutSettingsNotificationsRoute =
-  LayoutSettingsNotificationsRouteImport.update({
+const ProtectedLayoutProjectsRouteRoute =
+  ProtectedLayoutProjectsRouteRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutRolesRouteRoute =
+  ProtectedLayoutRolesRouteRouteImport.update({
+    id: '/roles',
+    path: '/roles',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutSettingsRouteRoute =
+  ProtectedLayoutSettingsRouteRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutUsersRouteRoute =
+  ProtectedLayoutUsersRouteRouteImport.update({
+    id: '/users',
+    path: '/users',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutProjectsIndexRoute =
+  ProtectedLayoutProjectsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedLayoutProjectsRouteRoute,
+  } as any)
+const ProtectedLayoutRolesIndexRoute =
+  ProtectedLayoutRolesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedLayoutRolesRouteRoute,
+  } as any)
+const ProtectedLayoutSettingsIndexRoute =
+  ProtectedLayoutSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedLayoutSettingsRouteRoute,
+  } as any)
+const ProtectedLayoutSettingsNotificationsRoute =
+  ProtectedLayoutSettingsNotificationsRouteImport.update({
     id: '/notifications',
     path: '/notifications',
-    getParentRoute: () => LayoutSettingsRoute,
+    getParentRoute: () => ProtectedLayoutSettingsRouteRoute,
   } as any)
-const LayoutSettingsProfileRoute = LayoutSettingsProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => LayoutSettingsRoute,
-} as any)
-const LayoutSettingsSecurityRoute = LayoutSettingsSecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => LayoutSettingsRoute,
-} as any)
-const LayoutSystemAuditLogsRoute = LayoutSystemAuditLogsRouteImport.update({
-  id: '/system/audit-logs',
-  path: '/system/audit-logs',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutSystemSettingsRoute = LayoutSystemSettingsRouteImport.update({
-  id: '/system/settings',
-  path: '/system/settings',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutUsersIndexRoute = LayoutUsersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LayoutUsersRoute,
-} as any)
-const LayoutUsersNewRoute = LayoutUsersNewRouteImport.update({
+const ProtectedLayoutSettingsProfileRoute =
+  ProtectedLayoutSettingsProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => ProtectedLayoutSettingsRouteRoute,
+  } as any)
+const ProtectedLayoutSettingsSecurityRoute =
+  ProtectedLayoutSettingsSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => ProtectedLayoutSettingsRouteRoute,
+  } as any)
+const ProtectedLayoutSystemAuditLogsRoute =
+  ProtectedLayoutSystemAuditLogsRouteImport.update({
+    id: '/system/audit-logs',
+    path: '/system/audit-logs',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutSystemSettingsRoute =
+  ProtectedLayoutSystemSettingsRouteImport.update({
+    id: '/system/settings',
+    path: '/system/settings',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutUsersIndexRoute =
+  ProtectedLayoutUsersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedLayoutUsersRouteRoute,
+  } as any)
+const ProtectedLayoutUsersNewRoute = ProtectedLayoutUsersNewRouteImport.update({
   id: '/new',
   path: '/new',
-  getParentRoute: () => LayoutUsersRoute,
+  getParentRoute: () => ProtectedLayoutUsersRouteRoute,
 } as any)
-const LayoutProjectsIdAssetsRoute = LayoutProjectsIdAssetsRouteImport.update({
-  id: '/$id/assets',
-  path: '/$id/assets',
-  getParentRoute: () => LayoutProjectsRoute,
-} as any)
-const LayoutProjectsIdContentTypesRoute =
-  LayoutProjectsIdContentTypesRouteImport.update({
-    id: '/$id/content-types',
-    path: '/$id/content-types',
-    getParentRoute: () => LayoutProjectsRoute,
+const ProtectedProjectProjectsProjectIdRouteRoute =
+  ProtectedProjectProjectsProjectIdRouteRouteImport.update({
+    id: '/projects/$projectId',
+    path: '/projects/$projectId',
+    getParentRoute: () => ProtectedProjectRoute,
   } as any)
-const LayoutProjectsIdContentsRoute =
-  LayoutProjectsIdContentsRouteImport.update({
-    id: '/$id/contents',
-    path: '/$id/contents',
-    getParentRoute: () => LayoutProjectsRoute,
-  } as any)
-const LayoutProjectsIdOverviewRoute =
-  LayoutProjectsIdOverviewRouteImport.update({
-    id: '/$id/overview',
-    path: '/$id/overview',
-    getParentRoute: () => LayoutProjectsRoute,
-  } as any)
-const LayoutSystemAuditLogsIndexRoute =
-  LayoutSystemAuditLogsIndexRouteImport.update({
+const ProtectedLayoutSystemAuditLogsIndexRoute =
+  ProtectedLayoutSystemAuditLogsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => LayoutSystemAuditLogsRoute,
+    getParentRoute: () => ProtectedLayoutSystemAuditLogsRoute,
   } as any)
-const LayoutSystemAuditLogsIdRoute = LayoutSystemAuditLogsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => LayoutSystemAuditLogsRoute,
-} as any)
-const LayoutUsersIdIndexRoute = LayoutUsersIdIndexRouteImport.update({
-  id: '/$id/',
-  path: '/$id/',
-  getParentRoute: () => LayoutUsersRoute,
-} as any)
-const LayoutUsersIdEditRoute = LayoutUsersIdEditRouteImport.update({
-  id: '/$id/edit',
-  path: '/$id/edit',
-  getParentRoute: () => LayoutUsersRoute,
-} as any)
-const LayoutProjectsIdContentTypesIndexRoute =
-  LayoutProjectsIdContentTypesIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+const ProtectedLayoutSystemAuditLogsIdRoute =
+  ProtectedLayoutSystemAuditLogsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ProtectedLayoutSystemAuditLogsRoute,
   } as any)
-const LayoutProjectsIdContentTypesNewRoute =
-  LayoutProjectsIdContentTypesNewRouteImport.update({
-    id: '/new',
-    path: '/new',
-    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
-  } as any)
-const LayoutProjectsIdContentsIndexRoute =
-  LayoutProjectsIdContentsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => LayoutProjectsIdContentsRoute,
-  } as any)
-const LayoutProjectsIdContentTypesIdIndexRoute =
-  LayoutProjectsIdContentTypesIdIndexRouteImport.update({
+const ProtectedLayoutUsersIdIndexRoute =
+  ProtectedLayoutUsersIdIndexRouteImport.update({
     id: '/$id/',
     path: '/$id/',
-    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+    getParentRoute: () => ProtectedLayoutUsersRouteRoute,
   } as any)
-const LayoutProjectsIdContentTypesIdEditRoute =
-  LayoutProjectsIdContentTypesIdEditRouteImport.update({
+const ProtectedLayoutUsersIdEditRoute =
+  ProtectedLayoutUsersIdEditRouteImport.update({
     id: '/$id/edit',
     path: '/$id/edit',
-    getParentRoute: () => LayoutProjectsIdContentTypesRoute,
+    getParentRoute: () => ProtectedLayoutUsersRouteRoute,
   } as any)
+const ProtectedProjectProjectsProjectIdAssetsRoute =
+  ProtectedProjectProjectsProjectIdAssetsRouteImport.update({
+    id: '/assets',
+    path: '/assets',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentTypesRoute =
+  ProtectedProjectProjectsProjectIdContentTypesRouteImport.update({
+    id: '/content-types',
+    path: '/content-types',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdOverviewRoute =
+  ProtectedProjectProjectsProjectIdOverviewRouteImport.update({
+    id: '/overview',
+    path: '/overview',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentTypesIndexRoute =
+  ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentTypesNewRoute =
+  ProtectedProjectProjectsProjectIdContentTypesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentsTypeKeyRoute =
+  ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport.update({
+    id: '/contents/$typeKey',
+    path: '/contents/$typeKey',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute =
+  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRouteImport.update(
+    {
+      id: '/$contentTypeId/',
+      path: '/$contentTypeId/',
+      getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
+    } as any,
+  )
+const ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute =
+  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRouteImport.update(
+    {
+      id: '/$contentTypeId/builder',
+      path: '/$contentTypeId/builder',
+      getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
+    } as any,
+  )
+const ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute =
+  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRouteImport.update(
+    {
+      id: '/$contentTypeId/edit',
+      path: '/$contentTypeId/edit',
+      getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
+    } as any,
+  )
+const ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute =
+  ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdContentsTypeKeyRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute =
+  ProtectedProjectProjectsProjectIdContentsTypeKeyNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdContentsTypeKeyRoute,
+  } as any)
+const ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute =
+  ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRouteImport.update(
+    {
+      id: '/$contentItemId/edit',
+      path: '/$contentItemId/edit',
+      getParentRoute: () =>
+        ProtectedProjectProjectsProjectIdContentsTypeKeyRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
-  '/': typeof LayoutIndexRoute
+  '/': typeof ProtectedLayoutIndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/403': typeof Layout403Route
-  '/dev': typeof LayoutDevRoute
-  '/projects': typeof LayoutProjectsRouteWithChildren
-  '/roles': typeof LayoutRolesRouteWithChildren
-  '/settings': typeof LayoutSettingsRouteWithChildren
-  '/users': typeof LayoutUsersRouteWithChildren
   '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
-  '/settings/notifications': typeof LayoutSettingsNotificationsRoute
-  '/settings/profile': typeof LayoutSettingsProfileRoute
-  '/settings/security': typeof LayoutSettingsSecurityRoute
-  '/system/audit-logs': typeof LayoutSystemAuditLogsRouteWithChildren
-  '/system/settings': typeof LayoutSystemSettingsRoute
-  '/users/new': typeof LayoutUsersNewRoute
-  '/projects/': typeof LayoutProjectsIndexRoute
-  '/roles/': typeof LayoutRolesIndexRoute
-  '/settings/': typeof LayoutSettingsIndexRoute
-  '/users/': typeof LayoutUsersIndexRoute
-  '/projects/$id/assets': typeof LayoutProjectsIdAssetsRoute
-  '/projects/$id/content-types': typeof LayoutProjectsIdContentTypesRouteWithChildren
-  '/projects/$id/contents': typeof LayoutProjectsIdContentsRouteWithChildren
-  '/projects/$id/overview': typeof LayoutProjectsIdOverviewRoute
-  '/system/audit-logs/$id': typeof LayoutSystemAuditLogsIdRoute
-  '/users/$id/edit': typeof LayoutUsersIdEditRoute
-  '/system/audit-logs/': typeof LayoutSystemAuditLogsIndexRoute
-  '/users/$id/': typeof LayoutUsersIdIndexRoute
-  '/projects/$id/content-types/new': typeof LayoutProjectsIdContentTypesNewRoute
-  '/projects/$id/content-types/': typeof LayoutProjectsIdContentTypesIndexRoute
-  '/projects/$id/contents/': typeof LayoutProjectsIdContentsIndexRoute
-  '/projects/$id/content-types/$id/edit': typeof LayoutProjectsIdContentTypesIdEditRoute
-  '/projects/$id/content-types/$id/': typeof LayoutProjectsIdContentTypesIdIndexRoute
+  '/projects': typeof ProtectedLayoutProjectsRouteRouteWithChildren
+  '/roles': typeof ProtectedLayoutRolesRouteRouteWithChildren
+  '/settings': typeof ProtectedLayoutSettingsRouteRouteWithChildren
+  '/users': typeof ProtectedLayoutUsersRouteRouteWithChildren
+  '/403': typeof ProtectedLayout403Route
+  '/dev': typeof ProtectedLayoutDevRoute
+  '/projects/$projectId': typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+  '/settings/notifications': typeof ProtectedLayoutSettingsNotificationsRoute
+  '/settings/profile': typeof ProtectedLayoutSettingsProfileRoute
+  '/settings/security': typeof ProtectedLayoutSettingsSecurityRoute
+  '/system/audit-logs': typeof ProtectedLayoutSystemAuditLogsRouteWithChildren
+  '/system/settings': typeof ProtectedLayoutSystemSettingsRoute
+  '/users/new': typeof ProtectedLayoutUsersNewRoute
+  '/projects/': typeof ProtectedLayoutProjectsIndexRoute
+  '/roles/': typeof ProtectedLayoutRolesIndexRoute
+  '/settings/': typeof ProtectedLayoutSettingsIndexRoute
+  '/users/': typeof ProtectedLayoutUsersIndexRoute
+  '/system/audit-logs/$id': typeof ProtectedLayoutSystemAuditLogsIdRoute
+  '/users/$id/edit': typeof ProtectedLayoutUsersIdEditRoute
+  '/projects/$projectId/assets': typeof ProtectedProjectProjectsProjectIdAssetsRoute
+  '/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren
+  '/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
+  '/system/audit-logs/': typeof ProtectedLayoutSystemAuditLogsIndexRoute
+  '/users/$id/': typeof ProtectedLayoutUsersIdIndexRoute
+  '/projects/$projectId/content-types/new': typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
+  '/projects/$projectId/contents/$typeKey': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
+  '/projects/$projectId/content-types/': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  '/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
+  '/projects/$projectId/content-types/$contentTypeId/edit': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
+  '/projects/$projectId/contents/$typeKey/new': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
+  '/projects/$projectId/content-types/$contentTypeId/': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
+  '/projects/$projectId/contents/$typeKey/': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
+  '/projects/$projectId/contents/$typeKey/$contentItemId/edit': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof ProtectedLayoutIndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/403': typeof Layout403Route
-  '/dev': typeof LayoutDevRoute
   '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
-  '/': typeof LayoutIndexRoute
-  '/settings/notifications': typeof LayoutSettingsNotificationsRoute
-  '/settings/profile': typeof LayoutSettingsProfileRoute
-  '/settings/security': typeof LayoutSettingsSecurityRoute
-  '/system/settings': typeof LayoutSystemSettingsRoute
-  '/users/new': typeof LayoutUsersNewRoute
-  '/projects': typeof LayoutProjectsIndexRoute
-  '/roles': typeof LayoutRolesIndexRoute
-  '/settings': typeof LayoutSettingsIndexRoute
-  '/users': typeof LayoutUsersIndexRoute
-  '/projects/$id/assets': typeof LayoutProjectsIdAssetsRoute
-  '/projects/$id/overview': typeof LayoutProjectsIdOverviewRoute
-  '/system/audit-logs/$id': typeof LayoutSystemAuditLogsIdRoute
-  '/users/$id/edit': typeof LayoutUsersIdEditRoute
-  '/system/audit-logs': typeof LayoutSystemAuditLogsIndexRoute
-  '/users/$id': typeof LayoutUsersIdIndexRoute
-  '/projects/$id/content-types/new': typeof LayoutProjectsIdContentTypesNewRoute
-  '/projects/$id/content-types': typeof LayoutProjectsIdContentTypesIndexRoute
-  '/projects/$id/contents': typeof LayoutProjectsIdContentsIndexRoute
-  '/projects/$id/content-types/$id/edit': typeof LayoutProjectsIdContentTypesIdEditRoute
-  '/projects/$id/content-types/$id': typeof LayoutProjectsIdContentTypesIdIndexRoute
+  '/403': typeof ProtectedLayout403Route
+  '/dev': typeof ProtectedLayoutDevRoute
+  '/projects/$projectId': typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+  '/settings/notifications': typeof ProtectedLayoutSettingsNotificationsRoute
+  '/settings/profile': typeof ProtectedLayoutSettingsProfileRoute
+  '/settings/security': typeof ProtectedLayoutSettingsSecurityRoute
+  '/system/settings': typeof ProtectedLayoutSystemSettingsRoute
+  '/users/new': typeof ProtectedLayoutUsersNewRoute
+  '/projects': typeof ProtectedLayoutProjectsIndexRoute
+  '/roles': typeof ProtectedLayoutRolesIndexRoute
+  '/settings': typeof ProtectedLayoutSettingsIndexRoute
+  '/users': typeof ProtectedLayoutUsersIndexRoute
+  '/system/audit-logs/$id': typeof ProtectedLayoutSystemAuditLogsIdRoute
+  '/users/$id/edit': typeof ProtectedLayoutUsersIdEditRoute
+  '/projects/$projectId/assets': typeof ProtectedProjectProjectsProjectIdAssetsRoute
+  '/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
+  '/system/audit-logs': typeof ProtectedLayoutSystemAuditLogsIndexRoute
+  '/users/$id': typeof ProtectedLayoutUsersIdIndexRoute
+  '/projects/$projectId/content-types/new': typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
+  '/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  '/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
+  '/projects/$projectId/content-types/$contentTypeId/edit': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
+  '/projects/$projectId/contents/$typeKey/new': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
+  '/projects/$projectId/content-types/$contentTypeId': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
+  '/projects/$projectId/contents/$typeKey': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
+  '/projects/$projectId/contents/$typeKey/$contentItemId/edit': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_layout': typeof LayoutRouteWithChildren
+  '/_protected': typeof ProtectedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
-  '/_layout/403': typeof Layout403Route
-  '/_layout/dev': typeof LayoutDevRoute
-  '/_layout/projects': typeof LayoutProjectsRouteWithChildren
-  '/_layout/roles': typeof LayoutRolesRouteWithChildren
-  '/_layout/settings': typeof LayoutSettingsRouteWithChildren
-  '/_layout/users': typeof LayoutUsersRouteWithChildren
+  '/_protected/_layout': typeof ProtectedLayoutRouteWithChildren
+  '/_protected/_project': typeof ProtectedProjectRouteWithChildren
   '/auth/accept-invite': typeof AuthAcceptInviteRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
-  '/_layout/': typeof LayoutIndexRoute
-  '/_layout/settings/notifications': typeof LayoutSettingsNotificationsRoute
-  '/_layout/settings/profile': typeof LayoutSettingsProfileRoute
-  '/_layout/settings/security': typeof LayoutSettingsSecurityRoute
-  '/_layout/system/audit-logs': typeof LayoutSystemAuditLogsRouteWithChildren
-  '/_layout/system/settings': typeof LayoutSystemSettingsRoute
-  '/_layout/users/new': typeof LayoutUsersNewRoute
-  '/_layout/projects/': typeof LayoutProjectsIndexRoute
-  '/_layout/roles/': typeof LayoutRolesIndexRoute
-  '/_layout/settings/': typeof LayoutSettingsIndexRoute
-  '/_layout/users/': typeof LayoutUsersIndexRoute
-  '/_layout/projects/$id/assets': typeof LayoutProjectsIdAssetsRoute
-  '/_layout/projects/$id/content-types': typeof LayoutProjectsIdContentTypesRouteWithChildren
-  '/_layout/projects/$id/contents': typeof LayoutProjectsIdContentsRouteWithChildren
-  '/_layout/projects/$id/overview': typeof LayoutProjectsIdOverviewRoute
-  '/_layout/system/audit-logs/$id': typeof LayoutSystemAuditLogsIdRoute
-  '/_layout/users/$id/edit': typeof LayoutUsersIdEditRoute
-  '/_layout/system/audit-logs/': typeof LayoutSystemAuditLogsIndexRoute
-  '/_layout/users/$id/': typeof LayoutUsersIdIndexRoute
-  '/_layout/projects/$id/content-types/new': typeof LayoutProjectsIdContentTypesNewRoute
-  '/_layout/projects/$id/content-types/': typeof LayoutProjectsIdContentTypesIndexRoute
-  '/_layout/projects/$id/contents/': typeof LayoutProjectsIdContentsIndexRoute
-  '/_layout/projects/$id/content-types/$id/edit': typeof LayoutProjectsIdContentTypesIdEditRoute
-  '/_layout/projects/$id/content-types/$id/': typeof LayoutProjectsIdContentTypesIdIndexRoute
+  '/_protected/_layout/projects': typeof ProtectedLayoutProjectsRouteRouteWithChildren
+  '/_protected/_layout/roles': typeof ProtectedLayoutRolesRouteRouteWithChildren
+  '/_protected/_layout/settings': typeof ProtectedLayoutSettingsRouteRouteWithChildren
+  '/_protected/_layout/users': typeof ProtectedLayoutUsersRouteRouteWithChildren
+  '/_protected/_layout/403': typeof ProtectedLayout403Route
+  '/_protected/_layout/dev': typeof ProtectedLayoutDevRoute
+  '/_protected/_layout/': typeof ProtectedLayoutIndexRoute
+  '/_protected/_project/projects/$projectId': typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+  '/_protected/_layout/settings/notifications': typeof ProtectedLayoutSettingsNotificationsRoute
+  '/_protected/_layout/settings/profile': typeof ProtectedLayoutSettingsProfileRoute
+  '/_protected/_layout/settings/security': typeof ProtectedLayoutSettingsSecurityRoute
+  '/_protected/_layout/system/audit-logs': typeof ProtectedLayoutSystemAuditLogsRouteWithChildren
+  '/_protected/_layout/system/settings': typeof ProtectedLayoutSystemSettingsRoute
+  '/_protected/_layout/users/new': typeof ProtectedLayoutUsersNewRoute
+  '/_protected/_layout/projects/': typeof ProtectedLayoutProjectsIndexRoute
+  '/_protected/_layout/roles/': typeof ProtectedLayoutRolesIndexRoute
+  '/_protected/_layout/settings/': typeof ProtectedLayoutSettingsIndexRoute
+  '/_protected/_layout/users/': typeof ProtectedLayoutUsersIndexRoute
+  '/_protected/_layout/system/audit-logs/$id': typeof ProtectedLayoutSystemAuditLogsIdRoute
+  '/_protected/_layout/users/$id/edit': typeof ProtectedLayoutUsersIdEditRoute
+  '/_protected/_project/projects/$projectId/assets': typeof ProtectedProjectProjectsProjectIdAssetsRoute
+  '/_protected/_project/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren
+  '/_protected/_project/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
+  '/_protected/_layout/system/audit-logs/': typeof ProtectedLayoutSystemAuditLogsIndexRoute
+  '/_protected/_layout/users/$id/': typeof ProtectedLayoutUsersIdIndexRoute
+  '/_protected/_project/projects/$projectId/content-types/new': typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
+  '/_protected/_project/projects/$projectId/contents/$typeKey': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
+  '/_protected/_project/projects/$projectId/content-types/': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
+  '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
+  '/_protected/_project/projects/$projectId/contents/$typeKey/new': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
+  '/_protected/_project/projects/$projectId/content-types/$contentTypeId/': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
+  '/_protected/_project/projects/$projectId/contents/$typeKey/': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
+  '/_protected/_project/projects/$projectId/contents/$typeKey/$contentItemId/edit': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
-    | '/403'
-    | '/dev'
-    | '/projects'
-    | '/roles'
-    | '/settings'
-    | '/users'
     | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
     | '/auth/reset-password'
+    | '/projects'
+    | '/roles'
+    | '/settings'
+    | '/users'
+    | '/403'
+    | '/dev'
+    | '/projects/$projectId'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/security'
@@ -377,30 +455,34 @@ export interface FileRouteTypes {
     | '/roles/'
     | '/settings/'
     | '/users/'
-    | '/projects/$id/assets'
-    | '/projects/$id/content-types'
-    | '/projects/$id/contents'
-    | '/projects/$id/overview'
     | '/system/audit-logs/$id'
     | '/users/$id/edit'
+    | '/projects/$projectId/assets'
+    | '/projects/$projectId/content-types'
+    | '/projects/$projectId/overview'
     | '/system/audit-logs/'
     | '/users/$id/'
-    | '/projects/$id/content-types/new'
-    | '/projects/$id/content-types/'
-    | '/projects/$id/contents/'
-    | '/projects/$id/content-types/$id/edit'
-    | '/projects/$id/content-types/$id/'
+    | '/projects/$projectId/content-types/new'
+    | '/projects/$projectId/contents/$typeKey'
+    | '/projects/$projectId/content-types/'
+    | '/projects/$projectId/content-types/$contentTypeId/builder'
+    | '/projects/$projectId/content-types/$contentTypeId/edit'
+    | '/projects/$projectId/contents/$typeKey/new'
+    | '/projects/$projectId/content-types/$contentTypeId/'
+    | '/projects/$projectId/contents/$typeKey/'
+    | '/projects/$projectId/contents/$typeKey/$contentItemId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
-    | '/403'
-    | '/dev'
     | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
     | '/auth/reset-password'
-    | '/'
+    | '/403'
+    | '/dev'
+    | '/projects/$projectId'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/security'
@@ -410,70 +492,79 @@ export interface FileRouteTypes {
     | '/roles'
     | '/settings'
     | '/users'
-    | '/projects/$id/assets'
-    | '/projects/$id/overview'
     | '/system/audit-logs/$id'
     | '/users/$id/edit'
+    | '/projects/$projectId/assets'
+    | '/projects/$projectId/overview'
     | '/system/audit-logs'
     | '/users/$id'
-    | '/projects/$id/content-types/new'
-    | '/projects/$id/content-types'
-    | '/projects/$id/contents'
-    | '/projects/$id/content-types/$id/edit'
-    | '/projects/$id/content-types/$id'
+    | '/projects/$projectId/content-types/new'
+    | '/projects/$projectId/content-types'
+    | '/projects/$projectId/content-types/$contentTypeId/builder'
+    | '/projects/$projectId/content-types/$contentTypeId/edit'
+    | '/projects/$projectId/contents/$typeKey/new'
+    | '/projects/$projectId/content-types/$contentTypeId'
+    | '/projects/$projectId/contents/$typeKey'
+    | '/projects/$projectId/contents/$typeKey/$contentItemId/edit'
   id:
     | '__root__'
-    | '/_layout'
+    | '/_protected'
     | '/auth'
-    | '/_layout/403'
-    | '/_layout/dev'
-    | '/_layout/projects'
-    | '/_layout/roles'
-    | '/_layout/settings'
-    | '/_layout/users'
+    | '/_protected/_layout'
+    | '/_protected/_project'
     | '/auth/accept-invite'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
     | '/auth/reset-password'
-    | '/_layout/'
-    | '/_layout/settings/notifications'
-    | '/_layout/settings/profile'
-    | '/_layout/settings/security'
-    | '/_layout/system/audit-logs'
-    | '/_layout/system/settings'
-    | '/_layout/users/new'
-    | '/_layout/projects/'
-    | '/_layout/roles/'
-    | '/_layout/settings/'
-    | '/_layout/users/'
-    | '/_layout/projects/$id/assets'
-    | '/_layout/projects/$id/content-types'
-    | '/_layout/projects/$id/contents'
-    | '/_layout/projects/$id/overview'
-    | '/_layout/system/audit-logs/$id'
-    | '/_layout/users/$id/edit'
-    | '/_layout/system/audit-logs/'
-    | '/_layout/users/$id/'
-    | '/_layout/projects/$id/content-types/new'
-    | '/_layout/projects/$id/content-types/'
-    | '/_layout/projects/$id/contents/'
-    | '/_layout/projects/$id/content-types/$id/edit'
-    | '/_layout/projects/$id/content-types/$id/'
+    | '/_protected/_layout/projects'
+    | '/_protected/_layout/roles'
+    | '/_protected/_layout/settings'
+    | '/_protected/_layout/users'
+    | '/_protected/_layout/403'
+    | '/_protected/_layout/dev'
+    | '/_protected/_layout/'
+    | '/_protected/_project/projects/$projectId'
+    | '/_protected/_layout/settings/notifications'
+    | '/_protected/_layout/settings/profile'
+    | '/_protected/_layout/settings/security'
+    | '/_protected/_layout/system/audit-logs'
+    | '/_protected/_layout/system/settings'
+    | '/_protected/_layout/users/new'
+    | '/_protected/_layout/projects/'
+    | '/_protected/_layout/roles/'
+    | '/_protected/_layout/settings/'
+    | '/_protected/_layout/users/'
+    | '/_protected/_layout/system/audit-logs/$id'
+    | '/_protected/_layout/users/$id/edit'
+    | '/_protected/_project/projects/$projectId/assets'
+    | '/_protected/_project/projects/$projectId/content-types'
+    | '/_protected/_project/projects/$projectId/overview'
+    | '/_protected/_layout/system/audit-logs/'
+    | '/_protected/_layout/users/$id/'
+    | '/_protected/_project/projects/$projectId/content-types/new'
+    | '/_protected/_project/projects/$projectId/contents/$typeKey'
+    | '/_protected/_project/projects/$projectId/content-types/'
+    | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder'
+    | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit'
+    | '/_protected/_project/projects/$projectId/contents/$typeKey/new'
+    | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/'
+    | '/_protected/_project/projects/$projectId/contents/$typeKey/'
+    | '/_protected/_project/projects/$projectId/contents/$typeKey/$contentItemId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  LayoutRoute: typeof LayoutRouteWithChildren
+  ProtectedRoute: typeof ProtectedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_layout': {
-      id: '/_layout'
+    '/_protected': {
+      id: '/_protected'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof LayoutRouteImport
+      preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -483,54 +574,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout/': {
-      id: '/_layout/'
-      path: '/'
+    '/_protected/_layout': {
+      id: '/_protected/_layout'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof ProtectedLayoutRouteImport
+      parentRoute: typeof ProtectedRoute
     }
-    '/_layout/403': {
-      id: '/_layout/403'
-      path: '/403'
-      fullPath: '/403'
-      preLoaderRoute: typeof Layout403RouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/dev': {
-      id: '/_layout/dev'
-      path: '/dev'
-      fullPath: '/dev'
-      preLoaderRoute: typeof LayoutDevRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/projects': {
-      id: '/_layout/projects'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof LayoutProjectsRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/roles': {
-      id: '/_layout/roles'
-      path: '/roles'
-      fullPath: '/roles'
-      preLoaderRoute: typeof LayoutRolesRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/settings': {
-      id: '/_layout/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof LayoutSettingsRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/users': {
-      id: '/_layout/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof LayoutUsersRouteImport
-      parentRoute: typeof LayoutRoute
+    '/_protected/_project': {
+      id: '/_protected/_project'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedProjectRouteImport
+      parentRoute: typeof ProtectedRoute
     }
     '/auth/accept-invite': {
       id: '/auth/accept-invite'
@@ -567,317 +623,462 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthResetPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_layout/projects/': {
-      id: '/_layout/projects/'
+    '/_protected/_layout/': {
+      id: '/_protected/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedLayoutIndexRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/403': {
+      id: '/_protected/_layout/403'
+      path: '/403'
+      fullPath: '/403'
+      preLoaderRoute: typeof ProtectedLayout403RouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/dev': {
+      id: '/_protected/_layout/dev'
+      path: '/dev'
+      fullPath: '/dev'
+      preLoaderRoute: typeof ProtectedLayoutDevRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/projects': {
+      id: '/_protected/_layout/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProtectedLayoutProjectsRouteRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/roles': {
+      id: '/_protected/_layout/roles'
+      path: '/roles'
+      fullPath: '/roles'
+      preLoaderRoute: typeof ProtectedLayoutRolesRouteRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/settings': {
+      id: '/_protected/_layout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ProtectedLayoutSettingsRouteRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/users': {
+      id: '/_protected/_layout/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof ProtectedLayoutUsersRouteRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/projects/': {
+      id: '/_protected/_layout/projects/'
       path: '/'
       fullPath: '/projects/'
-      preLoaderRoute: typeof LayoutProjectsIndexRouteImport
-      parentRoute: typeof LayoutProjectsRoute
+      preLoaderRoute: typeof ProtectedLayoutProjectsIndexRouteImport
+      parentRoute: typeof ProtectedLayoutProjectsRouteRoute
     }
-    '/_layout/roles/': {
-      id: '/_layout/roles/'
+    '/_protected/_layout/roles/': {
+      id: '/_protected/_layout/roles/'
       path: '/'
       fullPath: '/roles/'
-      preLoaderRoute: typeof LayoutRolesIndexRouteImport
-      parentRoute: typeof LayoutRolesRoute
+      preLoaderRoute: typeof ProtectedLayoutRolesIndexRouteImport
+      parentRoute: typeof ProtectedLayoutRolesRouteRoute
     }
-    '/_layout/settings/': {
-      id: '/_layout/settings/'
+    '/_protected/_layout/settings/': {
+      id: '/_protected/_layout/settings/'
       path: '/'
       fullPath: '/settings/'
-      preLoaderRoute: typeof LayoutSettingsIndexRouteImport
-      parentRoute: typeof LayoutSettingsRoute
+      preLoaderRoute: typeof ProtectedLayoutSettingsIndexRouteImport
+      parentRoute: typeof ProtectedLayoutSettingsRouteRoute
     }
-    '/_layout/settings/notifications': {
-      id: '/_layout/settings/notifications'
+    '/_protected/_layout/settings/notifications': {
+      id: '/_protected/_layout/settings/notifications'
       path: '/notifications'
       fullPath: '/settings/notifications'
-      preLoaderRoute: typeof LayoutSettingsNotificationsRouteImport
-      parentRoute: typeof LayoutSettingsRoute
+      preLoaderRoute: typeof ProtectedLayoutSettingsNotificationsRouteImport
+      parentRoute: typeof ProtectedLayoutSettingsRouteRoute
     }
-    '/_layout/settings/profile': {
-      id: '/_layout/settings/profile'
+    '/_protected/_layout/settings/profile': {
+      id: '/_protected/_layout/settings/profile'
       path: '/profile'
       fullPath: '/settings/profile'
-      preLoaderRoute: typeof LayoutSettingsProfileRouteImport
-      parentRoute: typeof LayoutSettingsRoute
+      preLoaderRoute: typeof ProtectedLayoutSettingsProfileRouteImport
+      parentRoute: typeof ProtectedLayoutSettingsRouteRoute
     }
-    '/_layout/settings/security': {
-      id: '/_layout/settings/security'
+    '/_protected/_layout/settings/security': {
+      id: '/_protected/_layout/settings/security'
       path: '/security'
       fullPath: '/settings/security'
-      preLoaderRoute: typeof LayoutSettingsSecurityRouteImport
-      parentRoute: typeof LayoutSettingsRoute
+      preLoaderRoute: typeof ProtectedLayoutSettingsSecurityRouteImport
+      parentRoute: typeof ProtectedLayoutSettingsRouteRoute
     }
-    '/_layout/system/audit-logs': {
-      id: '/_layout/system/audit-logs'
+    '/_protected/_layout/system/audit-logs': {
+      id: '/_protected/_layout/system/audit-logs'
       path: '/system/audit-logs'
       fullPath: '/system/audit-logs'
-      preLoaderRoute: typeof LayoutSystemAuditLogsRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof ProtectedLayoutSystemAuditLogsRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
     }
-    '/_layout/system/settings': {
-      id: '/_layout/system/settings'
+    '/_protected/_layout/system/settings': {
+      id: '/_protected/_layout/system/settings'
       path: '/system/settings'
       fullPath: '/system/settings'
-      preLoaderRoute: typeof LayoutSystemSettingsRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof ProtectedLayoutSystemSettingsRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
     }
-    '/_layout/users/': {
-      id: '/_layout/users/'
+    '/_protected/_layout/users/': {
+      id: '/_protected/_layout/users/'
       path: '/'
       fullPath: '/users/'
-      preLoaderRoute: typeof LayoutUsersIndexRouteImport
-      parentRoute: typeof LayoutUsersRoute
+      preLoaderRoute: typeof ProtectedLayoutUsersIndexRouteImport
+      parentRoute: typeof ProtectedLayoutUsersRouteRoute
     }
-    '/_layout/users/new': {
-      id: '/_layout/users/new'
+    '/_protected/_layout/users/new': {
+      id: '/_protected/_layout/users/new'
       path: '/new'
       fullPath: '/users/new'
-      preLoaderRoute: typeof LayoutUsersNewRouteImport
-      parentRoute: typeof LayoutUsersRoute
+      preLoaderRoute: typeof ProtectedLayoutUsersNewRouteImport
+      parentRoute: typeof ProtectedLayoutUsersRouteRoute
     }
-    '/_layout/projects/$id/assets': {
-      id: '/_layout/projects/$id/assets'
-      path: '/$id/assets'
-      fullPath: '/projects/$id/assets'
-      preLoaderRoute: typeof LayoutProjectsIdAssetsRouteImport
-      parentRoute: typeof LayoutProjectsRoute
+    '/_protected/_project/projects/$projectId': {
+      id: '/_protected/_project/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdRouteRouteImport
+      parentRoute: typeof ProtectedProjectRoute
     }
-    '/_layout/projects/$id/content-types': {
-      id: '/_layout/projects/$id/content-types'
-      path: '/$id/content-types'
-      fullPath: '/projects/$id/content-types'
-      preLoaderRoute: typeof LayoutProjectsIdContentTypesRouteImport
-      parentRoute: typeof LayoutProjectsRoute
-    }
-    '/_layout/projects/$id/contents': {
-      id: '/_layout/projects/$id/contents'
-      path: '/$id/contents'
-      fullPath: '/projects/$id/contents'
-      preLoaderRoute: typeof LayoutProjectsIdContentsRouteImport
-      parentRoute: typeof LayoutProjectsRoute
-    }
-    '/_layout/projects/$id/overview': {
-      id: '/_layout/projects/$id/overview'
-      path: '/$id/overview'
-      fullPath: '/projects/$id/overview'
-      preLoaderRoute: typeof LayoutProjectsIdOverviewRouteImport
-      parentRoute: typeof LayoutProjectsRoute
-    }
-    '/_layout/system/audit-logs/': {
-      id: '/_layout/system/audit-logs/'
+    '/_protected/_layout/system/audit-logs/': {
+      id: '/_protected/_layout/system/audit-logs/'
       path: '/'
       fullPath: '/system/audit-logs/'
-      preLoaderRoute: typeof LayoutSystemAuditLogsIndexRouteImport
-      parentRoute: typeof LayoutSystemAuditLogsRoute
+      preLoaderRoute: typeof ProtectedLayoutSystemAuditLogsIndexRouteImport
+      parentRoute: typeof ProtectedLayoutSystemAuditLogsRoute
     }
-    '/_layout/system/audit-logs/$id': {
-      id: '/_layout/system/audit-logs/$id'
+    '/_protected/_layout/system/audit-logs/$id': {
+      id: '/_protected/_layout/system/audit-logs/$id'
       path: '/$id'
       fullPath: '/system/audit-logs/$id'
-      preLoaderRoute: typeof LayoutSystemAuditLogsIdRouteImport
-      parentRoute: typeof LayoutSystemAuditLogsRoute
+      preLoaderRoute: typeof ProtectedLayoutSystemAuditLogsIdRouteImport
+      parentRoute: typeof ProtectedLayoutSystemAuditLogsRoute
     }
-    '/_layout/users/$id/': {
-      id: '/_layout/users/$id/'
+    '/_protected/_layout/users/$id/': {
+      id: '/_protected/_layout/users/$id/'
       path: '/$id'
       fullPath: '/users/$id/'
-      preLoaderRoute: typeof LayoutUsersIdIndexRouteImport
-      parentRoute: typeof LayoutUsersRoute
+      preLoaderRoute: typeof ProtectedLayoutUsersIdIndexRouteImport
+      parentRoute: typeof ProtectedLayoutUsersRouteRoute
     }
-    '/_layout/users/$id/edit': {
-      id: '/_layout/users/$id/edit'
+    '/_protected/_layout/users/$id/edit': {
+      id: '/_protected/_layout/users/$id/edit'
       path: '/$id/edit'
       fullPath: '/users/$id/edit'
-      preLoaderRoute: typeof LayoutUsersIdEditRouteImport
-      parentRoute: typeof LayoutUsersRoute
+      preLoaderRoute: typeof ProtectedLayoutUsersIdEditRouteImport
+      parentRoute: typeof ProtectedLayoutUsersRouteRoute
     }
-    '/_layout/projects/$id/content-types/': {
-      id: '/_layout/projects/$id/content-types/'
+    '/_protected/_project/projects/$projectId/assets': {
+      id: '/_protected/_project/projects/$projectId/assets'
+      path: '/assets'
+      fullPath: '/projects/$projectId/assets'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdAssetsRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
+    }
+    '/_protected/_project/projects/$projectId/content-types': {
+      id: '/_protected/_project/projects/$projectId/content-types'
+      path: '/content-types'
+      fullPath: '/projects/$projectId/content-types'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
+    }
+    '/_protected/_project/projects/$projectId/overview': {
+      id: '/_protected/_project/projects/$projectId/overview'
+      path: '/overview'
+      fullPath: '/projects/$projectId/overview'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdOverviewRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
+    }
+    '/_protected/_project/projects/$projectId/content-types/': {
+      id: '/_protected/_project/projects/$projectId/content-types/'
       path: '/'
-      fullPath: '/projects/$id/content-types/'
-      preLoaderRoute: typeof LayoutProjectsIdContentTypesIndexRouteImport
-      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+      fullPath: '/projects/$projectId/content-types/'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
     }
-    '/_layout/projects/$id/content-types/new': {
-      id: '/_layout/projects/$id/content-types/new'
+    '/_protected/_project/projects/$projectId/content-types/new': {
+      id: '/_protected/_project/projects/$projectId/content-types/new'
       path: '/new'
-      fullPath: '/projects/$id/content-types/new'
-      preLoaderRoute: typeof LayoutProjectsIdContentTypesNewRouteImport
-      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+      fullPath: '/projects/$projectId/content-types/new'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesNewRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
     }
-    '/_layout/projects/$id/contents/': {
-      id: '/_layout/projects/$id/contents/'
+    '/_protected/_project/projects/$projectId/contents/$typeKey': {
+      id: '/_protected/_project/projects/$projectId/contents/$typeKey'
+      path: '/contents/$typeKey'
+      fullPath: '/projects/$projectId/contents/$typeKey'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
+    }
+    '/_protected/_project/projects/$projectId/content-types/$contentTypeId/': {
+      id: '/_protected/_project/projects/$projectId/content-types/$contentTypeId/'
+      path: '/$contentTypeId'
+      fullPath: '/projects/$projectId/content-types/$contentTypeId/'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
+    }
+    '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder': {
+      id: '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder'
+      path: '/$contentTypeId/builder'
+      fullPath: '/projects/$projectId/content-types/$contentTypeId/builder'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
+    }
+    '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit': {
+      id: '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit'
+      path: '/$contentTypeId/edit'
+      fullPath: '/projects/$projectId/content-types/$contentTypeId/edit'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
+    }
+    '/_protected/_project/projects/$projectId/contents/$typeKey/': {
+      id: '/_protected/_project/projects/$projectId/contents/$typeKey/'
       path: '/'
-      fullPath: '/projects/$id/contents/'
-      preLoaderRoute: typeof LayoutProjectsIdContentsIndexRouteImport
-      parentRoute: typeof LayoutProjectsIdContentsRoute
+      fullPath: '/projects/$projectId/contents/$typeKey/'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRoute
     }
-    '/_layout/projects/$id/content-types/$id/': {
-      id: '/_layout/projects/$id/content-types/$id/'
-      path: '/$id'
-      fullPath: '/projects/$id/content-types/$id/'
-      preLoaderRoute: typeof LayoutProjectsIdContentTypesIdIndexRouteImport
-      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+    '/_protected/_project/projects/$projectId/contents/$typeKey/new': {
+      id: '/_protected/_project/projects/$projectId/contents/$typeKey/new'
+      path: '/new'
+      fullPath: '/projects/$projectId/contents/$typeKey/new'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRoute
     }
-    '/_layout/projects/$id/content-types/$id/edit': {
-      id: '/_layout/projects/$id/content-types/$id/edit'
-      path: '/$id/edit'
-      fullPath: '/projects/$id/content-types/$id/edit'
-      preLoaderRoute: typeof LayoutProjectsIdContentTypesIdEditRouteImport
-      parentRoute: typeof LayoutProjectsIdContentTypesRoute
+    '/_protected/_project/projects/$projectId/contents/$typeKey/$contentItemId/edit': {
+      id: '/_protected/_project/projects/$projectId/contents/$typeKey/$contentItemId/edit'
+      path: '/$contentItemId/edit'
+      fullPath: '/projects/$projectId/contents/$typeKey/$contentItemId/edit'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRoute
     }
   }
 }
 
-interface LayoutProjectsIdContentTypesRouteChildren {
-  LayoutProjectsIdContentTypesNewRoute: typeof LayoutProjectsIdContentTypesNewRoute
-  LayoutProjectsIdContentTypesIndexRoute: typeof LayoutProjectsIdContentTypesIndexRoute
-  LayoutProjectsIdContentTypesIdEditRoute: typeof LayoutProjectsIdContentTypesIdEditRoute
-  LayoutProjectsIdContentTypesIdIndexRoute: typeof LayoutProjectsIdContentTypesIdIndexRoute
+interface ProtectedLayoutProjectsRouteRouteChildren {
+  ProtectedLayoutProjectsIndexRoute: typeof ProtectedLayoutProjectsIndexRoute
 }
 
-const LayoutProjectsIdContentTypesRouteChildren: LayoutProjectsIdContentTypesRouteChildren =
+const ProtectedLayoutProjectsRouteRouteChildren: ProtectedLayoutProjectsRouteRouteChildren =
   {
-    LayoutProjectsIdContentTypesNewRoute: LayoutProjectsIdContentTypesNewRoute,
-    LayoutProjectsIdContentTypesIndexRoute:
-      LayoutProjectsIdContentTypesIndexRoute,
-    LayoutProjectsIdContentTypesIdEditRoute:
-      LayoutProjectsIdContentTypesIdEditRoute,
-    LayoutProjectsIdContentTypesIdIndexRoute:
-      LayoutProjectsIdContentTypesIdIndexRoute,
+    ProtectedLayoutProjectsIndexRoute: ProtectedLayoutProjectsIndexRoute,
   }
 
-const LayoutProjectsIdContentTypesRouteWithChildren =
-  LayoutProjectsIdContentTypesRoute._addFileChildren(
-    LayoutProjectsIdContentTypesRouteChildren,
+const ProtectedLayoutProjectsRouteRouteWithChildren =
+  ProtectedLayoutProjectsRouteRoute._addFileChildren(
+    ProtectedLayoutProjectsRouteRouteChildren,
   )
 
-interface LayoutProjectsIdContentsRouteChildren {
-  LayoutProjectsIdContentsIndexRoute: typeof LayoutProjectsIdContentsIndexRoute
+interface ProtectedLayoutRolesRouteRouteChildren {
+  ProtectedLayoutRolesIndexRoute: typeof ProtectedLayoutRolesIndexRoute
 }
 
-const LayoutProjectsIdContentsRouteChildren: LayoutProjectsIdContentsRouteChildren =
+const ProtectedLayoutRolesRouteRouteChildren: ProtectedLayoutRolesRouteRouteChildren =
   {
-    LayoutProjectsIdContentsIndexRoute: LayoutProjectsIdContentsIndexRoute,
+    ProtectedLayoutRolesIndexRoute: ProtectedLayoutRolesIndexRoute,
   }
 
-const LayoutProjectsIdContentsRouteWithChildren =
-  LayoutProjectsIdContentsRoute._addFileChildren(
-    LayoutProjectsIdContentsRouteChildren,
+const ProtectedLayoutRolesRouteRouteWithChildren =
+  ProtectedLayoutRolesRouteRoute._addFileChildren(
+    ProtectedLayoutRolesRouteRouteChildren,
   )
 
-interface LayoutProjectsRouteChildren {
-  LayoutProjectsIndexRoute: typeof LayoutProjectsIndexRoute
-  LayoutProjectsIdAssetsRoute: typeof LayoutProjectsIdAssetsRoute
-  LayoutProjectsIdContentTypesRoute: typeof LayoutProjectsIdContentTypesRouteWithChildren
-  LayoutProjectsIdContentsRoute: typeof LayoutProjectsIdContentsRouteWithChildren
-  LayoutProjectsIdOverviewRoute: typeof LayoutProjectsIdOverviewRoute
+interface ProtectedLayoutSettingsRouteRouteChildren {
+  ProtectedLayoutSettingsNotificationsRoute: typeof ProtectedLayoutSettingsNotificationsRoute
+  ProtectedLayoutSettingsProfileRoute: typeof ProtectedLayoutSettingsProfileRoute
+  ProtectedLayoutSettingsSecurityRoute: typeof ProtectedLayoutSettingsSecurityRoute
+  ProtectedLayoutSettingsIndexRoute: typeof ProtectedLayoutSettingsIndexRoute
 }
 
-const LayoutProjectsRouteChildren: LayoutProjectsRouteChildren = {
-  LayoutProjectsIndexRoute: LayoutProjectsIndexRoute,
-  LayoutProjectsIdAssetsRoute: LayoutProjectsIdAssetsRoute,
-  LayoutProjectsIdContentTypesRoute:
-    LayoutProjectsIdContentTypesRouteWithChildren,
-  LayoutProjectsIdContentsRoute: LayoutProjectsIdContentsRouteWithChildren,
-  LayoutProjectsIdOverviewRoute: LayoutProjectsIdOverviewRoute,
-}
+const ProtectedLayoutSettingsRouteRouteChildren: ProtectedLayoutSettingsRouteRouteChildren =
+  {
+    ProtectedLayoutSettingsNotificationsRoute:
+      ProtectedLayoutSettingsNotificationsRoute,
+    ProtectedLayoutSettingsProfileRoute: ProtectedLayoutSettingsProfileRoute,
+    ProtectedLayoutSettingsSecurityRoute: ProtectedLayoutSettingsSecurityRoute,
+    ProtectedLayoutSettingsIndexRoute: ProtectedLayoutSettingsIndexRoute,
+  }
 
-const LayoutProjectsRouteWithChildren = LayoutProjectsRoute._addFileChildren(
-  LayoutProjectsRouteChildren,
-)
-
-interface LayoutRolesRouteChildren {
-  LayoutRolesIndexRoute: typeof LayoutRolesIndexRoute
-}
-
-const LayoutRolesRouteChildren: LayoutRolesRouteChildren = {
-  LayoutRolesIndexRoute: LayoutRolesIndexRoute,
-}
-
-const LayoutRolesRouteWithChildren = LayoutRolesRoute._addFileChildren(
-  LayoutRolesRouteChildren,
-)
-
-interface LayoutSettingsRouteChildren {
-  LayoutSettingsNotificationsRoute: typeof LayoutSettingsNotificationsRoute
-  LayoutSettingsProfileRoute: typeof LayoutSettingsProfileRoute
-  LayoutSettingsSecurityRoute: typeof LayoutSettingsSecurityRoute
-  LayoutSettingsIndexRoute: typeof LayoutSettingsIndexRoute
-}
-
-const LayoutSettingsRouteChildren: LayoutSettingsRouteChildren = {
-  LayoutSettingsNotificationsRoute: LayoutSettingsNotificationsRoute,
-  LayoutSettingsProfileRoute: LayoutSettingsProfileRoute,
-  LayoutSettingsSecurityRoute: LayoutSettingsSecurityRoute,
-  LayoutSettingsIndexRoute: LayoutSettingsIndexRoute,
-}
-
-const LayoutSettingsRouteWithChildren = LayoutSettingsRoute._addFileChildren(
-  LayoutSettingsRouteChildren,
-)
-
-interface LayoutUsersRouteChildren {
-  LayoutUsersNewRoute: typeof LayoutUsersNewRoute
-  LayoutUsersIndexRoute: typeof LayoutUsersIndexRoute
-  LayoutUsersIdEditRoute: typeof LayoutUsersIdEditRoute
-  LayoutUsersIdIndexRoute: typeof LayoutUsersIdIndexRoute
-}
-
-const LayoutUsersRouteChildren: LayoutUsersRouteChildren = {
-  LayoutUsersNewRoute: LayoutUsersNewRoute,
-  LayoutUsersIndexRoute: LayoutUsersIndexRoute,
-  LayoutUsersIdEditRoute: LayoutUsersIdEditRoute,
-  LayoutUsersIdIndexRoute: LayoutUsersIdIndexRoute,
-}
-
-const LayoutUsersRouteWithChildren = LayoutUsersRoute._addFileChildren(
-  LayoutUsersRouteChildren,
-)
-
-interface LayoutSystemAuditLogsRouteChildren {
-  LayoutSystemAuditLogsIdRoute: typeof LayoutSystemAuditLogsIdRoute
-  LayoutSystemAuditLogsIndexRoute: typeof LayoutSystemAuditLogsIndexRoute
-}
-
-const LayoutSystemAuditLogsRouteChildren: LayoutSystemAuditLogsRouteChildren = {
-  LayoutSystemAuditLogsIdRoute: LayoutSystemAuditLogsIdRoute,
-  LayoutSystemAuditLogsIndexRoute: LayoutSystemAuditLogsIndexRoute,
-}
-
-const LayoutSystemAuditLogsRouteWithChildren =
-  LayoutSystemAuditLogsRoute._addFileChildren(
-    LayoutSystemAuditLogsRouteChildren,
+const ProtectedLayoutSettingsRouteRouteWithChildren =
+  ProtectedLayoutSettingsRouteRoute._addFileChildren(
+    ProtectedLayoutSettingsRouteRouteChildren,
   )
 
-interface LayoutRouteChildren {
-  Layout403Route: typeof Layout403Route
-  LayoutDevRoute: typeof LayoutDevRoute
-  LayoutProjectsRoute: typeof LayoutProjectsRouteWithChildren
-  LayoutRolesRoute: typeof LayoutRolesRouteWithChildren
-  LayoutSettingsRoute: typeof LayoutSettingsRouteWithChildren
-  LayoutUsersRoute: typeof LayoutUsersRouteWithChildren
-  LayoutIndexRoute: typeof LayoutIndexRoute
-  LayoutSystemAuditLogsRoute: typeof LayoutSystemAuditLogsRouteWithChildren
-  LayoutSystemSettingsRoute: typeof LayoutSystemSettingsRoute
+interface ProtectedLayoutUsersRouteRouteChildren {
+  ProtectedLayoutUsersNewRoute: typeof ProtectedLayoutUsersNewRoute
+  ProtectedLayoutUsersIndexRoute: typeof ProtectedLayoutUsersIndexRoute
+  ProtectedLayoutUsersIdEditRoute: typeof ProtectedLayoutUsersIdEditRoute
+  ProtectedLayoutUsersIdIndexRoute: typeof ProtectedLayoutUsersIdIndexRoute
 }
 
-const LayoutRouteChildren: LayoutRouteChildren = {
-  Layout403Route: Layout403Route,
-  LayoutDevRoute: LayoutDevRoute,
-  LayoutProjectsRoute: LayoutProjectsRouteWithChildren,
-  LayoutRolesRoute: LayoutRolesRouteWithChildren,
-  LayoutSettingsRoute: LayoutSettingsRouteWithChildren,
-  LayoutUsersRoute: LayoutUsersRouteWithChildren,
-  LayoutIndexRoute: LayoutIndexRoute,
-  LayoutSystemAuditLogsRoute: LayoutSystemAuditLogsRouteWithChildren,
-  LayoutSystemSettingsRoute: LayoutSystemSettingsRoute,
+const ProtectedLayoutUsersRouteRouteChildren: ProtectedLayoutUsersRouteRouteChildren =
+  {
+    ProtectedLayoutUsersNewRoute: ProtectedLayoutUsersNewRoute,
+    ProtectedLayoutUsersIndexRoute: ProtectedLayoutUsersIndexRoute,
+    ProtectedLayoutUsersIdEditRoute: ProtectedLayoutUsersIdEditRoute,
+    ProtectedLayoutUsersIdIndexRoute: ProtectedLayoutUsersIdIndexRoute,
+  }
+
+const ProtectedLayoutUsersRouteRouteWithChildren =
+  ProtectedLayoutUsersRouteRoute._addFileChildren(
+    ProtectedLayoutUsersRouteRouteChildren,
+  )
+
+interface ProtectedLayoutSystemAuditLogsRouteChildren {
+  ProtectedLayoutSystemAuditLogsIdRoute: typeof ProtectedLayoutSystemAuditLogsIdRoute
+  ProtectedLayoutSystemAuditLogsIndexRoute: typeof ProtectedLayoutSystemAuditLogsIndexRoute
 }
 
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
+const ProtectedLayoutSystemAuditLogsRouteChildren: ProtectedLayoutSystemAuditLogsRouteChildren =
+  {
+    ProtectedLayoutSystemAuditLogsIdRoute:
+      ProtectedLayoutSystemAuditLogsIdRoute,
+    ProtectedLayoutSystemAuditLogsIndexRoute:
+      ProtectedLayoutSystemAuditLogsIndexRoute,
+  }
+
+const ProtectedLayoutSystemAuditLogsRouteWithChildren =
+  ProtectedLayoutSystemAuditLogsRoute._addFileChildren(
+    ProtectedLayoutSystemAuditLogsRouteChildren,
+  )
+
+interface ProtectedLayoutRouteChildren {
+  ProtectedLayoutProjectsRouteRoute: typeof ProtectedLayoutProjectsRouteRouteWithChildren
+  ProtectedLayoutRolesRouteRoute: typeof ProtectedLayoutRolesRouteRouteWithChildren
+  ProtectedLayoutSettingsRouteRoute: typeof ProtectedLayoutSettingsRouteRouteWithChildren
+  ProtectedLayoutUsersRouteRoute: typeof ProtectedLayoutUsersRouteRouteWithChildren
+  ProtectedLayout403Route: typeof ProtectedLayout403Route
+  ProtectedLayoutDevRoute: typeof ProtectedLayoutDevRoute
+  ProtectedLayoutIndexRoute: typeof ProtectedLayoutIndexRoute
+  ProtectedLayoutSystemAuditLogsRoute: typeof ProtectedLayoutSystemAuditLogsRouteWithChildren
+  ProtectedLayoutSystemSettingsRoute: typeof ProtectedLayoutSystemSettingsRoute
+}
+
+const ProtectedLayoutRouteChildren: ProtectedLayoutRouteChildren = {
+  ProtectedLayoutProjectsRouteRoute:
+    ProtectedLayoutProjectsRouteRouteWithChildren,
+  ProtectedLayoutRolesRouteRoute: ProtectedLayoutRolesRouteRouteWithChildren,
+  ProtectedLayoutSettingsRouteRoute:
+    ProtectedLayoutSettingsRouteRouteWithChildren,
+  ProtectedLayoutUsersRouteRoute: ProtectedLayoutUsersRouteRouteWithChildren,
+  ProtectedLayout403Route: ProtectedLayout403Route,
+  ProtectedLayoutDevRoute: ProtectedLayoutDevRoute,
+  ProtectedLayoutIndexRoute: ProtectedLayoutIndexRoute,
+  ProtectedLayoutSystemAuditLogsRoute:
+    ProtectedLayoutSystemAuditLogsRouteWithChildren,
+  ProtectedLayoutSystemSettingsRoute: ProtectedLayoutSystemSettingsRoute,
+}
+
+const ProtectedLayoutRouteWithChildren = ProtectedLayoutRoute._addFileChildren(
+  ProtectedLayoutRouteChildren,
+)
+
+interface ProtectedProjectProjectsProjectIdContentTypesRouteChildren {
+  ProtectedProjectProjectsProjectIdContentTypesNewRoute: typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
+  ProtectedProjectProjectsProjectIdContentTypesIndexRoute: typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
+  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
+  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
+}
+
+const ProtectedProjectProjectsProjectIdContentTypesRouteChildren: ProtectedProjectProjectsProjectIdContentTypesRouteChildren =
+  {
+    ProtectedProjectProjectsProjectIdContentTypesNewRoute:
+      ProtectedProjectProjectsProjectIdContentTypesNewRoute,
+    ProtectedProjectProjectsProjectIdContentTypesIndexRoute:
+      ProtectedProjectProjectsProjectIdContentTypesIndexRoute,
+    ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute:
+      ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute,
+    ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute:
+      ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute,
+    ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute:
+      ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute,
+  }
+
+const ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren =
+  ProtectedProjectProjectsProjectIdContentTypesRoute._addFileChildren(
+    ProtectedProjectProjectsProjectIdContentTypesRouteChildren,
+  )
+
+interface ProtectedProjectProjectsProjectIdContentsTypeKeyRouteChildren {
+  ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
+  ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
+  ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute
+}
+
+const ProtectedProjectProjectsProjectIdContentsTypeKeyRouteChildren: ProtectedProjectProjectsProjectIdContentsTypeKeyRouteChildren =
+  {
+    ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute:
+      ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute,
+    ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute:
+      ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute,
+    ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute:
+      ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRoute,
+  }
+
+const ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren =
+  ProtectedProjectProjectsProjectIdContentsTypeKeyRoute._addFileChildren(
+    ProtectedProjectProjectsProjectIdContentsTypeKeyRouteChildren,
+  )
+
+interface ProtectedProjectProjectsProjectIdRouteRouteChildren {
+  ProtectedProjectProjectsProjectIdAssetsRoute: typeof ProtectedProjectProjectsProjectIdAssetsRoute
+  ProtectedProjectProjectsProjectIdContentTypesRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren
+  ProtectedProjectProjectsProjectIdOverviewRoute: typeof ProtectedProjectProjectsProjectIdOverviewRoute
+  ProtectedProjectProjectsProjectIdContentsTypeKeyRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
+}
+
+const ProtectedProjectProjectsProjectIdRouteRouteChildren: ProtectedProjectProjectsProjectIdRouteRouteChildren =
+  {
+    ProtectedProjectProjectsProjectIdAssetsRoute:
+      ProtectedProjectProjectsProjectIdAssetsRoute,
+    ProtectedProjectProjectsProjectIdContentTypesRoute:
+      ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren,
+    ProtectedProjectProjectsProjectIdOverviewRoute:
+      ProtectedProjectProjectsProjectIdOverviewRoute,
+    ProtectedProjectProjectsProjectIdContentsTypeKeyRoute:
+      ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren,
+  }
+
+const ProtectedProjectProjectsProjectIdRouteRouteWithChildren =
+  ProtectedProjectProjectsProjectIdRouteRoute._addFileChildren(
+    ProtectedProjectProjectsProjectIdRouteRouteChildren,
+  )
+
+interface ProtectedProjectRouteChildren {
+  ProtectedProjectProjectsProjectIdRouteRoute: typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+}
+
+const ProtectedProjectRouteChildren: ProtectedProjectRouteChildren = {
+  ProtectedProjectProjectsProjectIdRouteRoute:
+    ProtectedProjectProjectsProjectIdRouteRouteWithChildren,
+}
+
+const ProtectedProjectRouteWithChildren =
+  ProtectedProjectRoute._addFileChildren(ProtectedProjectRouteChildren)
+
+interface ProtectedRouteChildren {
+  ProtectedLayoutRoute: typeof ProtectedLayoutRouteWithChildren
+  ProtectedProjectRoute: typeof ProtectedProjectRouteWithChildren
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedLayoutRoute: ProtectedLayoutRouteWithChildren,
+  ProtectedProjectRoute: ProtectedProjectRouteWithChildren,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
 
 interface AuthRouteChildren {
   AuthAcceptInviteRoute: typeof AuthAcceptInviteRoute
@@ -898,7 +1099,7 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRoute: LayoutRouteWithChildren,
+  ProtectedRoute: ProtectedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
 }
 export const routeTree = rootRouteImport

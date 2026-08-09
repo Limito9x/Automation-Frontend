@@ -4,7 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ListOfString } from './listOfString';
+import type { ListOfString } from "./listOfString";
 
 export interface UpdateRolePermissionsCommand {
   permissions: ListOfString;

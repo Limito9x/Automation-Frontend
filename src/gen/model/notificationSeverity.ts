@@ -5,8 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type NotificationSeverity = typeof NotificationSeverity[keyof typeof NotificationSeverity];
-
+export type NotificationSeverity =
+  (typeof NotificationSeverity)[keyof typeof NotificationSeverity];
 
 export const NotificationSeverity = {
   NUMBER_0: 0,

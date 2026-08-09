@@ -4,6 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RoleDto } from './roleDto';
+import type { RoleDto } from "./roleDto";
 
 export type IEnumerableOfRoleDto = RoleDto[];

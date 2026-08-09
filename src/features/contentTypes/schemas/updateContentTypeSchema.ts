@@ -8,7 +8,6 @@ export const updateContentTypeSchema = z.object({
     icon: z.string().max(100).optional().nullable(),
     color: z.string().max(50).optional().nullable(),
     sortOrder: z.number().int().default(0),
-    fieldsConfig: z.array(fieldDefinitionSchema).default([]),
     displayConfig: z.any().default({}),
 }).transform(data => ({
     ...data,

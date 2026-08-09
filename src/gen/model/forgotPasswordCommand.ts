@@ -7,8 +7,8 @@
 
 export interface ForgotPasswordCommand {
   /**
-     * @minLength 1
-     * @pattern ^[^@]+@[^@]+$
-     */
+   * @minLength 1
+   * @pattern ^[^@]+@[^@]+$
+   */
   email: string;
 }

@@ -4,6 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { NotificationDto } from './notificationDto';
+import type { NotificationDto } from "./notificationDto";
 
 export type IReadOnlyListOfNotificationDto = NotificationDto[];

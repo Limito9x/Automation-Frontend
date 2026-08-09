@@ -7,9 +7,9 @@
 
 export interface ResetPasswordCommand {
   /**
-     * @minLength 1
-     * @pattern ^[^@]+@[^@]+$
-     */
+   * @minLength 1
+   * @pattern ^[^@]+@[^@]+$
+   */
   email: string;
   /** @minLength 1 */
   token: string;

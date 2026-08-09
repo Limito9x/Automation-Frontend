@@ -1,9 +1,8 @@
 import { Form, FormGrid, zodResolver, useForm } from "@/components/form";
-import { FormInput, FormTextarea, FormIconPicker } from "@/components/form-controls";
+import { FormInput, FormTextarea, FormIconPicker, FormSelect } from "@/components/form-controls";
 import { createContentTypeSchema, type CreateContentTypeInput, type CreateContentTypeOutput } from "../schemas/createContentTypeSchema";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { SchemaBuilder } from "./SchemaBuilder";
 
 interface ContentTypeFormProps {
     onSubmit: (data: CreateContentTypeOutput) => void;
@@ -18,13 +17,11 @@ export function CreateContentTypeForm({ onSubmit, projectId }: ContentTypeFormPr
             projectId: projectId,
             name: "",
             displayName: "",
-            key: "",
             description: "",
             icon: "",
             color: "",
             sortOrder: 0,
-            fieldsConfig: [],
-            displayConfig: {},
+            displayConfig: { mode: "table" },
         }
     });
 
@@ -32,8 +29,6 @@ export function CreateContentTypeForm({ onSubmit, projectId }: ContentTypeFormPr
 
     useEffect(() => {
         if (nameValue) {
-            const slug = nameValue.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-            form.setValue("key", slug, { shouldValidate: true });
             form.setValue("displayName", nameValue, { shouldValidate: true });
         }
     }, [nameValue, form]);
@@ -61,8 +56,16 @@ export function CreateContentTypeForm({ onSubmit, projectId }: ContentTypeFormPr
                     name="description"
                     placeholder="Describe this content type..."
                 />
+                <FormSelect
+                    control={form.control}
+                    label="Display Mode"
+                    name="displayConfig.mode"
+                    options={[
+                        { label: "Table", value: "table" },
+                        { label: "List Card", value: "list-card" }
+                    ]}
+                />
             </div>
-            <SchemaBuilder />
         </Form>
     );
 }

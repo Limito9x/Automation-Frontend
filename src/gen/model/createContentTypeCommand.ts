@@ -4,45 +4,37 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { JsonDocument } from './jsonDocument';
+import type { JsonDocument } from "./jsonDocument";
 
 export interface CreateContentTypeCommand {
-  /** @minLength 1 */
-  projectId: string;
   /**
-     * @minLength 0
-     * @maxLength 100
-     */
-  key: string;
-  /**
-     * @minLength 0
-     * @maxLength 255
-     */
+   * @minLength 0
+   * @maxLength 255
+   */
   name: string;
   /**
-     * @minLength 0
-     * @maxLength 255
-     */
+   * @minLength 0
+   * @maxLength 255
+   */
   displayName: string;
   /**
-     * @minLength 0
-     * @maxLength 1000
-     * @nullable
-     */
-  description: string | null;
+   * @minLength 0
+   * @maxLength 1000
+   * @nullable
+   */
+  description?: string | null;
   /**
-     * @minLength 0
-     * @maxLength 100
-     * @nullable
-     */
-  icon: string | null;
+   * @minLength 0
+   * @maxLength 100
+   * @nullable
+   */
+  icon?: string | null;
   /**
-     * @minLength 0
-     * @maxLength 50
-     * @nullable
-     */
-  color: string | null;
-  sortOrder: number;
-  fieldsConfig: JsonDocument;
+   * @minLength 0
+   * @maxLength 50
+   * @nullable
+   */
+  color?: string | null;
+  sortOrder?: number;
   displayConfig: JsonDocument;
 }

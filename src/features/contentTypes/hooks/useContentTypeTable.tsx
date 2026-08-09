@@ -6,7 +6,7 @@ import { DataTableRowActions, type ActionItem } from "@/components/table/DataTab
 import type { BaseSearchParams, useResourceQuery } from "@/lib/useResourceQuery";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ContentTypeDto } from "@/gen/model";
-import { EditIcon, TrashIcon, TypeIcon, KeyIcon, FileTextIcon } from "lucide-react";
+import { EditIcon, TrashIcon, TypeIcon, KeyIcon, FileTextIcon, BlocksIcon } from "lucide-react";
 import { useDataTable } from "@/lib/useDataTable";
 import { useRouter } from "@tanstack/react-router";
 
@@ -55,6 +55,16 @@ export function useContentTypeTable({ data, totalCount, resource }: UseContentTy
                 cell: ({ row }) => {
                     const item = row.original;
                     const actions = [
+                        hasPermission("contenttypes:update") && {
+                            label: t("actions.schemaBuilder", { defaultValue: "Schema Config" }),
+                            icon: BlocksIcon,
+                            onClick: () => {
+                                router.navigate({
+                                    to: `/projects/$id/content-types/${item.id}/builder`,
+                                    params: { id: item.projectId! }
+                                });
+                            },
+                        },
                         hasPermission("contenttypes:update") && {
                             label: t("common:edit", { defaultValue: "Edit" }),
                             icon: EditIcon,

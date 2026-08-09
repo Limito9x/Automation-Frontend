@@ -5,8 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
-
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
 export const UserStatus = {
   NUMBER_1: 1,

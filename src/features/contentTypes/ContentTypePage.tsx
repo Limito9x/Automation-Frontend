@@ -6,22 +6,27 @@ import { useContentTypes } from "./hooks/useContentTypes";
 import { useContentTypeTable } from "./hooks/useContentTypeTable";
 import { useTranslation } from "react-i18next";
 import { DataTableViewOptions } from "@/components/table/DataTableViewOptions";
-import { useParams } from "@tanstack/react-router";
+import { useParams, useNavigate as useAppNavigate } from "@tanstack/react-router";
 
 import { useAuthStore } from "@/stores/authStore";
 
-export function ContentTypePage({ useSearch, useNavigate }: ResourcePageProps) {
+interface ContentTypePageProps extends ResourcePageProps {
+    projectId: string;
+}
+
+export function ContentTypePage({ useSearch, useNavigate, projectId }: ContentTypePageProps) {
     const { t } = useTranslation("contentTypes");
     const hasPermission = useAuthStore((state) => state.hasPermission);
 
     const search = useSearch();
-    const navigate = useNavigate();
+    const navigateResource = useNavigate();
+    const appNavigate = useAppNavigate();
 
-    const { id: projectId } = useParams({ strict: false }) as { id: string };
+    const resourceQuery = useResourceQuery(search, navigateResource);
 
-    const resourceQuery = useResourceQuery(search, navigate);
-
-    const { data, isLoading } = useContentTypes(search as any);
+    const { data, isLoading } = useContentTypes({
+        ...search,
+    }, projectId);
 
     const { table, columns } = useContentTypeTable({
         data: data?.items ?? [],
@@ -35,7 +40,7 @@ export function ContentTypePage({ useSearch, useNavigate }: ResourcePageProps) {
         <ResourcePageShell
             title={t("page.title", { defaultValue: "ContentType Management" })}
             description={t("page.description", { defaultValue: "Manage all contentTypes in the system." })}
-            onAdd={canCreate ? () => navigate({ to: "/projects/$id/content-types/new", params: { id: projectId } }) : undefined}
+            onAdd={canCreate ? () => appNavigate({ to: "/projects/$projectId/content-types/new", params: { projectId } }) : undefined}
             addLabel={t("actions.create", { defaultValue: "Add ContentType" })}
             resource={resourceQuery}
             filterConfig={contentTypeFilterConfig}

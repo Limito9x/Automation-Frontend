@@ -4,6 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IReason } from './iReason';
+import type { IReason } from "./iReason";
 
 export type ListOfIReason = IReason[];

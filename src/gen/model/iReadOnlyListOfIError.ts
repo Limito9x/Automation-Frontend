@@ -4,6 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { IError } from './iError';
+import type { IError } from "./iError";
 
 export type IReadOnlyListOfIError = IError[];

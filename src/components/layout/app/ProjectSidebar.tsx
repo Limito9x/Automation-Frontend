@@ -10,11 +10,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Settings, Logs, Folder } from "lucide-react";
+import { LayoutDashboard, Settings, Logs, Folder, ChevronRight } from "lucide-react";
 import { NavUser } from "./NavUser";
-import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useGetProjectById } from "@/features/projects/hooks/useProjects";
+import { useContentTypes } from "@/features/contentTypes/hooks/useContentTypes";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 
 export function ProjectSidebar() {
   const navigate = useNavigate();
@@ -22,6 +27,7 @@ export function ProjectSidebar() {
 
   const currentProjectId = pathname.split("/")[2];
   const { data: currentProject } = useGetProjectById(currentProjectId);
+  const { data: contentTypesData } = useContentTypes({ PageSize: 100 } as any, currentProjectId);
 
   const projectNavItems = [
     {
@@ -78,6 +84,46 @@ export function ProjectSidebar() {
             <SidebarMenu>
               {projectNavItems.map((item) => {
                 const Icon = item.icon;
+                const isContents = item.title === "Contents";
+
+                if (isContents) {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <Collapsible
+                        defaultExpanded={pathname.startsWith(item.url)}
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuButton tooltip={item.title} slot="trigger">
+                          <Icon />
+                          <span>{item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[expanded]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                        <CollapsibleContent>
+                          {contentTypesData?.items && contentTypesData.items.length > 0 && (
+                            <SidebarMenuSub>
+                              {contentTypesData.items.map(ct => {
+                                const isActive = pathname.startsWith(`/projects/${currentProjectId}/contents/${ct.key}`);
+                                if (!ct.key) return null;
+                                return (
+                                  <SidebarMenuSubItem key={ct.id}>
+                                    <SidebarMenuSubButton
+                                      isActive={isActive}
+                                    >
+                                      <Link to="/projects/$projectId/contents/$typeKey" params={{ projectId: currentProjectId, typeKey: ct.key }}>
+                                        <span>{ct.displayName || ct.name}</span>
+                                      </Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
+                            </SidebarMenuSub>
+                          )}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </SidebarMenuItem>
+                  );
+                }
+
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
