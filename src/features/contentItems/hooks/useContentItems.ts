@@ -42,9 +42,12 @@ export const useUpdateContentItem = ({projectId, contentTypeKey}: {projectId: st
     const queryClient = useQueryClient();
     return ContentItemsApi.useUpdateContentItem({
         mutation: {
-            onSuccess: () => {
+            onSuccess: (_, variables) => {
                 queryClient.invalidateQueries({
                     queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ContentItemsApi.getGetContentItemByIdQueryKey(variables.id)
                 });
             }
         }

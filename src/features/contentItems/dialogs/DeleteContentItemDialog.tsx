@@ -6,7 +6,7 @@ import { useDeleteContentItem } from "../hooks/useContentItems";
 
 export function DeleteContentItemDialog({ open, onOpenChange, data }: DialogProps<{ id: string; typeKey: string; projectId: string }>) {
     const { t } = useTranslation("contentItems");
-    const deleteContentItem = useDeleteContentItem({ projectId });
+    const deleteContentItem = useDeleteContentItem({ projectId: data?.projectId!, contentTypeKey: data?.typeKey! });
 
     const handleDelete = () => {
         if (!data?.id) return;

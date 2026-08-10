@@ -13,5 +13,8 @@ export interface CreateContentItemCommand {
    */
   name: string;
   values: JsonDocument;
-  key?: string;
+  /** @nullable */
+  thumbnailAssetId?: string | null;
+  /** @nullable */
+  thumbnailFileName?: string | null;
 }

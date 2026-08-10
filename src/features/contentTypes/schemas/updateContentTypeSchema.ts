@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { fieldDefinitionSchema } from "./createContentTypeSchema";
 
 export const updateContentTypeSchema = z.object({
     name: z.string().min(1, "Name is required").max(255),

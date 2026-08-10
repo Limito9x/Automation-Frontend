@@ -6,8 +6,8 @@ import { useContentTypes } from "./hooks/useContentTypes";
 import { useContentTypeTable } from "./hooks/useContentTypeTable";
 import { useTranslation } from "react-i18next";
 import { DataTableViewOptions } from "@/components/table/DataTableViewOptions";
-import { useParams, useNavigate as useAppNavigate } from "@tanstack/react-router";
 
+import { useDialogStore } from "@/stores/dialogStore";
 import { useAuthStore } from "@/stores/authStore";
 
 interface ContentTypePageProps extends ResourcePageProps {
@@ -17,10 +17,10 @@ interface ContentTypePageProps extends ResourcePageProps {
 export function ContentTypePage({ useSearch, useNavigate, projectId }: ContentTypePageProps) {
     const { t } = useTranslation("contentTypes");
     const hasPermission = useAuthStore((state) => state.hasPermission);
+    const openDialog = useDialogStore((state) => state.openDialog);
 
     const search = useSearch();
     const navigateResource = useNavigate();
-    const appNavigate = useAppNavigate();
 
     const resourceQuery = useResourceQuery(search, navigateResource);
 
@@ -40,7 +40,7 @@ export function ContentTypePage({ useSearch, useNavigate, projectId }: ContentTy
         <ResourcePageShell
             title={t("page.title", { defaultValue: "ContentType Management" })}
             description={t("page.description", { defaultValue: "Manage all contentTypes in the system." })}
-            onAdd={canCreate ? () => appNavigate({ to: "/projects/$projectId/content-types/new", params: { projectId } }) : undefined}
+            onAdd={canCreate ? () => openDialog("create-content-type", { projectId }) : undefined}
             addLabel={t("actions.create", { defaultValue: "Add ContentType" })}
             resource={resourceQuery}
             filterConfig={contentTypeFilterConfig}

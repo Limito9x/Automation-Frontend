@@ -29,6 +29,8 @@ export function UpdateContentItemPage() {
         if (!itemData) return undefined;
         return {
             name: itemData.name || "",
+            thumbnailAssetId: itemData.thumbnailAssetId ?? undefined,
+            thumbnailUrl: itemData.thumbnailUrl ?? undefined,
             ...((itemData.values as Record<string, any>) || {}),
         };
     }, [itemData]);
@@ -36,7 +38,7 @@ export function UpdateContentItemPage() {
     const handleSubmit = (data: ContentItemFormValues) => {
         if (!projectId || !typeKey || !contentItemId) return;
 
-        const { name, ...values } = data;
+        const { name, thumbnailAssetId, ...values } = data;
         const itemName = name || "Untitled";
 
         updateContentItem.mutate(
@@ -45,6 +47,7 @@ export function UpdateContentItemPage() {
                 data: {
                     name: itemName,
                     values: values as any,
+                    thumbnailAssetId: thumbnailAssetId ?? undefined,
                 },
             },
             {
@@ -100,7 +103,7 @@ export function UpdateContentItemPage() {
             title={t("actions.editTitle", { defaultValue: `Edit ${contentType.displayName || 'Content Item'}` })}
             description={t("actions.editDescription", { defaultValue: `Update details for ${itemData.name || 'this item'}.` })}
             formId="update-content-item-form"
-            isSubmitting={updateContentItem.isPending}
+            isPending={updateContentItem.isPending}
             onCancel={handleCancel}
         >
             <ContentItemForm

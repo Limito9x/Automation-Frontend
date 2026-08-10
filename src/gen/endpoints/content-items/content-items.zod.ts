@@ -18,15 +18,17 @@ export const GetContentItemByIdParams = /*#__PURE__*/ zod.object({
 })
 
 export const GetContentItemByIdResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "id": /*#__PURE__*/ zod.uuid(),
   "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
-  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "thumbnailAssetId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "thumbnailUrl": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })
 
 export const UpdateContentItemParams = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid()
+  "id": /*#__PURE__*/ zod.string()
 })
 
 export const updateContentItemBodyNameMin = 0;
@@ -36,15 +38,19 @@ export const updateContentItemBodyNameMax = 255;
 
 export const UpdateContentItemBody = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateContentItemBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(updateContentItemBodyNameMax)),
-  "values": /*#__PURE__*/ zod.unknown()
+  "values": /*#__PURE__*/ zod.unknown(),
+  "thumbnailAssetId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "thumbnailFileName": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })
 
 export const UpdateContentItemResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "id": /*#__PURE__*/ zod.uuid(),
   "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
-  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "thumbnailAssetId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "thumbnailUrl": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })
 
 export const CreateContentItemParams = /*#__PURE__*/ zod.object({
@@ -60,15 +66,18 @@ export const createContentItemBodyNameMax = 255;
 export const CreateContentItemBody = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createContentItemBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createContentItemBodyNameMax)),
   "values": /*#__PURE__*/ zod.unknown(),
-  "key": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string())
+  "thumbnailAssetId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "thumbnailFileName": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })
 
 export const CreateContentItemResponse = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "id": /*#__PURE__*/ zod.uuid(),
   "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
-  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "thumbnailAssetId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "thumbnailUrl": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })
 
 export const GetContentItemsParams = /*#__PURE__*/ zod.object({
@@ -89,11 +98,13 @@ export const GetContentItemsQueryParams = /*#__PURE__*/ zod.object({
 
 export const GetContentItemsResponse = /*#__PURE__*/ zod.object({
   "items": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
+  "id": /*#__PURE__*/ zod.uuid(),
   "contentTypeId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "projectId": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.uuid()),
   "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
-  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown())
+  "values": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "thumbnailAssetId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "thumbnailUrl": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 }))),
   "totalCount": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
   "page": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),

@@ -6,10 +6,11 @@ import { useEffect } from "react";
 
 interface ContentTypeFormProps {
     initialData?: Partial<UpdateContentTypeInput>;
+    keyString?: string;
     onSubmit: (data: UpdateContentTypeOutput) => void;
 }
 
-export function UpdateContentTypeForm({ initialData, onSubmit }: ContentTypeFormProps) {
+export function UpdateContentTypeForm({ initialData, keyString, onSubmit }: ContentTypeFormProps) {
     const { t } = useTranslation("contentTypes");
     const form = useForm<UpdateContentTypeInput, any, UpdateContentTypeOutput>({
         resolver: zodResolver(updateContentTypeSchema),
@@ -46,7 +47,20 @@ export function UpdateContentTypeForm({ initialData, onSubmit }: ContentTypeForm
                     name="icon"
                 />
             </FormGrid>
-            <div className="mt-4">
+
+            {keyString && (
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border/50">
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">
+                        {t("fields.key", { defaultValue: "System Key (Read-only)" })}
+                    </label>
+                    <code className="text-sm font-mono font-semibold text-foreground">{keyString}</code>
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                        {t("fields.keyHelp", { defaultValue: "System key is immutable to preserve API integration and URL routing." })}
+                    </p>
+                </div>
+            )}
+
+            <div className="mt-4 space-y-4">
                 <FormTextarea
                     control={form.control}
                     label={t("fields.description", { defaultValue: "Description" })}
@@ -66,3 +80,4 @@ export function UpdateContentTypeForm({ initialData, onSubmit }: ContentTypeForm
         </Form>
     );
 }
+

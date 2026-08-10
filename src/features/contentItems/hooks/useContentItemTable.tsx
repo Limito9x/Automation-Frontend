@@ -6,7 +6,7 @@ import { DataTableRowActions, type ActionItem } from "@/components/table/DataTab
 import type { BaseSearchParams, useResourceQuery } from "@/lib/useResourceQuery";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ContentItemDto } from "@/gen/model";
-import { EditIcon, TrashIcon, TypeIcon } from "lucide-react";
+import { EditIcon, TrashIcon, TypeIcon, ImageIcon } from "lucide-react";
 import { useDataTable } from "@/lib/useDataTable";
 import { useDialogStore } from "@/stores/dialogStore";
 
@@ -29,6 +29,24 @@ export function useContentItemTable({ data, totalCount, resource, typeKey, proje
 
         return [
             {
+                accessorKey: "thumbnailUrl",
+                header: () => t("fields.thumbnail", { defaultValue: "Thumbnail" }),
+                enableSorting: false,
+                meta: { label: t("fields.thumbnail", { defaultValue: "Thumbnail" }), icon: ImageIcon },
+                cell: ({ row }) => {
+                    const url = row.original.thumbnailUrl;
+                    return (
+                        <div className="w-10 h-10 rounded overflow-hidden bg-muted/40 border shrink-0 flex items-center justify-center">
+                            {url ? (
+                                <img src={url} alt={row.original.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <ImageIcon className="w-4 h-4 text-muted-foreground/40" />
+                            )}
+                        </div>
+                    );
+                },
+            },
+            {
                 accessorKey: "name",
                 header: () => t("fields.name", { defaultValue: "Name" }),
                 meta: { label: t("fields.name", { defaultValue: "Name" }), icon: TypeIcon },
@@ -50,7 +68,7 @@ export function useContentItemTable({ data, totalCount, resource, typeKey, proje
                         hasPermission("contentitems:delete") && {
                             label: t("common:delete", { defaultValue: "Delete" }),
                             icon: TrashIcon,
-                            onClick: () => openDialog("delete-content-item", { id: item.id }),
+                            onClick: () => openDialog("delete-content-item", { id: item.id!, typeKey, projectId }),
                             destructive: true,
                             separatorBefore: true,
                         }

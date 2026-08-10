@@ -4,14 +4,15 @@ import type { DialogProps } from "@/lib/dialog-registry";
 import { useTranslation } from "react-i18next";
 import { useDeleteContentType } from "../hooks/useContentTypes";
 
-export function DeleteContentTypeDialog({ open, onOpenChange, data }: DialogProps<{ id: string }>) {
+export function DeleteContentTypeDialog({ open, onOpenChange, data }: DialogProps<{ id: string; projectId?: string }>) {
     const { t } = useTranslation("contentTypes");
-    const deleteContentType = useDeleteContentType();
+    const projectId = data?.projectId ?? "";
+    const deleteContentType = useDeleteContentType({ projectId });
 
     const handleDelete = () => {
         if (!data?.id) return;
         deleteContentType.mutate(
-            { path: { id: data.id } },
+            { id: data.id },
             {
                 onSuccess: () => {
                     toast.success(t("actions.deleteSuccess", { defaultValue: "Deleted successfully" }));

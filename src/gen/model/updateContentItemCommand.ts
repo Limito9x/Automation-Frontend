@@ -13,4 +13,8 @@ export interface UpdateContentItemCommand {
    */
   name: string;
   values: JsonDocument;
+  /** @nullable */
+  thumbnailAssetId?: string | null;
+  /** @nullable */
+  thumbnailFileName?: string | null;
 }

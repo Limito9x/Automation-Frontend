@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { ContentItemTable } from "./components/ContentItemTable";
 import { useResourceQuery, type ResourcePageProps } from "@/lib/useResourceQuery";
 import { ResourcePageShell } from "@/components/layout/shells/ResourcePageShell";
@@ -7,19 +8,23 @@ import { useContentItemTable } from "./hooks/useContentItemTable";
 import { useTranslation } from "react-i18next";
 import { DataTableViewOptions } from "@/components/table/DataTableViewOptions";
 import { useAuthStore } from "@/stores/authStore";
+import { useDialogStore } from "@/stores/dialogStore";
 import { useNavigate as useAppNavigate, useLoaderData, useParams } from "@tanstack/react-router";
 import { BaseCardGrid } from "@/components/custom-ui/data-display/card/BaseCardGrid";
 import { BaseCard } from "@/components/custom-ui/data-display/card/BaseCard";
 import { ContentDisplayModes } from "./constants/contentDisplayModes";
+import { DataTableRowActions, type ActionItem } from "@/components/table/DataTableRowActions";
+import { Button } from "@/components/ui/button";
+import { LayoutGrid, List, EditIcon, TrashIcon } from "lucide-react";
 import type { ContentTypeDto } from "@/gen/model";
 
 export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
-    const { t } = useTranslation("contentItems");
+    const { t } = useTranslation(["contentItems", "common"]);
     const hasPermission = useAuthStore((state) => state.hasPermission);
+    const openDialog = useDialogStore((state) => state.openDialog);
 
     const search = useSearch();
     const navigate = useNavigate();
-
     const appNavigate = useAppNavigate();
 
     const parentData = useLoaderData({
@@ -49,12 +54,27 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
     const canCreate = hasPermission("contentitems:create");
 
     const displayConfig = (contentType?.displayConfig as any) || {};
-    const displayMode = displayConfig.mode || ContentDisplayModes.TABLE;
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>(() => {
+        const mode = displayConfig.mode;
+        if (mode === ContentDisplayModes.TABLE || mode === "table") return 'table';
+        return 'grid';
+    });
+
+    useEffect(() => {
+        const mode = (contentType?.displayConfig as any)?.mode;
+        if (mode === ContentDisplayModes.TABLE || mode === "table") {
+            setViewMode('table');
+        } else if (mode === ContentDisplayModes.LIST_CARD || mode === "card" || mode === "list_card" || mode === "grid") {
+            setViewMode('grid');
+        } else {
+            setViewMode('grid');
+        }
+    }, [contentType, typeKey]);
 
     const getCardData = (item: any) => {
         const values = item.values || {};
-        const thumbnailKey = displayConfig?.thumbnailField || "avatarUrl";
-        const thumbnailUrl = item[thumbnailKey] || values[thumbnailKey] || values.avatarUrl || values.imageUrl || values.thumbnail || values.cover || values.avatar;
+        const thumbnailKey = displayConfig?.thumbnailField;
+        const thumbnailUrl = item.thumbnailUrl || (thumbnailKey ? item[thumbnailKey] || values[thumbnailKey] : null) || values.avatarUrl || values.imageUrl || values.thumbnail || values.cover || values.avatar;
 
         const titleKey = displayConfig?.titleField || "name";
         const title = item[titleKey] || values[titleKey] || item.name || "Untitled";
@@ -63,6 +83,27 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
         const description = item[descKey] || values[descKey] || values.description || values.summary || "";
 
         return { title, description, thumbnailUrl };
+    };
+
+    const getItemActions = (item: any) => {
+        const actions: ActionItem[] = [
+            hasPermission("contentitems:update") && {
+                label: t("common:edit", { defaultValue: "Edit" }),
+                icon: EditIcon,
+                onClick: () => appNavigate({
+                    to: "/projects/$projectId/contents/$typeKey/$contentItemId/edit",
+                    params: { projectId, typeKey, contentItemId: item.id! },
+                }),
+            },
+            hasPermission("contentitems:delete") && {
+                label: t("common:delete", { defaultValue: "Delete" }),
+                icon: TrashIcon,
+                onClick: () => openDialog("delete-content-item", { id: item.id!, typeKey, projectId }),
+                destructive: true,
+                separatorBefore: true,
+            }
+        ].filter(Boolean) as ActionItem[];
+        return actions;
     };
 
     return (
@@ -74,9 +115,33 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
             resource={resourceQuery}
             filterConfig={contentItemFilterConfig}
             searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search..." })}
-            renderViewOptions={<DataTableViewOptions table={table} />}
+            renderViewOptions={
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center border rounded-md p-0.5 bg-muted/20">
+                        <Button
+                            variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                            size="icon"
+                            className="h-7 w-7"
+                            onPress={() => setViewMode('grid')}
+                            aria-label="Grid View"
+                        >
+                            <LayoutGrid className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                            size="icon"
+                            className="h-7 w-7"
+                            onPress={() => setViewMode('table')}
+                            aria-label="Table View"
+                        >
+                            <List className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <DataTableViewOptions table={table} />
+                </div>
+            }
         >
-            {displayMode === ContentDisplayModes.TABLE ? (
+            {viewMode === 'table' ? (
                 <ContentItemTable
                     table={table}
                     columns={columns}
@@ -88,12 +153,15 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
                     isLoading={isLoading}
                     renderCard={(item) => {
                         const { title, description, thumbnailUrl } = getCardData(item);
+                        const actions = getItemActions(item);
+
                         return (
                             <BaseCard
                                 key={item.id}
                                 title={title}
                                 description={description}
                                 thumbnailUrl={thumbnailUrl}
+                                action={actions.length > 0 ? <DataTableRowActions actions={actions} /> : undefined}
                                 onClick={() => appNavigate({
                                     to: "/projects/$projectId/contents/$typeKey/$contentItemId/edit",
                                     params: { projectId, typeKey, contentItemId: item.id }

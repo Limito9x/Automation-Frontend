@@ -7,9 +7,13 @@
 import type { JsonDocument } from "./jsonDocument";
 
 export interface ContentItemDto {
-  id?: string;
+  id: string;
   contentTypeId?: string;
   projectId?: string;
   name?: string;
   values?: JsonDocument;
+  /** @nullable */
+  thumbnailAssetId?: string | null;
+  /** @nullable */
+  thumbnailUrl?: string | null;
 }

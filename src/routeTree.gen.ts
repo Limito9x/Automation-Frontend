@@ -44,11 +44,9 @@ import { Route as ProtectedProjectProjectsProjectIdAssetsRouteImport } from './r
 import { Route as ProtectedProjectProjectsProjectIdContentTypesRouteImport } from './routes/_protected/_project/projects/$projectId/content-types'
 import { Route as ProtectedProjectProjectsProjectIdOverviewRouteImport } from './routes/_protected/_project/projects/$projectId/overview'
 import { Route as ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/index'
-import { Route as ProtectedProjectProjectsProjectIdContentTypesNewRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/new'
 import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey'
 import { Route as ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/$contentTypeId/index'
 import { Route as ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder'
-import { Route as ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit'
 import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey/index'
 import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyNewRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey/new'
 import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyContentItemIdEditRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey/$contentItemId/edit'
@@ -247,12 +245,6 @@ const ProtectedProjectProjectsProjectIdContentTypesIndexRoute =
     path: '/',
     getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
   } as any)
-const ProtectedProjectProjectsProjectIdContentTypesNewRoute =
-  ProtectedProjectProjectsProjectIdContentTypesNewRouteImport.update({
-    id: '/new',
-    path: '/new',
-    getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
-  } as any)
 const ProtectedProjectProjectsProjectIdContentsTypeKeyRoute =
   ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport.update({
     id: '/contents/$typeKey',
@@ -272,14 +264,6 @@ const ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute =
     {
       id: '/$contentTypeId/builder',
       path: '/$contentTypeId/builder',
-      getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
-    } as any,
-  )
-const ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute =
-  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRouteImport.update(
-    {
-      id: '/$contentTypeId/edit',
-      path: '/$contentTypeId/edit',
       getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
     } as any,
   )
@@ -337,11 +321,9 @@ export interface FileRoutesByFullPath {
   '/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
   '/system/audit-logs/': typeof ProtectedLayoutSystemAuditLogsIndexRoute
   '/users/$id/': typeof ProtectedLayoutUsersIdIndexRoute
-  '/projects/$projectId/content-types/new': typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
   '/projects/$projectId/contents/$typeKey': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
   '/projects/$projectId/content-types/': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
   '/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
-  '/projects/$projectId/content-types/$contentTypeId/edit': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
   '/projects/$projectId/contents/$typeKey/new': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
   '/projects/$projectId/content-types/$contentTypeId/': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
   '/projects/$projectId/contents/$typeKey/': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
@@ -373,10 +355,8 @@ export interface FileRoutesByTo {
   '/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
   '/system/audit-logs': typeof ProtectedLayoutSystemAuditLogsIndexRoute
   '/users/$id': typeof ProtectedLayoutUsersIdIndexRoute
-  '/projects/$projectId/content-types/new': typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
   '/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
   '/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
-  '/projects/$projectId/content-types/$contentTypeId/edit': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
   '/projects/$projectId/contents/$typeKey/new': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
   '/projects/$projectId/content-types/$contentTypeId': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
   '/projects/$projectId/contents/$typeKey': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
@@ -418,11 +398,9 @@ export interface FileRoutesById {
   '/_protected/_project/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
   '/_protected/_layout/system/audit-logs/': typeof ProtectedLayoutSystemAuditLogsIndexRoute
   '/_protected/_layout/users/$id/': typeof ProtectedLayoutUsersIdIndexRoute
-  '/_protected/_project/projects/$projectId/content-types/new': typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
   '/_protected/_project/projects/$projectId/contents/$typeKey': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
   '/_protected/_project/projects/$projectId/content-types/': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
   '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
-  '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
   '/_protected/_project/projects/$projectId/contents/$typeKey/new': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
   '/_protected/_project/projects/$projectId/content-types/$contentTypeId/': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
   '/_protected/_project/projects/$projectId/contents/$typeKey/': typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
@@ -462,11 +440,9 @@ export interface FileRouteTypes {
     | '/projects/$projectId/overview'
     | '/system/audit-logs/'
     | '/users/$id/'
-    | '/projects/$projectId/content-types/new'
     | '/projects/$projectId/contents/$typeKey'
     | '/projects/$projectId/content-types/'
     | '/projects/$projectId/content-types/$contentTypeId/builder'
-    | '/projects/$projectId/content-types/$contentTypeId/edit'
     | '/projects/$projectId/contents/$typeKey/new'
     | '/projects/$projectId/content-types/$contentTypeId/'
     | '/projects/$projectId/contents/$typeKey/'
@@ -498,10 +474,8 @@ export interface FileRouteTypes {
     | '/projects/$projectId/overview'
     | '/system/audit-logs'
     | '/users/$id'
-    | '/projects/$projectId/content-types/new'
     | '/projects/$projectId/content-types'
     | '/projects/$projectId/content-types/$contentTypeId/builder'
-    | '/projects/$projectId/content-types/$contentTypeId/edit'
     | '/projects/$projectId/contents/$typeKey/new'
     | '/projects/$projectId/content-types/$contentTypeId'
     | '/projects/$projectId/contents/$typeKey'
@@ -542,11 +516,9 @@ export interface FileRouteTypes {
     | '/_protected/_project/projects/$projectId/overview'
     | '/_protected/_layout/system/audit-logs/'
     | '/_protected/_layout/users/$id/'
-    | '/_protected/_project/projects/$projectId/content-types/new'
     | '/_protected/_project/projects/$projectId/contents/$typeKey'
     | '/_protected/_project/projects/$projectId/content-types/'
     | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder'
-    | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit'
     | '/_protected/_project/projects/$projectId/contents/$typeKey/new'
     | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/'
     | '/_protected/_project/projects/$projectId/contents/$typeKey/'
@@ -805,13 +777,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport
       parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
     }
-    '/_protected/_project/projects/$projectId/content-types/new': {
-      id: '/_protected/_project/projects/$projectId/content-types/new'
-      path: '/new'
-      fullPath: '/projects/$projectId/content-types/new'
-      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesNewRouteImport
-      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
-    }
     '/_protected/_project/projects/$projectId/contents/$typeKey': {
       id: '/_protected/_project/projects/$projectId/contents/$typeKey'
       path: '/contents/$typeKey'
@@ -831,13 +796,6 @@ declare module '@tanstack/react-router' {
       path: '/$contentTypeId/builder'
       fullPath: '/projects/$projectId/content-types/$contentTypeId/builder'
       preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRouteImport
-      parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
-    }
-    '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit': {
-      id: '/_protected/_project/projects/$projectId/content-types/$contentTypeId/edit'
-      path: '/$contentTypeId/edit'
-      fullPath: '/projects/$projectId/content-types/$contentTypeId/edit'
-      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRouteImport
       parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
     }
     '/_protected/_project/projects/$projectId/contents/$typeKey/': {
@@ -983,23 +941,17 @@ const ProtectedLayoutRouteWithChildren = ProtectedLayoutRoute._addFileChildren(
 )
 
 interface ProtectedProjectProjectsProjectIdContentTypesRouteChildren {
-  ProtectedProjectProjectsProjectIdContentTypesNewRoute: typeof ProtectedProjectProjectsProjectIdContentTypesNewRoute
   ProtectedProjectProjectsProjectIdContentTypesIndexRoute: typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
   ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
-  ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute
   ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute: typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute
 }
 
 const ProtectedProjectProjectsProjectIdContentTypesRouteChildren: ProtectedProjectProjectsProjectIdContentTypesRouteChildren =
   {
-    ProtectedProjectProjectsProjectIdContentTypesNewRoute:
-      ProtectedProjectProjectsProjectIdContentTypesNewRoute,
     ProtectedProjectProjectsProjectIdContentTypesIndexRoute:
       ProtectedProjectProjectsProjectIdContentTypesIndexRoute,
     ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute:
       ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute,
-    ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute:
-      ProtectedProjectProjectsProjectIdContentTypesContentTypeIdEditRoute,
     ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute:
       ProtectedProjectProjectsProjectIdContentTypesContentTypeIdIndexRoute,
   }

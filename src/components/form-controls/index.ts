@@ -13,3 +13,4 @@ export * from "./FormCheckbox";
 export * from "./FormColorPicker";
 export * from "./FormIconPicker";
 export * from './FormTagsInput';
+export * from './FormImageUpload';

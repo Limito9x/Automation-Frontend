@@ -24,7 +24,7 @@ export function CreateContentItemPage() {
     const handleSubmit = (data: ContentItemFormValues) => {
         if (!projectId || !typeKey) return;
 
-        const { name, ...values } = data;
+        const { name, thumbnailAssetId, ...values } = data;
         const itemName = name || "Untitled";
 
         createContentItem.mutate(
@@ -32,6 +32,7 @@ export function CreateContentItemPage() {
                 data: {
                     name: itemName,
                     values: values as any,
+                    thumbnailAssetId: thumbnailAssetId ?? undefined,
                 },
                 projectId,
                 key: typeKey
@@ -60,7 +61,7 @@ export function CreateContentItemPage() {
             title={t("actions.createTitle", { defaultValue: `Create ${contentType.displayName || 'Content Item'}` })}
             description={t("actions.createDescription", { defaultValue: `Fill in the details to create a new ${contentType.displayName || 'content item'}.` })}
             formId="create-content-item-form"
-            isSubmitting={createContentItem.isPending}
+            isPending={createContentItem.isPending}
             onCancel={() =>
                 navigate({
                     to: "/projects/$projectId/contents/$typeKey",

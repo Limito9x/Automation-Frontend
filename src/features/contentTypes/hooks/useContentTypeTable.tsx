@@ -69,16 +69,13 @@ export function useContentTypeTable({ data, totalCount, resource }: UseContentTy
                             label: t("common:edit", { defaultValue: "Edit" }),
                             icon: EditIcon,
                             onClick: () => {
-                                router.navigate({
-                                    to: `/projects/$id/content-types/${item.id}/edit`,
-                                    params: { id: item.projectId! }
-                                });
+                                openDialog("update-content-type", { item });
                             },
                         },
                         hasPermission("contenttypes:delete") && {
                             label: t("common:delete", { defaultValue: "Delete" }),
                             icon: TrashIcon,
-                            onClick: () => openDialog("delete-content-type", { id: item.id! }),
+                            onClick: () => openDialog("delete-content-type", { id: item.id!, projectId: item.projectId! }),
                             destructive: true,
                             separatorBefore: true,
                         }

@@ -10,6 +10,10 @@ export interface BaseFieldRules {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 export interface GlobalFieldRegistry {}
 
+export type ExtractConfig<P> = {
+  properties?: Omit<P, "name" | "control" | "label" | "description">;
+};
+
 export interface FieldBuilderSpec {
   name: string
   label?: string

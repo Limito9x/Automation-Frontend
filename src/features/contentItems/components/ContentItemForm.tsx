@@ -1,12 +1,14 @@
-import type { ContentTypeDto } from "@/gen/model";
+import { useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Form } from "@/components/form/Form";
+import { FormInput, FormImageUpload } from "@/components/form-controls";
 import { FormRenderer } from "@/components/dynamic-form/FormRenderer";
 import { buildDynamicSchema } from "@/lib/schema-builder";
-import { useMemo } from "react";
 import type { FieldDefinition } from "@/lib/field-registry";
+import type { ContentTypeDto } from "@/gen/model";
 
 export type ContentItemFormValues = Record<string, any>;
 
@@ -20,50 +22,71 @@ export interface ContentItemFormProps {
 export function ContentItemForm({ formId, contentType, initialData, onSubmit }: ContentItemFormProps) {
     const { t } = useTranslation(["contentItems", "common"]);
 
-    const fields = useMemo(() => {
+    const dynamicFields = useMemo(() => {
         const fieldsConfig = contentType.fieldsConfig as any;
-        const dynamicFields = (fieldsConfig || []) as FieldDefinition<any>[];
-
-        const hasNameField = dynamicFields.some(f => f.name === "name");
-        if (hasNameField) {
-            return dynamicFields;
-        }
-
-        const nameField: FieldDefinition<any> = {
-            type: "text",
-            name: "name",
-            label: t("fields.name", { defaultValue: "Name" }),
-            properties: {
-                placeholder: t("fields.namePlaceholder", { defaultValue: "Enter item name..." }),
-                required: true,
-            }
-        };
-
-        return [nameField, ...dynamicFields];
-    }, [contentType, t]);
+        return (fieldsConfig || []) as FieldDefinition<any>[];
+    }, [contentType]);
 
     const schema = useMemo(() => {
-        return buildDynamicSchema(fields);
-    }, [fields]);
+        const dynamicSchema = buildDynamicSchema(dynamicFields);
+        const staticSchema = z.object({
+            name: z.string().min(1, t("fields.nameRequired", { defaultValue: "Name is required" })),
+            thumbnailAssetId: z.string().nullable().optional(),
+        });
+
+        return staticSchema.merge(dynamicSchema);
+    }, [dynamicFields, t]);
 
     const defaultValues = useMemo(() => {
-        const defaults = { ...initialData } as Record<string, any>;
-        fields.forEach(f => {
+        const defaults: Record<string, any> = {
+            name: initialData?.name || "",
+            thumbnailAssetId: initialData?.thumbnailAssetId ?? null,
+            ...((initialData || {}) as Record<string, any>),
+        };
+
+        dynamicFields.forEach(f => {
             if (f.defaultValue !== undefined && defaults[f.name as string] === undefined) {
                 defaults[f.name as string] = f.defaultValue;
             }
         });
+
         return defaults;
-    }, [initialData, fields]);
+    }, [initialData, dynamicFields]);
 
     const form = useForm<ContentItemFormValues>({
         resolver: zodResolver(schema as any) as any,
         defaultValues,
+        values: defaultValues, // Reactively update form values when async data finishes loading
     });
+
+    useEffect(() => {
+        if (initialData) {
+            form.reset(defaultValues);
+        }
+    }, [initialData]);
 
     return (
         <Form form={form as any} onSubmit={onSubmit as any} formId={formId} className="space-y-6">
-            <FormRenderer control={form.control} fields={fields} />
+            <FormInput
+                control={form.control}
+                name="name"
+                label={t("fields.name", { defaultValue: "Name" })}
+                placeholder={t("fields.namePlaceholder", { defaultValue: "Enter item name..." })}
+                required
+            />
+
+            <FormImageUpload
+                control={form.control as any}
+                name="thumbnailAssetId"
+                label={t("fields.thumbnail", { defaultValue: "Thumbnail Image" })}
+                aspectRatio={16 / 9}
+                cropShape="rect"
+                defaultPreviewUrl={(initialData as any)?.thumbnailUrl}
+            />
+
+            {dynamicFields.length > 0 && (
+                <FormRenderer control={form.control} fields={dynamicFields} />
+            )}
         </Form>
     );
 }

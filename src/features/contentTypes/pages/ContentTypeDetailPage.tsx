@@ -4,14 +4,16 @@ import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DescriptionList, DescriptionListItem } from "@/components/custom-ui/data-display/DescriptionList";
 import { SinglePageShell } from "@/components/layout/shells/SinglePageShell";
-import { useGetContentTypeById } from "../hooks/useContentTypes";
+import { useGetContentType } from "../hooks/useContentTypes";
+import { useDialogStore } from "@/stores/dialogStore";
 
 export function ContentTypeDetailPage() {
-    const { t } = useTranslation("contentType");
+    const { t } = useTranslation("contentTypes");
     const navigate = useNavigate();
-    const { id } = useParams({ strict: false }) as { id: string };
+    const openDialog = useDialogStore((state) => state.openDialog);
+    const { projectId, contentTypeId } = useParams({ strict: false }) as { projectId: string; contentTypeId: string };
 
-    const { data: item, isLoading } = useGetContentTypeById(id);
+    const { data: item, isLoading } = useGetContentType(projectId, contentTypeId);
 
     if (isLoading) {
         return (
@@ -41,12 +43,12 @@ export function ContentTypeDetailPage() {
                 <>
                     <Button
                         variant="outline"
-                        onClick={() => navigate({ to: "/content-types" })}
+                        onClick={() => navigate({ to: "/projects/$projectId/content-types", params: { projectId } })}
                     >
                         {t("common:back", { defaultValue: "Back" })}
                     </Button>
                     <Button
-                        onClick={() => navigate({ to: "/content-types/$id/edit", params: { id } })}
+                        onClick={() => openDialog("update-content-type", { item })}
                     >
                         <Edit className="mr-2 h-4 w-4" />
                         {t("actions.update", { defaultValue: "Edit" })}
@@ -57,10 +59,17 @@ export function ContentTypeDetailPage() {
             <div className="rounded-lg border bg-card p-6 shadow-sm">
                 <DescriptionList>
                     <DescriptionListItem
-                        label={t("fields.id", { defaultValue: "ID" })}
-                        value={<span className="font-mono text-xs">{item.id}</span>}
+                        label={t("fields.displayName", { defaultValue: "Display Name" })}
+                        value={item.displayName}
                     />
-                    {/* Add more fields here */}
+                    <DescriptionListItem
+                        label={t("fields.key", { defaultValue: "Key" })}
+                        value={<span className="font-mono text-xs">{item.key}</span>}
+                    />
+                    <DescriptionListItem
+                        label={t("fields.description", { defaultValue: "Description" })}
+                        value={item.description || "-"}
+                    />
                 </DescriptionList>
             </div>
         </SinglePageShell>
