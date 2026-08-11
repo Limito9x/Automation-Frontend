@@ -58,6 +58,7 @@ export function SingleCombobox<T>({
     return (
         <Combobox
             aria-label="Combobox"
+            menuTrigger="focus"
             items={items}
             value={selectedKey}
             onInputChange={onSearch}

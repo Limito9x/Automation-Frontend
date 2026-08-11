@@ -8,7 +8,7 @@ import { getFieldRegistry } from "@/lib/field-registry";
 import { normalizeTypeName } from "@/components/dynamic-form/BuilderBlock";
 import { useMemo } from "react";
 
-export function FormBuilder() {
+export function FormBuilder({ builderContext }: { builderContext?: Record<string, any> }) {
     const { t } = useTranslation("contentTypes");
     const { control } = useFormContext();
     const { fields, append, remove } = useFieldArray({
@@ -18,7 +18,6 @@ export function FormBuilder() {
 
     const availableTypes = useMemo(() => {
         return Array.from(getFieldRegistry().keys())
-            .filter(k => k !== 'relation')
             .map(k => ({ label: normalizeTypeName(k), value: k }));
     }, []);
 
@@ -50,6 +49,7 @@ export function FormBuilder() {
                         onRemove={() => remove(index)}
                         namePrefix="fieldsConfig"
                         availableTypes={availableTypes}
+                        builderContext={builderContext}
                     />
                 ))}
             </CardContent>

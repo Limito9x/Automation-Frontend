@@ -54,6 +54,7 @@ declare module "@/lib/field-registry" {
 import { registerField } from '@/lib/field-registry';
 import { z } from 'zod';
 import { useContentTypes } from '@/features/contentTypes/hooks/useContentTypes';
+import { useContentItems } from '@/features/contentItems/hooks/useContentItems'
 
 registerField({
     type: "relation",
@@ -68,19 +69,39 @@ registerField({
     builderFields: [
         {
             name: "targetContentType",
-            fieldType: "text",
+            fieldType: "relation",
             label: "Target Content Type",
-            description: "Nhập ID hoặc mã của Content Type muốn liên kết"
+            description: "Select content type that you want to relate",
+            isRequired: true,
+            resolverFieldConfig(builderContext) {
+                return {
+                    useOptions: (search: string) => {
+
+                        const { data, isLoading } = useContentTypes(
+                            { globalKeyword: search, page: 1, pageSize: 10 },
+                            builderContext?.projectId
+                        );
+                        return {
+                            data: data?.items?.map(ct => ({ label: ct.name || 'No Name', value: ct.key || ct.id || '' })) || [],
+                            isLoading
+                        };
+                    }
+                }
+            },
         }
     ],
-    resolveProps: (properties: FormApiComboboxProperties & { targetContentType?: string }) => {
+    resolveProps: (properties, context) => {
         return {
             // Tạm thời fetch list content types để giả lập (mock) theo ý user
             useOptions: (search: string) => {
                 // eslint-disable-next-line react-hooks/rules-of-hooks
-                const { data, isLoading } = useContentTypes({ globalKeyword: search, page: 1, pageSize: 10, projectId: "513305c8-4315-43a0-b292-73965017df26" });
+                const { data, isLoading } = useContentItems({
+                    page: 1,
+                    pageSize: 10,
+                    globalKeyword: search
+                }, { projectId: context?.projectId || '', contentTypeKey: properties?.targetContentType || '' })
                 return {
-                    data: data?.items?.map(ct => ({ label: ct.name || 'No Name', value: ct.id || '' })) || [],
+                    data: data?.items?.map(item => ({ label: item.name || 'No Name', value: item.id || '' })) || [],
                     isLoading
                 };
             }

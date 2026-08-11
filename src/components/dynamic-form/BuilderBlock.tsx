@@ -22,10 +22,18 @@ interface BuilderBlockProps {
     index: number
     onRemove: () => void
     availableTypes?: { label: string; value: string }[]
-    namePrefix?: string
+    namePrefix?: string,
+    builderContext?: Record<string, any>
 }
 
-export function BuilderBlock({ control, index, onRemove, availableTypes, namePrefix = "fields" }: BuilderBlockProps) {
+export function BuilderBlock({
+    control,
+    index,
+    onRemove,
+    availableTypes,
+    namePrefix = "fields",
+    builderContext
+}: BuilderBlockProps) {
     const currentField = useWatch({ control, name: `${namePrefix}.${index}` });
     const type = currentField?.type;
     const registration = getFieldRegistration(type || "text");
@@ -74,16 +82,8 @@ export function BuilderBlock({ control, index, onRemove, availableTypes, namePre
                             control={control}
                             name={`${namePrefix}.${index}.label`}
                             label="Label"
-                            placeholder="Tên hiển thị..."
+                            placeholder="Label..."
                         />
-                        <div className="mt-2 flex items-center gap-2 text-xs">
-                            <span className="text-muted-foreground font-mono">Key:</span>
-                            <FormInput
-                                control={control}
-                                name={`${namePrefix}.${index}.name`}
-                                className="h-7 text-xs px-2 py-0 font-mono w-[200px] bg-muted/50 border-transparent hover:border-input focus:border-input transition-colors"
-                            />
-                        </div>
                     </div>
 
                     <div className="w-[220px] shrink-0">
@@ -148,6 +148,9 @@ export function BuilderBlock({ control, index, onRemove, availableTypes, namePre
                                     const fieldReg = getFieldRegistration(spec.fieldType);
                                     if (!fieldReg) return <div key={spec.name} className="text-red-500 text-sm">Error: Unknown fieldType "{spec.fieldType}"</div>;
 
+                                    const resolvedFieldConfig = spec.resolverFieldConfig ?
+                                        spec.resolverFieldConfig(builderContext) : (spec.fieldConfig || {});
+
                                     const Component = fieldReg.component;
                                     return (
                                         <div key={spec.name} className="col-span-1">
@@ -158,6 +161,7 @@ export function BuilderBlock({ control, index, onRemove, availableTypes, namePre
                                                 description={spec.description}
                                                 isRequired={spec.isRequired}
                                                 {...(spec.fieldConfig || {})}
+                                                {...resolvedFieldConfig}
                                             />
                                         </div>
                                     )

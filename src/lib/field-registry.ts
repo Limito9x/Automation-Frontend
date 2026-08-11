@@ -19,8 +19,9 @@ export interface FieldBuilderSpec {
   label?: string
   description?: string
   isRequired?: boolean
-  fieldType: keyof GlobalFieldRegistry | string // Allow string for fallback
+  fieldType: keyof GlobalFieldRegistry | string
   fieldConfig?: Record<string, any>
+  resolverFieldConfig?: (builderContext?: Record<string,any>) => Record<string, any>
 }
 
 export interface FieldRegistration {
@@ -28,10 +29,9 @@ export interface FieldRegistration {
   component: ComponentType<any>
   builderFields?: FieldBuilderSpec[]
   buildSchema?: (properties: any, field?: FieldDefinition<any, any>) => ZodType
-  resolveProps?: (properties: any) => Record<string, any>
+  resolveProps?: (properties: any, context?: Record<string,any>) => Record<string, any>
 }
 
-// eslint-disable-next-line no-var
 var _fieldRegistry: Map<string, FieldRegistration> | undefined;
 
 function getInternalRegistry() {

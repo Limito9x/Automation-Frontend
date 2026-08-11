@@ -11,6 +11,7 @@ export const useContentItems = (params: contentItemQuery, { projectId, contentTy
 }) => {
     return ContentItemsApi.useGetContentItems(projectId, contentTypeKey, params, {
         query: {
+            enabled: !!projectId && !!contentTypeKey,
             placeholderData: keepPreviousData,
         }
     });

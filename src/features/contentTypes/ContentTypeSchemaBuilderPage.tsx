@@ -82,7 +82,7 @@ export function ContentTypeSchemaBuilderPage({ projectId, contentTypeId }: { pro
 
             <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pt-0">
                 <Form form={form} formId="schema-builder-form" onSubmit={onSubmit}>
-                    <FormBuilder />
+                    <FormBuilder builderContext={{ projectId }} />
 
                     <div className="flex justify-end mt-6">
                         <Button type="button" variant="outline" className="mr-2" onClick={() => navigate({ to: "/projects/$projectId/content-types", params: { projectId } })}>

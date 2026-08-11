@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const fieldDefinitionSchema = z.object({
-    name: z.string().min(1, "Key is required"),
+    name: z.string().optional().nullable(),
     label: z.string().min(1, "Label is required"),
     type: z.string(),
     description: z.string().optional().nullable(),
@@ -9,6 +9,15 @@ export const fieldDefinitionSchema = z.object({
     defaultValue: z.any().optional(),
     config: z.any().optional(),
     rules: z.any().optional(),
+}).transform((data) => {
+    const generatedName = (data.name && data.name.trim().length > 0)
+        ? data.name
+        : (data.label ? data.label.toLowerCase().replace(/[^a-zA-Z0-9]/g, "_").replace(/^_+|_+$/g, "") : `field_${Date.now()}`);
+
+    return {
+        ...data,
+        name: generatedName,
+    };
 });
 
 export const createContentTypeSchema = z.object({

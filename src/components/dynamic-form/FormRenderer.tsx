@@ -5,19 +5,22 @@ import type { FieldDefinition } from "@/lib/field-registry";
 export interface FormRendererProps<T extends FieldValues> {
     control: Control<T>;
     fields: FieldDefinition<T>[];
+    context?: Record<string, any>;
 }
 
 export function FormRenderer<T extends FieldValues>({
     control,
-    fields
+    fields,
+    context
 }: FormRendererProps<T>) {
     return (
         <div className="space-y-4">
             {fields.map((field) => (
-                <DynamicField 
-                    key={field.name} 
-                    control={control} 
+                <DynamicField
+                    key={field.name}
+                    control={control}
                     field={field}
+                    context={context}
                 />
             ))}
         </div>

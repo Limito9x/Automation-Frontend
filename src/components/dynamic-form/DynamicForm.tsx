@@ -20,6 +20,7 @@ export interface DynamicFormProps<T extends FieldValues> {
     /** Text to display on the submit button */
     submitText?: string;
     formId?: string;
+    context?: Record<string, any>;
 }
 
 export function DynamicForm<T extends FieldValues>({
@@ -29,6 +30,7 @@ export function DynamicForm<T extends FieldValues>({
     onSubmit,
     submitText = "Lưu thông tin",
     formId,
+    context,
 }: DynamicFormProps<T>) {
     // Tự động sinh schema nếu không được truyền vào từ bên ngoài
     const finalSchema = useMemo(() => {
@@ -53,7 +55,7 @@ export function DynamicForm<T extends FieldValues>({
 
     return (
         <Form form={form as any} onSubmit={onSubmit as any} formId={formId}>
-            <FormRenderer control={form.control} fields={fields} />
+            <FormRenderer control={form.control} fields={fields} context={context} />
             <div className="flex justify-end mt-4">
                 <Button type="submit">
                     {submitText}

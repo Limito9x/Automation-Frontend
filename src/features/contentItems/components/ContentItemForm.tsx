@@ -85,7 +85,7 @@ export function ContentItemForm({ formId, contentType, initialData, onSubmit }: 
             />
 
             {dynamicFields.length > 0 && (
-                <FormRenderer control={form.control} fields={dynamicFields} />
+                <FormRenderer control={form.control} fields={dynamicFields} context={{ projectId: contentType.projectId }} />
             )}
         </Form>
     );

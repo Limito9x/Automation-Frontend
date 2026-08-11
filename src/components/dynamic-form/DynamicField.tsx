@@ -2,8 +2,8 @@ import { getFieldRegistration, type FieldDefinition } from "@/lib/field-registry
 import type { Control, FieldValues } from "react-hook-form";
 
 export function DynamicField<T extends FieldValues>({
-    control, field
-}: { control: Control<T>; field: FieldDefinition<T> }) {
+    control, field, context
+}: { control: Control<T>; field: FieldDefinition<T>, context?: Record<string, any> }) {
     const registration = getFieldRegistration(field.type as string)
     const Component = registration?.component
 
@@ -12,7 +12,7 @@ export function DynamicField<T extends FieldValues>({
     }
 
     const resolvedExecutableProps = registration.resolveProps
-        ? registration.resolveProps(field.properties)
+        ? registration.resolveProps(field.properties, context)
         : {};
 
     const finalProps = {
