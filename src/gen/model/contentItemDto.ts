@@ -16,4 +16,5 @@ export interface ContentItemDto {
   thumbnailAssetId?: string | null;
   /** @nullable */
   thumbnailUrl?: string | null;
+  resolvedData?: JsonDocument;
 }

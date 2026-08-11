@@ -14,7 +14,13 @@ export const ConfirmUploadBody = /*#__PURE__*/ zod.object({
   "assetIds": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()).check(/*#__PURE__*/ zod.minLength(1))
 })
 
-export const ConfirmUploadResponse = /*#__PURE__*/ zod.void()
+export const ConfirmUploadResponseItem = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "contentType": /*#__PURE__*/ zod.string(),
+  "size": /*#__PURE__*/ zod.int(),
+  "publicUrl": /*#__PURE__*/ zod.string()
+})
+export const ConfirmUploadResponse = /*#__PURE__*/ zod.array(ConfirmUploadResponseItem)
 
 export const requestUploadBodyItemsItemHashSha256Min = 64;
 export const requestUploadBodyItemsItemHashSha256Max = 64;

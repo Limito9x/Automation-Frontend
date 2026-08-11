@@ -65,6 +65,11 @@ export function ContentItemForm({ formId, contentType, initialData, onSubmit }: 
         }
     }, [initialData]);
 
+    const formRendererContext = useMemo(() => ({
+        projectId: contentType.projectId,
+        resolvedData: (initialData as any)?.resolvedData,
+    }), [contentType.projectId, initialData]);
+
     return (
         <Form form={form as any} onSubmit={onSubmit as any} formId={formId} className="space-y-6">
             <FormInput
@@ -85,7 +90,7 @@ export function ContentItemForm({ formId, contentType, initialData, onSubmit }: 
             />
 
             {dynamicFields.length > 0 && (
-                <FormRenderer control={form.control} fields={dynamicFields} context={{ projectId: contentType.projectId }} />
+                <FormRenderer control={form.control} fields={dynamicFields} context={formRendererContext} />
             )}
         </Form>
     );

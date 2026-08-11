@@ -15,9 +15,19 @@ export function DynamicField<T extends FieldValues>({
         ? registration.resolveProps(field.properties, context)
         : {};
 
+    const extraProps: Record<string, any> = {};
+    if (context?.resolvedData?.[field.name] !== undefined) {
+        const resolvedValue = context.resolvedData[field.name];
+        const targetProp = registration.resolvedDataProp || (field.type === "file-upload" ? "initialAssets" : undefined);
+        if (targetProp) {
+            extraProps[targetProp] = Array.isArray(resolvedValue) ? resolvedValue : [resolvedValue];
+        }
+    }
+
     const finalProps = {
         ...field.properties,
-        ...resolvedExecutableProps
+        ...resolvedExecutableProps,
+        ...extraProps
     };
 
     return (

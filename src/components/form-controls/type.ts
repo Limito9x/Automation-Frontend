@@ -10,6 +10,7 @@ export interface BaseFormControlProps<T extends FieldValues> {
   autoComplete?: React.HTMLInputAutoCompleteAttribute  // token chuẩn
   inputName?: string  // override name của input element nếu cần
   isRequired?: boolean;
+  defaultValue?: any;
 }
 
 // Loại bỏ các thuộc tính của HTML Element trùng với React Hook Form để tránh xung đột

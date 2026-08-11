@@ -31,6 +31,7 @@ export function UpdateContentItemPage() {
             name: itemData.name || "",
             thumbnailAssetId: itemData.thumbnailAssetId ?? undefined,
             thumbnailUrl: itemData.thumbnailUrl ?? undefined,
+            resolvedData: (itemData as any).resolvedData,
             ...((itemData.values as Record<string, any>) || {}),
         };
     }, [itemData]);

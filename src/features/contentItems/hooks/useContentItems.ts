@@ -26,26 +26,36 @@ export const useGetContentItemById = (id: string) => {
 };
 
 
-export const useCreateContentItem = ({projectId, contentTypeKey}: {projectId: string, contentTypeKey: string}) => {
+export const useCreateContentItem = (params?: { projectId?: string; contentTypeKey?: string }) => {
     const queryClient = useQueryClient();
     return ContentItemsApi.useCreateContentItem({
         mutation: {
             onSuccess: () => {
+                if (params?.projectId && params?.contentTypeKey) {
+                    queryClient.invalidateQueries({
+                        queryKey: ContentItemsApi.getGetContentItemsQueryKey(params.projectId, params.contentTypeKey)
+                    });
+                }
                 queryClient.invalidateQueries({
-                    queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                    predicate: (query) => typeof query.queryKey[0] === "string" && query.queryKey[0].includes("/contents")
                 });
             }
         }
     });
 };
 
-export const useUpdateContentItem = ({projectId, contentTypeKey}: {projectId: string, contentTypeKey: string}) => {
+export const useUpdateContentItem = (params?: { projectId?: string; contentTypeKey?: string }) => {
     const queryClient = useQueryClient();
     return ContentItemsApi.useUpdateContentItem({
         mutation: {
             onSuccess: (_, variables) => {
+                if (params?.projectId && params?.contentTypeKey) {
+                    queryClient.invalidateQueries({
+                        queryKey: ContentItemsApi.getGetContentItemsQueryKey(params.projectId, params.contentTypeKey)
+                    });
+                }
                 queryClient.invalidateQueries({
-                    queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                    predicate: (query) => typeof query.queryKey[0] === "string" && query.queryKey[0].includes("/contents")
                 });
                 queryClient.invalidateQueries({
                     queryKey: ContentItemsApi.getGetContentItemByIdQueryKey(variables.id)
@@ -55,13 +65,18 @@ export const useUpdateContentItem = ({projectId, contentTypeKey}: {projectId: st
     });
 };
 
-export const useDeleteContentItem = ({projectId, contentTypeKey}:{projectId: string, contentTypeKey: string}) => {
+export const useDeleteContentItem = (params?: { projectId?: string; contentTypeKey?: string }) => {
     const queryClient = useQueryClient();
     return ContentItemsApi.useDeleteContentItem({
         mutation: {
             onSuccess: () => {
+                if (params?.projectId && params?.contentTypeKey) {
+                    queryClient.invalidateQueries({
+                        queryKey: ContentItemsApi.getGetContentItemsQueryKey(params.projectId, params.contentTypeKey)
+                    });
+                }
                 queryClient.invalidateQueries({
-                    queryKey: ContentItemsApi.getGetContentItemsQueryKey(projectId, contentTypeKey)
+                    predicate: (query) => typeof query.queryKey[0] === "string" && query.queryKey[0].includes("/contents")
                 });
             }
         }

@@ -21,6 +21,7 @@ export interface DynamicFormProps<T extends FieldValues> {
     submitText?: string;
     formId?: string;
     context?: Record<string, any>;
+    resolvedData?: Record<string, any>;
 }
 
 export function DynamicForm<T extends FieldValues>({
@@ -31,6 +32,7 @@ export function DynamicForm<T extends FieldValues>({
     submitText = "Lưu thông tin",
     formId,
     context,
+    resolvedData,
 }: DynamicFormProps<T>) {
     // Tự động sinh schema nếu không được truyền vào từ bên ngoài
     const finalSchema = useMemo(() => {
@@ -48,6 +50,11 @@ export function DynamicForm<T extends FieldValues>({
         return defaults as any;
     }, [defaultValues, fields]);
 
+    const combinedContext = useMemo(
+        () => ({ ...context, resolvedData }),
+        [context, resolvedData]
+    );
+
     const form = useForm<T>({
         resolver: zodResolver(finalSchema as any) as any,
         defaultValues: finalDefaultValues,
@@ -55,7 +62,7 @@ export function DynamicForm<T extends FieldValues>({
 
     return (
         <Form form={form as any} onSubmit={onSubmit as any} formId={formId}>
-            <FormRenderer control={form.control} fields={fields} context={context} />
+            <FormRenderer control={form.control} fields={fields} context={combinedContext} />
             <div className="flex justify-end mt-4">
                 <Button type="submit">
                     {submitText}

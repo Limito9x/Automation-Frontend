@@ -31,6 +31,7 @@ export function BaseFormField<T extends FieldValues>({
     autoComplete,
     isRequired,
     render,
+    defaultValue,
     ...rest
 }: BaseFormFieldProps<T> & Record<string, any>) {
     const formId = useFormId();
@@ -41,6 +42,7 @@ export function BaseFormField<T extends FieldValues>({
         <Controller
             control={control}
             name={name}
+            defaultValue={defaultValue}
             render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                     {label && (

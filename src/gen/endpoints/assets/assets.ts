@@ -16,6 +16,7 @@ import type {
   ConfirmUploadCommand,
   ErrorResponse,
   IEnumerableOfAssetUploadDto,
+  IEnumerableOfConfirmAssetDto,
   RequestUploadCommand,
 } from "../../model";
 
@@ -25,7 +26,7 @@ export const confirmUpload = (
   confirmUploadCommand: ConfirmUploadCommand,
   signal?: AbortSignal,
 ) => {
-  return customInstance<void>({
+  return customInstance<IEnumerableOfConfirmAssetDto>({
     url: `/api/assets/confirm-upload`,
     method: "POST",
     headers: { "Content-Type": "application/json" },

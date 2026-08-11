@@ -30,6 +30,7 @@ export interface FieldRegistration {
   builderFields?: FieldBuilderSpec[]
   buildSchema?: (properties: any, field?: FieldDefinition<any, any>) => ZodType
   resolveProps?: (properties: any, context?: Record<string,any>) => Record<string, any>
+  resolvedDataProp?: string
 }
 
 var _fieldRegistry: Map<string, FieldRegistration> | undefined;

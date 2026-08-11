@@ -88,6 +88,14 @@ registerField({
                     }
                 }
             },
+        },
+        {
+            name: "multiple",
+            fieldType: "switch",
+            label: "Is Multiple",
+            fieldConfig: {
+                defaultValue: true
+            }
         }
     ],
     resolveProps: (properties, context) => {
