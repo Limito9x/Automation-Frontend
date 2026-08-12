@@ -15,8 +15,8 @@ import type {
 import type {
   ConfirmUploadCommand,
   ErrorResponse,
-  IEnumerableOfAssetUploadDto,
-  IEnumerableOfConfirmAssetDto,
+  IReadOnlyListOfAssetUploadDto,
+  IReadOnlyListOfConfirmAssetDto,
   RequestUploadCommand,
 } from "../../model";
 
@@ -26,7 +26,7 @@ export const confirmUpload = (
   confirmUploadCommand: ConfirmUploadCommand,
   signal?: AbortSignal,
 ) => {
-  return customInstance<IEnumerableOfConfirmAssetDto>({
+  return customInstance<IReadOnlyListOfConfirmAssetDto>({
     url: `/api/assets/confirm-upload`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -100,7 +100,7 @@ export const requestUpload = (
   requestUploadCommand: RequestUploadCommand,
   signal?: AbortSignal,
 ) => {
-  return customInstance<IEnumerableOfAssetUploadDto>({
+  return customInstance<IReadOnlyListOfAssetUploadDto>({
     url: `/api/assets/request-upload`,
     method: "POST",
     headers: { "Content-Type": "application/json" },

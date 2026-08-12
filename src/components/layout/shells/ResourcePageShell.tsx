@@ -1,10 +1,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, RefreshCw } from "lucide-react";
 import { FilterPanel } from "@/components/filter-panel/FilterPanel";
 import type { BaseSearchParams, useResourceQuery } from "@/lib/useResourceQuery";
 import type { ResolvedFilterConfig } from "@/components/filter-panel/filter-types";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export interface ResourcePageShellProps {
     title: string;
@@ -14,6 +15,10 @@ export interface ResourcePageShellProps {
     onAdd?: () => void;
     /** Text for the Add button. Default is "Add" */
     addLabel?: string;
+
+    /** Action for the Refresh button */
+    onRefresh?: () => void;
+    isRefreshing?: boolean;
 
     /** Query state from useResourceQuery hook */
     resource: ReturnType<typeof useResourceQuery<BaseSearchParams>>;
@@ -31,6 +36,8 @@ export function ResourcePageShell({
     description,
     onAdd,
     addLabel,
+    onRefresh,
+    isRefreshing,
     resource,
     filterConfig,
     searchPlaceholder,
@@ -49,11 +56,24 @@ export function ResourcePageShell({
                         <p className="text-sm text-muted-foreground">{description}</p>
                     )}
                 </div>
-                {onAdd && (
-                    <Button onClick={onAdd}>
-                        <PlusIcon className="mr-2 h-4 w-4" /> {resolvedAddLabel}
-                    </Button>
-                )}
+                <div className="flex items-center gap-2">
+                    {onRefresh && (
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={onRefresh}
+                            isDisabled={isRefreshing}
+                        >
+                            <RefreshCw className={cn("mr-2 h-4 w-4", isRefreshing && "animate-spin")} />
+                            {t("refresh", { defaultValue: "Refresh" })}
+                        </Button>
+                    )}
+                    {onAdd && (
+                        <Button onClick={onAdd}>
+                            <PlusIcon className="mr-2 h-4 w-4" /> {resolvedAddLabel}
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {filterConfig && (

@@ -39,6 +39,8 @@
 - **`build_frontend_hook`** (`.agents/skills/build_frontend_hook/SKILL.md`): Kích hoạt skill này để biết cách viết custom query/mutation hook (dùng `createMutationHook`, `keepPreviousData`) bọc các API tự sinh cho Feature.
 - **`create-frontend-feature`** (`.agents/skills/create-frontend-feature/SKILL.md`): Hướng dẫn quy trình chuẩn để tạo một Feature CRUD mới (Dialog hoặc Page layout) bằng cách chạy lệnh Plop và hoàn thiện logic.
 - **`create_form_control`** (`.agents/skills/create_form_control/SKILL.md`): Hướng dẫn quy trình chuẩn để tạo một Form Control mới hỗ trợ cơ chế auto-scan registry và dynamic form.
+- **`ui-ux-pro-max`** (`.agents/skills/ui-ux-pro-max/SKILL.md`): Kích hoạt skill này khi được yêu cầu thiết kế UI/UX cho trang mới, chọn màu sắc/typography, hoặc rà soát tiêu chuẩn giao diện chuyên nghiệp (đảm bảo tương phản, spacing 4/8dp, micro-animations, icons Phosphor/Heroicons).
+
 
 
 ## 5. Table & Dialog Architecture

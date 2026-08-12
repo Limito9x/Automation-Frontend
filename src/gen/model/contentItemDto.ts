@@ -11,10 +11,10 @@ export interface ContentItemDto {
   contentTypeId?: string;
   projectId?: string;
   name?: string;
+  resolvedData?: JsonDocument;
   values?: JsonDocument;
   /** @nullable */
   thumbnailAssetId?: string | null;
   /** @nullable */
   thumbnailUrl?: string | null;
-  resolvedData?: JsonDocument;
 }

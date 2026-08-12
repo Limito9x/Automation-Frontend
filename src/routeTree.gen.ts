@@ -20,11 +20,15 @@ import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as ProtectedLayoutIndexRouteImport } from './routes/_protected/_layout/index'
 import { Route as ProtectedLayout403RouteImport } from './routes/_protected/_layout/403'
+import { Route as ProtectedLayoutAgentsRouteImport } from './routes/_protected/_layout/agents'
 import { Route as ProtectedLayoutDevRouteImport } from './routes/_protected/_layout/dev'
+import { Route as ProtectedLayoutPlatformsRouteRouteImport } from './routes/_protected/_layout/platforms/route'
 import { Route as ProtectedLayoutProjectsRouteRouteImport } from './routes/_protected/_layout/projects/route'
 import { Route as ProtectedLayoutRolesRouteRouteImport } from './routes/_protected/_layout/roles/route'
 import { Route as ProtectedLayoutSettingsRouteRouteImport } from './routes/_protected/_layout/settings/route'
 import { Route as ProtectedLayoutUsersRouteRouteImport } from './routes/_protected/_layout/users/route'
+import { Route as ProtectedLayoutPlatformsIndexRouteImport } from './routes/_protected/_layout/platforms/index'
+import { Route as ProtectedLayoutPlatformsExtensionsRouteImport } from './routes/_protected/_layout/platforms/extensions'
 import { Route as ProtectedLayoutProjectsIndexRouteImport } from './routes/_protected/_layout/projects/index'
 import { Route as ProtectedLayoutRolesIndexRouteImport } from './routes/_protected/_layout/roles/index'
 import { Route as ProtectedLayoutSettingsIndexRouteImport } from './routes/_protected/_layout/settings/index'
@@ -103,11 +107,22 @@ const ProtectedLayout403Route = ProtectedLayout403RouteImport.update({
   path: '/403',
   getParentRoute: () => ProtectedLayoutRoute,
 } as any)
+const ProtectedLayoutAgentsRoute = ProtectedLayoutAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => ProtectedLayoutRoute,
+} as any)
 const ProtectedLayoutDevRoute = ProtectedLayoutDevRouteImport.update({
   id: '/dev',
   path: '/dev',
   getParentRoute: () => ProtectedLayoutRoute,
 } as any)
+const ProtectedLayoutPlatformsRouteRoute =
+  ProtectedLayoutPlatformsRouteRouteImport.update({
+    id: '/platforms',
+    path: '/platforms',
+    getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
 const ProtectedLayoutProjectsRouteRoute =
   ProtectedLayoutProjectsRouteRouteImport.update({
     id: '/projects',
@@ -131,6 +146,18 @@ const ProtectedLayoutUsersRouteRoute =
     id: '/users',
     path: '/users',
     getParentRoute: () => ProtectedLayoutRoute,
+  } as any)
+const ProtectedLayoutPlatformsIndexRoute =
+  ProtectedLayoutPlatformsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedLayoutPlatformsRouteRoute,
+  } as any)
+const ProtectedLayoutPlatformsExtensionsRoute =
+  ProtectedLayoutPlatformsExtensionsRouteImport.update({
+    id: '/extensions',
+    path: '/extensions',
+    getParentRoute: () => ProtectedLayoutPlatformsRouteRoute,
   } as any)
 const ProtectedLayoutProjectsIndexRoute =
   ProtectedLayoutProjectsIndexRouteImport.update({
@@ -297,19 +324,23 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/platforms': typeof ProtectedLayoutPlatformsRouteRouteWithChildren
   '/projects': typeof ProtectedLayoutProjectsRouteRouteWithChildren
   '/roles': typeof ProtectedLayoutRolesRouteRouteWithChildren
   '/settings': typeof ProtectedLayoutSettingsRouteRouteWithChildren
   '/users': typeof ProtectedLayoutUsersRouteRouteWithChildren
   '/403': typeof ProtectedLayout403Route
+  '/agents': typeof ProtectedLayoutAgentsRoute
   '/dev': typeof ProtectedLayoutDevRoute
   '/projects/$projectId': typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+  '/platforms/extensions': typeof ProtectedLayoutPlatformsExtensionsRoute
   '/settings/notifications': typeof ProtectedLayoutSettingsNotificationsRoute
   '/settings/profile': typeof ProtectedLayoutSettingsProfileRoute
   '/settings/security': typeof ProtectedLayoutSettingsSecurityRoute
   '/system/audit-logs': typeof ProtectedLayoutSystemAuditLogsRouteWithChildren
   '/system/settings': typeof ProtectedLayoutSystemSettingsRoute
   '/users/new': typeof ProtectedLayoutUsersNewRoute
+  '/platforms/': typeof ProtectedLayoutPlatformsIndexRoute
   '/projects/': typeof ProtectedLayoutProjectsIndexRoute
   '/roles/': typeof ProtectedLayoutRolesIndexRoute
   '/settings/': typeof ProtectedLayoutSettingsIndexRoute
@@ -338,13 +369,16 @@ export interface FileRoutesByTo {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/403': typeof ProtectedLayout403Route
+  '/agents': typeof ProtectedLayoutAgentsRoute
   '/dev': typeof ProtectedLayoutDevRoute
   '/projects/$projectId': typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+  '/platforms/extensions': typeof ProtectedLayoutPlatformsExtensionsRoute
   '/settings/notifications': typeof ProtectedLayoutSettingsNotificationsRoute
   '/settings/profile': typeof ProtectedLayoutSettingsProfileRoute
   '/settings/security': typeof ProtectedLayoutSettingsSecurityRoute
   '/system/settings': typeof ProtectedLayoutSystemSettingsRoute
   '/users/new': typeof ProtectedLayoutUsersNewRoute
+  '/platforms': typeof ProtectedLayoutPlatformsIndexRoute
   '/projects': typeof ProtectedLayoutProjectsIndexRoute
   '/roles': typeof ProtectedLayoutRolesIndexRoute
   '/settings': typeof ProtectedLayoutSettingsIndexRoute
@@ -373,20 +407,24 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/_protected/_layout/platforms': typeof ProtectedLayoutPlatformsRouteRouteWithChildren
   '/_protected/_layout/projects': typeof ProtectedLayoutProjectsRouteRouteWithChildren
   '/_protected/_layout/roles': typeof ProtectedLayoutRolesRouteRouteWithChildren
   '/_protected/_layout/settings': typeof ProtectedLayoutSettingsRouteRouteWithChildren
   '/_protected/_layout/users': typeof ProtectedLayoutUsersRouteRouteWithChildren
   '/_protected/_layout/403': typeof ProtectedLayout403Route
+  '/_protected/_layout/agents': typeof ProtectedLayoutAgentsRoute
   '/_protected/_layout/dev': typeof ProtectedLayoutDevRoute
   '/_protected/_layout/': typeof ProtectedLayoutIndexRoute
   '/_protected/_project/projects/$projectId': typeof ProtectedProjectProjectsProjectIdRouteRouteWithChildren
+  '/_protected/_layout/platforms/extensions': typeof ProtectedLayoutPlatformsExtensionsRoute
   '/_protected/_layout/settings/notifications': typeof ProtectedLayoutSettingsNotificationsRoute
   '/_protected/_layout/settings/profile': typeof ProtectedLayoutSettingsProfileRoute
   '/_protected/_layout/settings/security': typeof ProtectedLayoutSettingsSecurityRoute
   '/_protected/_layout/system/audit-logs': typeof ProtectedLayoutSystemAuditLogsRouteWithChildren
   '/_protected/_layout/system/settings': typeof ProtectedLayoutSystemSettingsRoute
   '/_protected/_layout/users/new': typeof ProtectedLayoutUsersNewRoute
+  '/_protected/_layout/platforms/': typeof ProtectedLayoutPlatformsIndexRoute
   '/_protected/_layout/projects/': typeof ProtectedLayoutProjectsIndexRoute
   '/_protected/_layout/roles/': typeof ProtectedLayoutRolesIndexRoute
   '/_protected/_layout/settings/': typeof ProtectedLayoutSettingsIndexRoute
@@ -416,19 +454,23 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/auth/reset-password'
+    | '/platforms'
     | '/projects'
     | '/roles'
     | '/settings'
     | '/users'
     | '/403'
+    | '/agents'
     | '/dev'
     | '/projects/$projectId'
+    | '/platforms/extensions'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/security'
     | '/system/audit-logs'
     | '/system/settings'
     | '/users/new'
+    | '/platforms/'
     | '/projects/'
     | '/roles/'
     | '/settings/'
@@ -457,13 +499,16 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/reset-password'
     | '/403'
+    | '/agents'
     | '/dev'
     | '/projects/$projectId'
+    | '/platforms/extensions'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/security'
     | '/system/settings'
     | '/users/new'
+    | '/platforms'
     | '/projects'
     | '/roles'
     | '/settings'
@@ -491,20 +536,24 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/auth/reset-password'
+    | '/_protected/_layout/platforms'
     | '/_protected/_layout/projects'
     | '/_protected/_layout/roles'
     | '/_protected/_layout/settings'
     | '/_protected/_layout/users'
     | '/_protected/_layout/403'
+    | '/_protected/_layout/agents'
     | '/_protected/_layout/dev'
     | '/_protected/_layout/'
     | '/_protected/_project/projects/$projectId'
+    | '/_protected/_layout/platforms/extensions'
     | '/_protected/_layout/settings/notifications'
     | '/_protected/_layout/settings/profile'
     | '/_protected/_layout/settings/security'
     | '/_protected/_layout/system/audit-logs'
     | '/_protected/_layout/system/settings'
     | '/_protected/_layout/users/new'
+    | '/_protected/_layout/platforms/'
     | '/_protected/_layout/projects/'
     | '/_protected/_layout/roles/'
     | '/_protected/_layout/settings/'
@@ -609,11 +658,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedLayout403RouteImport
       parentRoute: typeof ProtectedLayoutRoute
     }
+    '/_protected/_layout/agents': {
+      id: '/_protected/_layout/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof ProtectedLayoutAgentsRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
     '/_protected/_layout/dev': {
       id: '/_protected/_layout/dev'
       path: '/dev'
       fullPath: '/dev'
       preLoaderRoute: typeof ProtectedLayoutDevRouteImport
+      parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/platforms': {
+      id: '/_protected/_layout/platforms'
+      path: '/platforms'
+      fullPath: '/platforms'
+      preLoaderRoute: typeof ProtectedLayoutPlatformsRouteRouteImport
       parentRoute: typeof ProtectedLayoutRoute
     }
     '/_protected/_layout/projects': {
@@ -643,6 +706,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/users'
       preLoaderRoute: typeof ProtectedLayoutUsersRouteRouteImport
       parentRoute: typeof ProtectedLayoutRoute
+    }
+    '/_protected/_layout/platforms/': {
+      id: '/_protected/_layout/platforms/'
+      path: '/'
+      fullPath: '/platforms/'
+      preLoaderRoute: typeof ProtectedLayoutPlatformsIndexRouteImport
+      parentRoute: typeof ProtectedLayoutPlatformsRouteRoute
+    }
+    '/_protected/_layout/platforms/extensions': {
+      id: '/_protected/_layout/platforms/extensions'
+      path: '/extensions'
+      fullPath: '/platforms/extensions'
+      preLoaderRoute: typeof ProtectedLayoutPlatformsExtensionsRouteImport
+      parentRoute: typeof ProtectedLayoutPlatformsRouteRoute
     }
     '/_protected/_layout/projects/': {
       id: '/_protected/_layout/projects/'
@@ -822,6 +899,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ProtectedLayoutPlatformsRouteRouteChildren {
+  ProtectedLayoutPlatformsExtensionsRoute: typeof ProtectedLayoutPlatformsExtensionsRoute
+  ProtectedLayoutPlatformsIndexRoute: typeof ProtectedLayoutPlatformsIndexRoute
+}
+
+const ProtectedLayoutPlatformsRouteRouteChildren: ProtectedLayoutPlatformsRouteRouteChildren =
+  {
+    ProtectedLayoutPlatformsExtensionsRoute:
+      ProtectedLayoutPlatformsExtensionsRoute,
+    ProtectedLayoutPlatformsIndexRoute: ProtectedLayoutPlatformsIndexRoute,
+  }
+
+const ProtectedLayoutPlatformsRouteRouteWithChildren =
+  ProtectedLayoutPlatformsRouteRoute._addFileChildren(
+    ProtectedLayoutPlatformsRouteRouteChildren,
+  )
+
 interface ProtectedLayoutProjectsRouteRouteChildren {
   ProtectedLayoutProjectsIndexRoute: typeof ProtectedLayoutProjectsIndexRoute
 }
@@ -910,11 +1004,13 @@ const ProtectedLayoutSystemAuditLogsRouteWithChildren =
   )
 
 interface ProtectedLayoutRouteChildren {
+  ProtectedLayoutPlatformsRouteRoute: typeof ProtectedLayoutPlatformsRouteRouteWithChildren
   ProtectedLayoutProjectsRouteRoute: typeof ProtectedLayoutProjectsRouteRouteWithChildren
   ProtectedLayoutRolesRouteRoute: typeof ProtectedLayoutRolesRouteRouteWithChildren
   ProtectedLayoutSettingsRouteRoute: typeof ProtectedLayoutSettingsRouteRouteWithChildren
   ProtectedLayoutUsersRouteRoute: typeof ProtectedLayoutUsersRouteRouteWithChildren
   ProtectedLayout403Route: typeof ProtectedLayout403Route
+  ProtectedLayoutAgentsRoute: typeof ProtectedLayoutAgentsRoute
   ProtectedLayoutDevRoute: typeof ProtectedLayoutDevRoute
   ProtectedLayoutIndexRoute: typeof ProtectedLayoutIndexRoute
   ProtectedLayoutSystemAuditLogsRoute: typeof ProtectedLayoutSystemAuditLogsRouteWithChildren
@@ -922,6 +1018,8 @@ interface ProtectedLayoutRouteChildren {
 }
 
 const ProtectedLayoutRouteChildren: ProtectedLayoutRouteChildren = {
+  ProtectedLayoutPlatformsRouteRoute:
+    ProtectedLayoutPlatformsRouteRouteWithChildren,
   ProtectedLayoutProjectsRouteRoute:
     ProtectedLayoutProjectsRouteRouteWithChildren,
   ProtectedLayoutRolesRouteRoute: ProtectedLayoutRolesRouteRouteWithChildren,
@@ -929,6 +1027,7 @@ const ProtectedLayoutRouteChildren: ProtectedLayoutRouteChildren = {
     ProtectedLayoutSettingsRouteRouteWithChildren,
   ProtectedLayoutUsersRouteRoute: ProtectedLayoutUsersRouteRouteWithChildren,
   ProtectedLayout403Route: ProtectedLayout403Route,
+  ProtectedLayoutAgentsRoute: ProtectedLayoutAgentsRoute,
   ProtectedLayoutDevRoute: ProtectedLayoutDevRoute,
   ProtectedLayoutIndexRoute: ProtectedLayoutIndexRoute,
   ProtectedLayoutSystemAuditLogsRoute:
