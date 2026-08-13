@@ -4,6 +4,8 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AgentDto2 } from "./agentDto2";
 
-export type IReadOnlyListOfAgentDto = AgentDto2[];
+export interface ScanWorkspaceDirectoryRequest {
+  /** @nullable */
+  relativePath?: string | null;
+}

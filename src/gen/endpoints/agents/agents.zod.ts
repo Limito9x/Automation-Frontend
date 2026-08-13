@@ -103,3 +103,22 @@ export const RevokeAgentParams = /*#__PURE__*/ zod.object({
 
 export const RevokeAgentResponse = /*#__PURE__*/ zod.void()
 
+export const AutomationAgentFeaturesConnectionsTestSendMessageTestScanParams = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid()
+})
+
+export const AutomationAgentFeaturesConnectionsTestSendMessageTestScanBody = /*#__PURE__*/ zod.object({
+  "directoryPath": /*#__PURE__*/ zod.string(),
+  "extensions": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.string()))
+})
+
+export const AutomationAgentFeaturesConnectionsTestSendMessageTestScanResponse = /*#__PURE__*/ zod.object({
+  "success": /*#__PURE__*/ zod.boolean(),
+  "message": /*#__PURE__*/ zod.string(),
+  "items": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "relativePath": /*#__PURE__*/ zod.string(),
+  "hash": /*#__PURE__*/ zod.string(),
+  "sizeBytes": /*#__PURE__*/ zod.int()
+})))
+})
+

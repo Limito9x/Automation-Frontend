@@ -79,3 +79,8 @@
 - **Phân biệt Thuật Ngữ**: Luôn sử dụng `FormRenderer` (vẽ Form cho End-User từ JSON) và `FormBuilder` (Giao diện cấu hình cho Admin).
 - **Zod Validation**: Các giới hạn logic như `min`, `max` (cho số) bắt buộc phải cấu hình bằng Zod schema (`z.number().min()`), TUYỆT ĐỐI KHÔNG cấu hình qua HTML prop trong form động vì các component như `react-number-format` render ra thẻ `<input type="text">` và sẽ bỏ qua HTML min/max.
 - **BaseFormField Config**: Mọi Form Control phải bọc qua `BaseFormField` và dùng `OmitFormProps` để tránh xung đột Type với React Hook Form. Thuộc tính `config` sinh ra để chứa các HTML prop native (như `maxLength`) và prop riêng của component.
+
+## 14. Feature Analysis & UI Layout Heuristics
+- **Simple Entity Features:** When a feature request only involves 1 single entity, has very few fields, and at most 1 foreign key, assume a standard **Table layout** (ResourcePageShell / BaseTable) at Frontend. Do not ask redundant questions about UI layout.
+- **Complex Features:** When a feature request is complex, involves multiple fields, multiple entities, or complex scene data flows, YOU MUST proactively ask the user to clarify: (1) Preferred UI layout (List Card, Canvas, Dashboard, Tabbed View, etc.), (2) Field mapping to dedicated Command/Query & Response DTOs, and (3) Scene Data Flow design to minimize API roundtrips.
+

@@ -21,7 +21,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
-  AgentDto,
+  AgentDto2,
   AgentPlatformConfigDto,
   ConfigureAgentPlatformCommand,
   ErrorResponse,
@@ -30,6 +30,8 @@ import type {
   RegisterAgentResultDto,
   RegisterAgentWithTokenCommand,
   SetupTokenDto,
+  TestScanRequest,
+  TestScanResponse,
 } from "../../model";
 
 import { customInstance } from "../../../lib/api-client";
@@ -242,7 +244,7 @@ export const useGenerateSetupToken = <TError = void, TContext = unknown>(
   );
 };
 export const getMyAgent = (signal?: AbortSignal) => {
-  return customInstance<AgentDto>({
+  return customInstance<AgentDto2>({
     url: `/api/agents/me`,
     method: "GET",
     signal,
@@ -666,4 +668,115 @@ export const useRevokeAgent = <TError = void, TContext = unknown>(
   TContext
 > => {
   return useMutation(getRevokeAgentMutationOptions(options), queryClient);
+};
+export const automationAgentFeaturesConnectionsTestSendMessageTestScan = (
+  id: string,
+  testScanRequest: TestScanRequest,
+  signal?: AbortSignal,
+) => {
+  return customInstance<TestScanResponse>({
+    url: `/api/agents/${id}/test-scan`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: testScanRequest,
+    signal,
+  });
+};
+
+export const getAutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationOptions =
+  <TError = unknown, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
+        >
+      >,
+      TError,
+      { id: string; data: TestScanRequest },
+      TContext
+    >;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
+      >
+    >,
+    TError,
+    { id: string; data: TestScanRequest },
+    TContext
+  > => {
+    const mutationKey = [
+      "automationAgentFeaturesConnectionsTestSendMessageTestScan",
+    ];
+    const { mutation: mutationOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey } };
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
+        >
+      >,
+      { id: string; data: TestScanRequest }
+    > = (props) => {
+      const { id, data } = props ?? {};
+
+      return automationAgentFeaturesConnectionsTestSendMessageTestScan(
+        id,
+        data,
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type AutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
+      >
+    >
+  >;
+export type AutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationBody =
+  TestScanRequest;
+export type AutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationError =
+  unknown;
+
+export const useAutomationAgentFeaturesConnectionsTestSendMessageTestScan = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
+        >
+      >,
+      TError,
+      { id: string; data: TestScanRequest },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof automationAgentFeaturesConnectionsTestSendMessageTestScan>
+  >,
+  TError,
+  { id: string; data: TestScanRequest },
+  TContext
+> => {
+  return useMutation(
+    getAutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationOptions(
+      options,
+    ),
+    queryClient,
+  );
 };
