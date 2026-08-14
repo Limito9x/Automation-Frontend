@@ -5,6 +5,7 @@ import { Search, RefreshCw, FolderTree, Minimize2, ArrowLeft, Folder } from "luc
 interface DirectoryTreeToolbarProps {
   searchTerm: string;
   currentPath?: string;
+  canNavigateUp?: boolean;
   onSearchChange: (value: string) => void;
   onRefresh?: () => void;
   onExpandAll?: () => void;
@@ -16,6 +17,7 @@ interface DirectoryTreeToolbarProps {
 export function DirectoryTreeToolbar({
   searchTerm,
   currentPath,
+  canNavigateUp = false,
   onSearchChange,
   onRefresh,
   onExpandAll,
@@ -30,7 +32,7 @@ export function DirectoryTreeToolbar({
         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-background/90 rounded-md border border-border/50 text-xs font-mono text-foreground/80 truncate shadow-2xs">
           <Folder className="size-3.5 text-amber-500 shrink-0" />
           <span className="truncate" title={currentPath || "Root Directory"}>
-            {currentPath || "Root Directory ( . )"}
+            {currentPath || "Root Drives"}
           </span>
         </div>
       )}
@@ -38,12 +40,12 @@ export function DirectoryTreeToolbar({
       <div className="flex items-center gap-2">
         {/* Navigate Up / Back */}
         {onNavigateUp && (
-          <div title="Go Up / Parent Directory">
+          <div title={canNavigateUp ? "Go Up / Parent Directory" : "At Root Directory"}>
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={onNavigateUp}
-              isDisabled={isRefreshing}
+              isDisabled={isRefreshing || !canNavigateUp}
               className="size-8"
             >
               <ArrowLeft className="size-3.5" />

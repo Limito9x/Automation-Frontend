@@ -24,6 +24,8 @@ export function DirectoryTree({
   height = 450,
 }: DirectoryTreeProps) {
   const [currentPath, setCurrentPath] = useState<string>(initialPath);
+  const [parentPath, setParentPath] = useState<string>("");
+  const [canNavigateUp, setCanNavigateUp] = useState<boolean>(false);
   const [treeData, setTreeData] = useState<FileTreeNodeData[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -76,13 +78,23 @@ export function DirectoryTree({
     setErrorMessage(null);
 
     try {
-      const res = await scanDirectory.mutateAsync({
+      const res: any = await scanDirectory.mutateAsync({
         workspaceId,
         agentId,
         data: { relativePath: path },
       });
-      const nodes = mapDtosToNodes(res || []);
+
+      const items = Array.isArray(res) ? res : (res?.items || []);
+      const nodes = mapDtosToNodes(items);
       setTreeData(nodes);
+
+      if (res && !Array.isArray(res)) {
+        setCurrentPath(res.currentPath ?? path);
+        setParentPath(res.parentPath ?? "");
+        setCanNavigateUp(Boolean(res.canNavigateUp));
+      } else {
+        setCurrentPath(path);
+      }
     } catch (err: any) {
       setErrorMessage(err?.message || "Không thể tải danh sách thư mục từ Agent.");
     } finally {
@@ -91,8 +103,8 @@ export function DirectoryTree({
   }, [workspaceId, agentId]);
 
   useEffect(() => {
-    loadDirectory(currentPath);
-  }, [currentPath, loadDirectory]);
+    loadDirectory(initialPath);
+  }, [initialPath, loadDirectory]);
 
   // Lazy Load Subdirectory when folder toggled open
   const handleToggle = async (id: string) => {
@@ -110,12 +122,13 @@ export function DirectoryTree({
     const targetNode = findNodeByPath(treeData, id);
     if (targetNode && targetNode.isDirectory && !targetNode.isLoaded) {
       try {
-        const res = await scanDirectory.mutateAsync({
+        const res: any = await scanDirectory.mutateAsync({
           workspaceId,
           agentId,
           data: { relativePath: targetNode.path },
         });
-        const childNodes = mapDtosToNodes(res || []);
+        const items = Array.isArray(res) ? res : (res?.items || []);
+        const childNodes = mapDtosToNodes(items);
         setTreeData((prev) => updateNodeChildren(prev, id, childNodes));
       } catch (err) {
         console.error("Error loading subdirectory:", err);
@@ -123,33 +136,10 @@ export function DirectoryTree({
     }
   };
 
-  // Helper to calculate parent directory path
-  const getParentPath = (path: string): string => {
-    if (!path || path === "." || path === "/" || path === "\\") return "";
-    const normalized = path.replace(/\\/g, "/").replace(/\/$/, "");
-    const lastSlashIndex = normalized.lastIndexOf("/");
-    if (lastSlashIndex === -1) {
-      return "";
-    }
-    return normalized.substring(0, lastSlashIndex);
-  };
-
   // Navigate Up / Back Action
   const handleNavigateUp = () => {
-    // If currentPath is set, move currentPath UP to parent directory
-    if (currentPath) {
-      const parent = getParentPath(currentPath);
-      setCurrentPath(parent);
-      return;
-    }
-
-    // Otherwise if selected node exists, navigate to parent directory of selected node
-    const selected = treeRef.current?.selectedNodes[0];
-    if (selected && selected.data.path) {
-      const parent = getParentPath(selected.data.path);
-      setCurrentPath(parent);
-    } else {
-      treeRef.current?.closeAll();
+    if (canNavigateUp) {
+      loadDirectory(parentPath);
     }
   };
 
@@ -159,6 +149,7 @@ export function DirectoryTree({
       <DirectoryTreeToolbar
         searchTerm={searchTerm}
         currentPath={currentPath}
+        canNavigateUp={canNavigateUp}
         onSearchChange={setSearchTerm}
         onRefresh={() => loadDirectory(currentPath)}
         onExpandAll={() => treeRef.current?.openAll()}
