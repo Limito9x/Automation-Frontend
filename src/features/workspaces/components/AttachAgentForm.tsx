@@ -3,7 +3,7 @@ import { useWatch } from "react-hook-form";
 import { FormInput, FormSelect } from "@/components/form-controls";
 import { attachAgentSchema, type AttachAgentInput, type AttachAgentOutput } from "../schemas/workspaceSchema";
 import { useGetAgents } from "@/gen/endpoints/agents/agents";
-import { DirectoryTree } from "@/components/custom-ui/file-tree/DirectoryTree";
+import { FolderBrowser } from "@/components/custom-ui/file-tree";
 import { FolderTree } from "lucide-react";
 
 interface AttachAgentFormProps {
@@ -24,11 +24,12 @@ export function AttachAgentForm({ workspaceId, onSubmit }: AttachAgentFormProps)
     resolver: zodResolver(attachAgentSchema),
     defaultValues: {
       agentId: "",
-      rootPath: "/",
+      rootPath: "",
     },
   });
 
   const selectedAgentId = useWatch({ control: form.control, name: "agentId" });
+  const currentRootPath = useWatch({ control: form.control, name: "rootPath" });
 
   return (
     <Form form={form} formId="attach-agent-form" onSubmit={onSubmit}>
@@ -40,38 +41,43 @@ export function AttachAgentForm({ workspaceId, onSubmit }: AttachAgentFormProps)
           placeholder="Choose an agent..."
           options={agentOptions}
         />
-        <FormInput
-          control={form.control}
-          label="Root Path"
-          name="rootPath"
-          type="text"
-          placeholder="e.g. /var/workspace or C:\Workspaces"
-        />
 
-        {/* Directory Tree Preview / Browser */}
+        {/* Chỉ hiển thị Root Path và Folder Browser khi đã chọn Agent */}
         {selectedAgentId && workspaceId && (
-          <div className="space-y-2 pt-2 border-t border-border/40">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                <FolderTree className="size-3.5 text-primary" />
-                <span>Browse & Select Directory</span>
-              </label>
-              <span className="text-[11px] text-muted-foreground">
-                Click folder to auto-fill Root Path
-              </span>
-            </div>
-
-            <DirectoryTree
-              workspaceId={workspaceId}
-              agentId={selectedAgentId}
-              height={300}
-              onSelectNode={(node) => {
-                if (node.isDirectory) {
-                  form.setValue("rootPath", node.path, { shouldValidate: true });
-                }
-              }}
+          <>
+            <FormInput
+              control={form.control}
+              label="Root Path"
+              name="rootPath"
+              type="text"
+              readOnly
+              placeholder="Choose directory below to auto-fill Root Path..."
+              className="bg-muted/50 font-mono text-xs cursor-default"
             />
-          </div>
+
+            {/* Folder Browser */}
+            <div className="space-y-2 pt-2 border-t border-border/40">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                  <FolderTree className="size-3.5 text-primary" />
+                  <span>Browse & Select Directory</span>
+                </label>
+                <span className="text-[11px] text-muted-foreground">
+                  Click to select / Double-click or press Open to open
+                </span>
+              </div>
+
+              <FolderBrowser
+                workspaceId={workspaceId}
+                agentId={selectedAgentId}
+                selectedPath={currentRootPath}
+                height={280}
+                onSelectPath={(path) => {
+                  form.setValue("rootPath", path, { shouldValidate: true });
+                }}
+              />
+            </div>
+          </>
         )}
       </FormGrid>
     </Form>
