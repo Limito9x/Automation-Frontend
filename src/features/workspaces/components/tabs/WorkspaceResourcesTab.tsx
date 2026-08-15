@@ -30,6 +30,8 @@ export function WorkspaceResourcesTab({
         totalCount={data?.totalCount || 0}
         isLoading={isLoading}
         resource={resource}
+        workspaceId={workspaceId}
+        projectId={projectId}
       />
     </div>
   );

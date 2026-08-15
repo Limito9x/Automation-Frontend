@@ -1,24 +1,32 @@
-import { useMemo } from "react";
-import { type ColumnDef } from "@tanstack/react-table";
+import { useState, useEffect, useCallback } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  pointerWithin,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
 import { BaseTable } from "@/components/table/BaseTable";
-import { useDataTable } from "@/lib/useDataTable";
 import type { WorkspaceResourceDto } from "../types/workspace-resources";
 import type { useResourceQuery, BaseSearchParams } from "@/lib/useResourceQuery";
-import { 
-  FileCode, 
-  Search, 
-  Tag, 
-  Calendar, 
-  GitBranch, 
-  Folder 
-} from "lucide-react";
+import { useWorkspaceResourceTable } from "../hooks/useWorkspaceResourceTable";
+import { AssignContentSidePanel } from "./drawers/AssignContentSidePanel";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Search, Layers, Unlink, FileCode } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface WorkspaceResourceTableProps {
   data: WorkspaceResourceDto[];
   totalCount: number;
   isLoading: boolean;
   resource: ReturnType<typeof useResourceQuery<BaseSearchParams>>;
+  workspaceId: string;
+  projectId: string;
 }
 
 export function WorkspaceResourceTable({
@@ -26,142 +34,219 @@ export function WorkspaceResourceTable({
   totalCount,
   isLoading,
   resource,
+  workspaceId,
+  projectId,
 }: WorkspaceResourceTableProps) {
-  const columns = useMemo<ColumnDef<WorkspaceResourceDto>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: "Resource File",
-        meta: { label: "Name", icon: FileCode },
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <div className="flex items-center gap-2.5 py-1 min-w-[180px]">
-              <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                <FileCode className="size-4 text-primary" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-foreground text-sm truncate">
-                  {item.displayName || item.name || "Unnamed Resource"}
-                </p>
-                {(item.relativePath || item.filePath) && (
-                  <p className="text-xs text-muted-foreground truncate max-w-xs">
-                    {item.relativePath || item.filePath}
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "contentTypeName",
-        header: "Content Type",
-        meta: { label: "Type", icon: Tag },
-        cell: ({ row }) => {
-          const item = row.original;
-          if (!item.contentTypeName) {
-            return <span className="text-xs text-muted-foreground italic">Unassigned</span>;
-          }
-          return (
-            <span
-              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border"
-              style={{
-                backgroundColor: item.contentTypeColor ? `${item.contentTypeColor}15` : undefined,
-                color: item.contentTypeColor || undefined,
-                borderColor: item.contentTypeColor ? `${item.contentTypeColor}40` : undefined,
-              }}
-            >
-              <span
-                className="size-1.5 rounded-full"
-                style={{ backgroundColor: item.contentTypeColor || "#64748b" }}
-              />
-              {item.contentTypeName}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "contentName",
-        header: "Linked Content",
-        meta: { label: "Content", icon: Folder },
-        cell: ({ row }) => {
-          const item = row.original;
-          if (!item.contentName) {
-            return <span className="text-xs text-muted-foreground">-</span>;
-          }
-          return (
-            <div className="flex items-center gap-1.5 font-medium text-xs text-foreground">
-              <Folder className="size-3.5 text-muted-foreground" />
-              <span>{item.contentName}</span>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "versionCount",
-        header: "Versions",
-        meta: { label: "Versions", icon: GitBranch },
-        cell: ({ row }) => {
-          const count = row.original.versionCount;
-          return (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-muted text-xs font-mono font-medium text-foreground">
-              <GitBranch className="size-3 text-muted-foreground" />
-              v{count > 0 ? count : 1}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "createdAt",
-        header: "Created At",
-        meta: { label: "Created", icon: Calendar },
-        cell: ({ row }) => {
-          const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
-          return (
-            <span className="text-xs text-muted-foreground">
-              {date ? date.toLocaleDateString() : "N/A"}
-            </span>
-          );
-        },
-      },
-    ],
-    []
-  );
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [activeDragItem, setActiveDragItem] = useState<{
+    id: string;
+    resourceIds: string[];
+    displayName?: string;
+  } | null>(null);
 
-  const table = useDataTable({
-    data,
+  // Debounced search input state
+  const [searchValue, setSearchValue] = useState(resource.search.globalKeyword || "");
+  const debouncedSearch = useDebounce(searchValue, 350);
+
+  useEffect(() => {
+    if (debouncedSearch !== (resource.search.globalKeyword || "")) {
+      resource.onSearchChange(debouncedSearch);
+    }
+  }, [debouncedSearch]);
+
+  const handleOpenAssignPanel = useCallback((_resourceId?: string) => {
+    setIsPanelOpen(true);
+  }, []);
+
+  const {
+    table,
     columns,
+    selectedRowIds,
+    setRowSelection,
+    handleBatchUnlink,
+    assignMutation,
+  } = useWorkspaceResourceTable({
+    data,
     totalCount,
     resource,
+    workspaceId,
+    onOpenAssignPanel: handleOpenAssignPanel,
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const dragData = event.active.data.current as {
+      resourceIds: string[];
+      displayName?: string;
+    } | undefined;
+
+    setActiveDragItem({
+      id: event.active.id as string,
+      resourceIds: dragData?.resourceIds || [event.active.id as string],
+      displayName: dragData?.displayName,
+    });
+
+    setIsPanelOpen(true);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveDragItem(null);
+
+    if (!over || !over.id) return;
+
+    const targetContentId = over.id as string;
+    const dragData = active.data.current as { resourceIds: string[] } | undefined;
+    const resourceIdsToAssign = dragData?.resourceIds || [active.id as string];
+
+    if (resourceIdsToAssign.length === 0) return;
+
+    assignMutation.mutate(
+      {
+        data: {
+          resourceIds: resourceIdsToAssign,
+          contentId: targetContentId,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast.success(`Assigned ${resourceIdsToAssign.length} resource(s) to content.`);
+          setRowSelection({});
+        },
+        onError: (err: any) => {
+          toast.error(err?.message || "Failed to assign content.");
+        },
+      }
+    );
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Omni-Search Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search name, path, content..."
-            value={resource.search.globalKeyword || ""}
-            onChange={(e) => resource.onSearchChange(e.target.value)}
-            className="pl-9 text-xs"
+    <DndContext
+      sensors={sensors}
+      collisionDetection={pointerWithin}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <>
+        {/* Main Workspace Layout: Docked SidePanel on Left + Table & Toolbar on Right */}
+        <div className="flex items-start gap-4">
+        {/* Left Side: Content Drop Targets Panel */}
+        {isPanelOpen && (
+          <div className="w-80 lg:w-96 shrink-0 sticky top-4">
+            <AssignContentSidePanel
+              isOpen={isPanelOpen}
+              onClose={() => setIsPanelOpen(false)}
+              projectId={projectId}
+              workspaceId={workspaceId}
+              selectedResourceIds={selectedRowIds}
+              onAssignSuccess={() => {
+                setRowSelection({});
+              }}
+            />
+          </div>
+        )}
+
+        {/* Right Side: Table Toolbar + Selection Bar + Table */}
+        <div className="flex-1 min-w-0 space-y-3">
+          {/* Table Toolbar & Search */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="relative w-full sm:w-80">
+              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search name, path, content..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="pl-9 text-xs"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Batch Actions when items are selected */}
+              {selectedRowIds.length > 0 && (
+                <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    type="button"
+                    onClick={() => setRowSelection({})}
+                    className="inline-flex items-center gap-1 h-8 px-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors cursor-pointer"
+                    title="Click to clear selection"
+                  >
+                    <span>{selectedRowIds.length} selected</span>
+                    <span className="text-[10px] opacity-70">✕</span>
+                  </button>
+
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={handleBatchUnlink}
+                    isDisabled={assignMutation.isPending}
+                    className="h-8 text-xs gap-1 px-2.5"
+                  >
+                    <Unlink className="size-3.5" />
+                    Unlink ({selectedRowIds.length})
+                  </Button>
+                </div>
+              )}
+
+              {/* Toggle Left Content Panel */}
+              <Button
+                size="sm"
+                variant={isPanelOpen ? "default" : "outline"}
+                onClick={() => setIsPanelOpen(!isPanelOpen)}
+                className="h-8 text-xs gap-1.5 font-medium shadow-xs"
+              >
+                <Layers className="size-3.5" />
+                {isPanelOpen ? "Hide Content Panel" : "Assign Content Panel"}
+              </Button>
+
+              {/* Total Count */}
+              <div className="text-xs text-muted-foreground font-medium pl-1">
+                <span className="text-foreground font-semibold">{data.length}</span> /{" "}
+                <span className="text-foreground font-semibold">{totalCount}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <BaseTable
+            table={table}
+            columns={columns}
+            isLoading={isLoading}
+            caption="Workspace Resources List"
           />
-        </div>
-        <div className="text-xs text-muted-foreground font-medium">
-          Showing <span className="text-foreground font-semibold">{data.length}</span> of{" "}
-          <span className="text-foreground font-semibold">{totalCount}</span> resources
         </div>
       </div>
 
-      {/* Table */}
-      <BaseTable
-        table={table}
-        columns={columns}
-        isLoading={isLoading}
-        caption="Workspace Resources List"
-      />
-    </div>
+        {/* Drag Overlay (Floating Card while dragging) */}
+        <DragOverlay dropAnimation={null}>
+          {activeDragItem ? (
+            <div className="flex items-center gap-2.5 px-3.5 py-2.5 bg-card/95 backdrop-blur-md text-foreground rounded-xl border border-primary shadow-2xl ring-4 ring-primary/10 select-none pointer-events-none whitespace-nowrap min-w-max">
+              <div className="size-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+                <FileCode className="size-4" />
+              </div>
+              <div className="flex flex-col min-w-0 pr-1 text-left">
+                <span className="text-xs font-semibold text-foreground truncate max-w-[200px]">
+                  {activeDragItem.displayName || "Selected File"}
+                </span>
+                {activeDragItem.resourceIds.length > 1 && (
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    +{activeDragItem.resourceIds.length - 1} other files selected
+                  </span>
+                )}
+              </div>
+              <span className="flex items-center justify-center size-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold shrink-0 ml-1">
+                {activeDragItem.resourceIds.length}
+              </span>
+            </div>
+          ) : null}
+        </DragOverlay>
+      </>
+    </DndContext>
   );
 }

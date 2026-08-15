@@ -118,3 +118,25 @@ export const GetContentItemsResponse = /*#__PURE__*/ zod.object({
   "hasNextPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean())
 })
 
+export const LookupContentItemsParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
+})
+
+export const LookupContentItemsQueryParams = /*#__PURE__*/ zod.object({
+  "contentTypeId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "contentTypeKey": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "keyword": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "limit": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int())
+})
+
+export const LookupContentItemsResponseItem = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "name": /*#__PURE__*/ zod.string(),
+  "contentTypeId": /*#__PURE__*/ zod.uuid(),
+  "contentTypeKey": /*#__PURE__*/ zod.string(),
+  "contentTypeName": /*#__PURE__*/ zod.string(),
+  "contentTypeColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "contentTypeIcon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+})
+export const LookupContentItemsResponse = /*#__PURE__*/ zod.array(LookupContentItemsResponseItem)
+

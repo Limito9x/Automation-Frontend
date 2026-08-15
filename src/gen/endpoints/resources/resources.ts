@@ -20,7 +20,12 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { ResourceItemDto } from "../../model";
+import type {
+  AssignResourcesContentCommand,
+  ErrorResponse,
+  ListOfContentResourceDto,
+  ResourceItemDto,
+} from "../../model";
 
 import { customInstance } from "../../../lib/api-client";
 
@@ -41,6 +46,241 @@ const withQueryKey = <T extends object, K>(
   }
   return result;
 };
+
+export const assignResourcesContent = (
+  assignResourcesContentCommand: AssignResourcesContentCommand,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>({
+    url: `/api/workspaces/resources/assign-content`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: assignResourcesContentCommand,
+    signal,
+  });
+};
+
+export const getAssignResourcesContentMutationOptions = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof assignResourcesContent>>,
+    TError,
+    { data: AssignResourcesContentCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof assignResourcesContent>>,
+  TError,
+  { data: AssignResourcesContentCommand },
+  TContext
+> => {
+  const mutationKey = ["assignResourcesContent"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof assignResourcesContent>>,
+    { data: AssignResourcesContentCommand }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return assignResourcesContent(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AssignResourcesContentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof assignResourcesContent>>
+>;
+export type AssignResourcesContentMutationBody = AssignResourcesContentCommand;
+export type AssignResourcesContentMutationError = ErrorResponse | void;
+
+export const useAssignResourcesContent = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof assignResourcesContent>>,
+      TError,
+      { data: AssignResourcesContentCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof assignResourcesContent>>,
+  TError,
+  { data: AssignResourcesContentCommand },
+  TContext
+> => {
+  return useMutation(
+    getAssignResourcesContentMutationOptions(options),
+    queryClient,
+  );
+};
+export const getResourcesByContent = (
+  contentId: string,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ListOfContentResourceDto>({
+    url: `/api/workspaces/resources/by-content/${contentId}`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetResourcesByContentQueryKey = (contentId: string) => {
+  return [`/api/workspaces/resources/by-content/${contentId}`] as const;
+};
+
+export const getGetResourcesByContentQueryOptions = <
+  TData = Awaited<ReturnType<typeof getResourcesByContent>>,
+  TError = void,
+>(
+  contentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getResourcesByContent>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetResourcesByContentQueryKey(contentId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getResourcesByContent>>
+  > = ({ signal }) => getResourcesByContent(contentId, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: contentId !== null && contentId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getResourcesByContent>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetResourcesByContentQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getResourcesByContent>>
+>;
+export type GetResourcesByContentQueryError = void;
+
+export function useGetResourcesByContent<
+  TData = Awaited<ReturnType<typeof getResourcesByContent>>,
+  TError = void,
+>(
+  contentId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getResourcesByContent>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getResourcesByContent>>,
+          TError,
+          Awaited<ReturnType<typeof getResourcesByContent>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetResourcesByContent<
+  TData = Awaited<ReturnType<typeof getResourcesByContent>>,
+  TError = void,
+>(
+  contentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getResourcesByContent>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getResourcesByContent>>,
+          TError,
+          Awaited<ReturnType<typeof getResourcesByContent>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetResourcesByContent<
+  TData = Awaited<ReturnType<typeof getResourcesByContent>>,
+  TError = void,
+>(
+  contentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getResourcesByContent>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetResourcesByContent<
+  TData = Awaited<ReturnType<typeof getResourcesByContent>>,
+  TError = void,
+>(
+  contentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getResourcesByContent>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetResourcesByContentQueryOptions(contentId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
 
 export const deleteResource = (id: string, signal?: AbortSignal) => {
   return customInstance<void>({ url: `/api/${id}`, method: "DELETE", signal });

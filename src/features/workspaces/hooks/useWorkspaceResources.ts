@@ -1,5 +1,6 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { customInstance } from "@/lib/api-client";
+import * as ResourcesApi from "@/gen/endpoints/resources/resources";
 import type {
   WorkspaceResourceDto,
   WorkspaceAgentResourceDto,
@@ -76,3 +77,36 @@ export const useWorkspaceAgentResources = (
     placeholderData: keepPreviousData,
   });
 };
+
+export const useAssignResourcesContent = (workspaceId?: string) => {
+  const queryClient = useQueryClient();
+  return ResourcesApi.useAssignResourcesContent({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            (Array.isArray(query.queryKey) && query.queryKey.includes("resources")) ||
+            (typeof query.queryKey[0] === "string" && query.queryKey[0].includes("resources")),
+        });
+        if (workspaceId) {
+          queryClient.invalidateQueries({
+            queryKey: ["workspaces", workspaceId, "resources"],
+          });
+        }
+      },
+    },
+  });
+};
+
+export const useGetResourcesByContent = (
+  contentId: string,
+  options?: { enabled?: boolean }
+) => {
+  return ResourcesApi.useGetResourcesByContent(contentId, {
+    query: {
+      enabled: !!contentId && (options?.enabled ?? true),
+      placeholderData: keepPreviousData,
+    },
+  });
+};
+

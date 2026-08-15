@@ -7,6 +7,34 @@
 import * as zod from 'zod/mini';
 
 
+
+
+
+export const AssignResourcesContentBody = /*#__PURE__*/ zod.object({
+  "resourceIds": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()).check(/*#__PURE__*/ zod.minLength(1)),
+  "contentId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid())
+})
+
+export const AssignResourcesContentResponse = /*#__PURE__*/ zod.void()
+
+export const GetResourcesByContentParams = /*#__PURE__*/ zod.object({
+  "contentId": /*#__PURE__*/ zod.uuid()
+})
+
+export const GetResourcesByContentResponseItem = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "workspaceId": /*#__PURE__*/ zod.uuid(),
+  "workspaceName": /*#__PURE__*/ zod.string(),
+  "displayName": /*#__PURE__*/ zod.string(),
+  "relativePath": /*#__PURE__*/ zod.string(),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "latestVersionNo": /*#__PURE__*/ zod.int(),
+  "latestSizeBytes": /*#__PURE__*/ zod.int(),
+  "versionCount": /*#__PURE__*/ zod.int(),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})
+export const GetResourcesByContentResponse = /*#__PURE__*/ zod.array(GetResourcesByContentResponseItem)
+
 export const DeleteResourceParams = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid()
 })

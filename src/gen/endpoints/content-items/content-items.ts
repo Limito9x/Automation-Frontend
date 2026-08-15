@@ -25,6 +25,8 @@ import type {
   CreateContentItemCommand,
   ErrorResponse,
   GetContentItemsParams,
+  ListOfContentLookupDto,
+  LookupContentItemsParams,
   PagedResultOfContentItemDto,
   UpdateContentItemCommand,
 } from "../../model";
@@ -599,6 +601,178 @@ export function useGetContentItems<
   const queryOptions = getGetContentItemsQueryOptions(
     projectId,
     key,
+    params,
+    options,
+  );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const lookupContentItems = (
+  projectId: string,
+  params?: LookupContentItemsParams,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ListOfContentLookupDto>({
+    url: `/api/projects/${projectId}/contents/lookup`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
+
+export const getLookupContentItemsQueryKey = (
+  projectId: string,
+  params?: LookupContentItemsParams,
+) => {
+  return [
+    `/api/projects/${projectId}/contents/lookup`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getLookupContentItemsQueryOptions = <
+  TData = Awaited<ReturnType<typeof lookupContentItems>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: LookupContentItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof lookupContentItems>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getLookupContentItemsQueryKey(projectId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof lookupContentItems>>
+  > = ({ signal }) => lookupContentItems(projectId, params, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: projectId !== null && projectId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof lookupContentItems>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type LookupContentItemsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof lookupContentItems>>
+>;
+export type LookupContentItemsQueryError = void;
+
+export function useLookupContentItems<
+  TData = Awaited<ReturnType<typeof lookupContentItems>>,
+  TError = void,
+>(
+  projectId: string,
+  params: undefined | LookupContentItemsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof lookupContentItems>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof lookupContentItems>>,
+          TError,
+          Awaited<ReturnType<typeof lookupContentItems>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useLookupContentItems<
+  TData = Awaited<ReturnType<typeof lookupContentItems>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: LookupContentItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof lookupContentItems>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof lookupContentItems>>,
+          TError,
+          Awaited<ReturnType<typeof lookupContentItems>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useLookupContentItems<
+  TData = Awaited<ReturnType<typeof lookupContentItems>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: LookupContentItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof lookupContentItems>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useLookupContentItems<
+  TData = Awaited<ReturnType<typeof lookupContentItems>>,
+  TError = void,
+>(
+  projectId: string,
+  params?: LookupContentItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof lookupContentItems>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getLookupContentItemsQueryOptions(
+    projectId,
     params,
     options,
   );

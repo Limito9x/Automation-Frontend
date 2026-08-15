@@ -1,6 +1,7 @@
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import * as ContentItemsApi from "@/gen/endpoints/content-items/content-items";
 import { GetContentItemsQueryParams } from "@/gen/endpoints/content-items/content-items.zod";
+import type { LookupContentItemsParams } from "@/gen/model";
 import { z } from "zod";
 
 type contentItemQuery = z.infer<typeof GetContentItemsQueryParams>;
@@ -82,3 +83,16 @@ export const useDeleteContentItem = (params?: { projectId?: string; contentTypeK
         }
     });
 };
+
+export const useLookupContentItems = (
+    projectId: string,
+    params?: LookupContentItemsParams,
+    options?: { enabled?: boolean }
+) => {
+    return ContentItemsApi.useLookupContentItems(projectId, params, {
+        query: {
+            enabled: !!projectId && (options?.enabled ?? true),
+        }
+    });
+};
+
