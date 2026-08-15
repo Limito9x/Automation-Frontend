@@ -55,11 +55,15 @@ export const GetWorkspaceByIdResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "projectId": /*#__PURE__*/ zod.uuid(),
   "name": /*#__PURE__*/ zod.string(),
+  "agentCount": /*#__PURE__*/ zod.int(),
+  "resourceCount": /*#__PURE__*/ zod.int(),
+  "locationCount": /*#__PURE__*/ zod.int(),
   "workspaceAgents": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "agentId": /*#__PURE__*/ zod.uuid(),
   "rootPath": /*#__PURE__*/ zod.string(),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "lastSyncAt": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.iso.datetime({"offset":true})),
   "agent": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "name": /*#__PURE__*/ zod.string(),
@@ -109,6 +113,7 @@ export const AttachAgentToWorkspaceResponse = /*#__PURE__*/ zod.object({
   "agentId": /*#__PURE__*/ zod.uuid(),
   "rootPath": /*#__PURE__*/ zod.string(),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "lastSyncAt": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.iso.datetime({"offset":true})),
   "agent": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "name": /*#__PURE__*/ zod.string(),
@@ -119,23 +124,130 @@ export const AttachAgentToWorkspaceResponse = /*#__PURE__*/ zod.object({
 }))
 })
 
-export const ScanWorkspaceDirectoryParams = /*#__PURE__*/ zod.object({
+export const SCompareWorkspaceResourceParams = /*#__PURE__*/ zod.object({
   "workspaceId": /*#__PURE__*/ zod.uuid(),
   "agentId": /*#__PURE__*/ zod.uuid()
 })
 
-export const ScanWorkspaceDirectoryBody = /*#__PURE__*/ zod.object({
-  "relativePath": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
-})
-
-export const scanWorkspaceDirectoryResponseHasChildrenDefault = false;
-
-export const ScanWorkspaceDirectoryResponseItem = /*#__PURE__*/ zod.object({
+export const SCompareWorkspaceResourceResponse = /*#__PURE__*/ zod.object({
+  "workspaceAgentId": /*#__PURE__*/ zod.uuid(),
+  "added": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "relativePath": /*#__PURE__*/ zod.string(),
   "name": /*#__PURE__*/ zod.string(),
-  "path": /*#__PURE__*/ zod.string(),
-  "isDirectory": /*#__PURE__*/ zod.boolean(),
+  "localHash": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "localFileSize": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.int()),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "remoteVersion": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "versionNo": /*#__PURE__*/ zod.int(),
   "sizeBytes": /*#__PURE__*/ zod.int(),
-  "hasChildren": /*#__PURE__*/ zod._default(/*#__PURE__*/ zod.boolean(), scanWorkspaceDirectoryResponseHasChildrenDefault)
+  "fileHash": /*#__PURE__*/ zod.string(),
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}))
+})),
+  "modified": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "relativePath": /*#__PURE__*/ zod.string(),
+  "name": /*#__PURE__*/ zod.string(),
+  "localHash": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "localFileSize": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.int()),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "remoteVersion": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "versionNo": /*#__PURE__*/ zod.int(),
+  "sizeBytes": /*#__PURE__*/ zod.int(),
+  "fileHash": /*#__PURE__*/ zod.string(),
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}))
+})),
+  "deleted": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "relativePath": /*#__PURE__*/ zod.string(),
+  "name": /*#__PURE__*/ zod.string(),
+  "localHash": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "localFileSize": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.int()),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "remoteVersion": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "versionNo": /*#__PURE__*/ zod.int(),
+  "sizeBytes": /*#__PURE__*/ zod.int(),
+  "fileHash": /*#__PURE__*/ zod.string(),
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}))
+})),
+  "missing": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "relativePath": /*#__PURE__*/ zod.string(),
+  "name": /*#__PURE__*/ zod.string(),
+  "localHash": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "localFileSize": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.int()),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "remoteVersion": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "versionNo": /*#__PURE__*/ zod.int(),
+  "sizeBytes": /*#__PURE__*/ zod.int(),
+  "fileHash": /*#__PURE__*/ zod.string(),
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}))
+}))
 })
-export const ScanWorkspaceDirectoryResponse = /*#__PURE__*/ zod.array(ScanWorkspaceDirectoryResponseItem)
+
+export const SyncLocalChangesParams = /*#__PURE__*/ zod.object({
+  "workspaceId": /*#__PURE__*/ zod.uuid(),
+  "agentId": /*#__PURE__*/ zod.uuid()
+})
+
+export const SyncLocalChangesBody = /*#__PURE__*/ zod.object({
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "targetPaths": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.string()),
+  "newResourceNames": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.string()))
+})
+
+export const SyncLocalChangesResponse = /*#__PURE__*/ zod.object({
+  "workspaceId": /*#__PURE__*/ zod.uuid(),
+  "agentId": /*#__PURE__*/ zod.uuid(),
+  "addedCount": /*#__PURE__*/ zod.int(),
+  "modifiedCount": /*#__PURE__*/ zod.int(),
+  "locationRemove": /*#__PURE__*/ zod.int()
+})
+
+export const GetWorkspaceResourcesParams = /*#__PURE__*/ zod.object({
+  "workspaceId": /*#__PURE__*/ zod.uuid()
+})
+
+export const GetWorkspaceResourcesQueryParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid(),
+  "page": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
+  "pageSize": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int()),
+  "filters": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "field": /*#__PURE__*/ zod.string(),
+  "operator": /*#__PURE__*/ zod.enum(['Equal', 'NotEqual', 'Contains', 'GreaterThan', 'GreaterThanOrEqual', 'LessThan', 'LessThanOrEqual']),
+  "value": /*#__PURE__*/ zod.string()
+}))),
+  "globalKeyword": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+})
+
+export const GetWorkspaceResourcesResponse = /*#__PURE__*/ zod.object({
+  "items": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "workspaceId": /*#__PURE__*/ zod.uuid(),
+  "displayName": /*#__PURE__*/ zod.string(),
+  "relativePath": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "platformExtensionId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid()),
+  "contentId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid()),
+  "contentName": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "contentTypeName": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "contentTypeColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "contentTypeIcon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "versionCount": /*#__PURE__*/ zod.int(),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}))),
+  "totalCount": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "page": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "pageSize": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "totalPages": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
+  "hasPreviousPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
+  "hasNextPage": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean())
+})
 

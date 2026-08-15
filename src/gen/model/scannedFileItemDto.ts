@@ -5,8 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface DirectoryNodeDto {
-  name: string;
-  path: string;
-  hasChildren?: boolean;
+export interface ScannedFileItemDto {
+  relativePath: string;
+  hash: string;
+  sizeBytes: number;
 }

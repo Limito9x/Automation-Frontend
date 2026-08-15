@@ -9,10 +9,10 @@ import * as zod from 'zod/mini';
 
 export const GetResourceVersionsResponseItem = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
-  "resourceId": /*#__PURE__*/ zod.uuid(),
   "versionNo": /*#__PURE__*/ zod.int(),
+  "sizeBytes": /*#__PURE__*/ zod.int(),
+  "fileHash": /*#__PURE__*/ zod.string(),
   "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "fileHash": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })
 export const GetResourceVersionsResponse = /*#__PURE__*/ zod.array(GetResourceVersionsResponseItem)

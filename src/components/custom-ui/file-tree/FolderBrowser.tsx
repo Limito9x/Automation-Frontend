@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useScanWorkspaceDirectory } from "@/features/workspaces/hooks/useWorkspaces";
+import { useState, useMemo } from "react";
+import { useDiscoverAgentFolder } from "@/features/agents/hooks/useAgents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -19,12 +19,9 @@ import {
 export interface FolderItem {
   name: string;
   path: string;
-  isDirectory: boolean;
-  sizeBytes?: number;
 }
 
 interface FolderBrowserProps {
-  workspaceId: string;
   agentId: string;
   initialPath?: string;
   selectedPath?: string;
@@ -34,7 +31,6 @@ interface FolderBrowserProps {
 }
 
 export function FolderBrowser({
-  workspaceId,
   agentId,
   initialPath = "",
   selectedPath,
@@ -43,69 +39,17 @@ export function FolderBrowser({
   height = 320,
 }: FolderBrowserProps) {
   const [currentPath, setCurrentPath] = useState<string>(initialPath);
-  const [parentPath, setParentPath] = useState<string>("");
-  const [canNavigateUp, setCanNavigateUp] = useState<boolean>(false);
-  const [items, setItems] = useState<FolderItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const onSelectPathRef = useRef(onSelectPath);
-  onSelectPathRef.current = onSelectPath;
-
-  const scanDirectory = useScanWorkspaceDirectory();
-  const mutateAsyncRef = useRef(scanDirectory.mutateAsync);
-  mutateAsyncRef.current = scanDirectory.mutateAsync;
-
-  // Load directory contents for given path
-  const loadDirectory = useCallback(
-    async (path: string, autoSelectCurrent = true) => {
-      if (!workspaceId || !agentId) return;
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const res: any = await mutateAsyncRef.current({
-          workspaceId,
-          agentId,
-          data: { relativePath: path },
-        });
-
-        const rawItems = Array.isArray(res) ? res : res?.items || [];
-        const mappedItems: FolderItem[] = rawItems.map((item: any) => ({
-          name: item.name,
-          path: item.path || item.relativePath,
-          isDirectory: item.isDirectory,
-          sizeBytes: item.sizeBytes,
-        }));
-
-        setItems(mappedItems);
-
-        if (res && !Array.isArray(res)) {
-          const newCurrentPath = res.currentPath ?? path;
-          setCurrentPath(newCurrentPath);
-          setParentPath(res.parentPath ?? "");
-          setCanNavigateUp(Boolean(res.canNavigateUp));
-
-          // Auto-select the folder if currently browsing inside a valid directory (not root drives)
-          if (autoSelectCurrent && newCurrentPath && onSelectPathRef.current) {
-            onSelectPathRef.current(newCurrentPath);
-          }
-        } else {
-          setCurrentPath(path);
-        }
-      } catch (err: any) {
-        setErrorMessage(err?.message || "Could not load directory.");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [workspaceId, agentId]
+  const { data, isLoading, isFetching, error, refetch } = useDiscoverAgentFolder(
+    agentId,
+    currentPath
   );
 
-  useEffect(() => {
-    loadDirectory(initialPath, false);
-  }, [workspaceId, agentId, initialPath, loadDirectory]);
+  const items = data?.items ?? [];
+  const parentPath = data?.parentPath ?? "";
+  const canNavigateUp = Boolean(data?.canNavigateUp);
+  const errorMessage = error ? (error as any)?.message || "Could not load directory." : null;
 
   // Compute breadcrumbs from currentPath
   const breadcrumbs = useMemo(() => {
@@ -143,10 +87,18 @@ export function FolderBrowser({
     );
   }, [items, searchTerm]);
 
+  // Handle navigate to specific directory
+  const handleNavigate = (path: string, autoSelect = true) => {
+    setCurrentPath(path);
+    if (autoSelect && path && onSelectPath) {
+      onSelectPath(path);
+    }
+  };
+
   // Handle navigate up (Back button)
   const handleNavigateUp = () => {
     if (canNavigateUp) {
-      loadDirectory(parentPath, true);
+      handleNavigate(parentPath, true);
     }
   };
 
@@ -180,7 +132,7 @@ export function FolderBrowser({
                 {idx > 0 && <ChevronRight className="size-3 text-muted-foreground/50 shrink-0" />}
                 <button
                   type="button"
-                  onClick={() => !isLast && loadDirectory(crumb.path, true)}
+                  onClick={() => !isLast && handleNavigate(crumb.path, true)}
                   disabled={isLast || isLoading}
                   className={cn(
                     "flex items-center gap-1 px-1.5 py-0.5 rounded transition-colors text-xs",
@@ -207,11 +159,11 @@ export function FolderBrowser({
           <Button
             variant="ghost"
             size="icon-sm"
-            onClick={() => loadDirectory(currentPath, false)}
-            isDisabled={isLoading}
+            onClick={() => refetch()}
+            isDisabled={isFetching}
             className="size-7 shrink-0"
           >
-            <RefreshCw className={cn("size-3.5", isLoading && "animate-spin text-primary")} />
+            <RefreshCw className={cn("size-3.5", isFetching && "animate-spin text-primary")} />
           </Button>
         </div>
       </div>
@@ -242,7 +194,7 @@ export function FolderBrowser({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => loadDirectory(currentPath, false)}
+              onClick={() => refetch()}
               className="mt-1 h-7 text-xs"
             >
               Thử lại
@@ -278,7 +230,7 @@ export function FolderBrowser({
               <div
                 key={item.path}
                 onClick={() => onSelectPath?.(item.path)}
-                onDoubleClick={() => loadDirectory(item.path, true)}
+                onDoubleClick={() => handleNavigate(item.path, true)}
                 className={cn(
                   "group flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer transition-all select-none",
                   isSelected
@@ -309,7 +261,7 @@ export function FolderBrowser({
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      loadDirectory(item.path, true);
+                      handleNavigate(item.path, true);
                     }}
                     className="h-6 px-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-accent"
                   >

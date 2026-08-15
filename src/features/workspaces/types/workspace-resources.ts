@@ -2,9 +2,11 @@ import type { BaseSearchParams } from "@/lib/useResourceQuery";
 
 export interface WorkspaceResourceDto {
   id: string;
-  projectId: string;
+  projectId?: string;
   workspaceId: string;
-  name: string;
+  displayName?: string;
+  name?: string;
+  relativePath?: string | null;
   filePath?: string | null;
   platformExtensionId?: string | null;
   contentId?: string | null;
@@ -42,6 +44,6 @@ export interface PagedResult<T> {
 
 export interface WorkspaceResourceSearchParams extends BaseSearchParams {
   projectId?: string;
-  tab?: "resources" | "agents";
+  tab?: "resources" | "changes";
   agentId?: string;
 }

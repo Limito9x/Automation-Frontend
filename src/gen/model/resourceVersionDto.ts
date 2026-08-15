@@ -7,11 +7,10 @@
 
 export interface ResourceVersionDto {
   id: string;
-  resourceId: string;
   versionNo: number;
+  sizeBytes: number;
+  fileHash: string;
   /** @nullable */
   notes: string | null;
-  /** @nullable */
-  fileHash: string | null;
   createdAt: string;
 }

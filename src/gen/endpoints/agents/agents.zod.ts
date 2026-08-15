@@ -97,28 +97,30 @@ export const ConfigureAgentPlatformResponse = /*#__PURE__*/ zod.object({
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })
 
+export const DiscoverAgentFoldersParams = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid()
+})
+
+export const DiscoverAgentFoldersQueryParams = /*#__PURE__*/ zod.object({
+  "path": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+})
+
+export const discoverAgentFoldersResponseItemsItemHasChildrenDefault = false;
+
+export const DiscoverAgentFoldersResponse = /*#__PURE__*/ zod.object({
+  "currentPath": /*#__PURE__*/ zod.string(),
+  "parentPath": /*#__PURE__*/ zod.string(),
+  "canNavigateUp": /*#__PURE__*/ zod.boolean(),
+  "items": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "name": /*#__PURE__*/ zod.string(),
+  "path": /*#__PURE__*/ zod.string(),
+  "hasChildren": /*#__PURE__*/ zod._default(/*#__PURE__*/ zod.boolean(), discoverAgentFoldersResponseItemsItemHasChildrenDefault)
+}))
+})
+
 export const RevokeAgentParams = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid()
 })
 
 export const RevokeAgentResponse = /*#__PURE__*/ zod.void()
-
-export const AutomationAgentFeaturesConnectionsTestSendMessageTestScanParams = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.uuid()
-})
-
-export const AutomationAgentFeaturesConnectionsTestSendMessageTestScanBody = /*#__PURE__*/ zod.object({
-  "directoryPath": /*#__PURE__*/ zod.string(),
-  "extensions": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.string()))
-})
-
-export const AutomationAgentFeaturesConnectionsTestSendMessageTestScanResponse = /*#__PURE__*/ zod.object({
-  "success": /*#__PURE__*/ zod.boolean(),
-  "message": /*#__PURE__*/ zod.string(),
-  "items": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "relativePath": /*#__PURE__*/ zod.string(),
-  "hash": /*#__PURE__*/ zod.string(),
-  "sizeBytes": /*#__PURE__*/ zod.int()
-})))
-})
 

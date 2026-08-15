@@ -24,14 +24,14 @@ import type {
   AgentDto2,
   AgentPlatformConfigDto,
   ConfigureAgentPlatformCommand,
+  DiscoverAgentFolderResult,
+  DiscoverAgentFoldersParams,
   ErrorResponse,
   IReadOnlyListOfAgentDto,
   RegisterAgentCommand,
   RegisterAgentResultDto,
   RegisterAgentWithTokenCommand,
   SetupTokenDto,
-  TestScanRequest,
-  TestScanResponse,
 } from "../../model";
 
 import { customInstance } from "../../../lib/api-client";
@@ -600,6 +600,174 @@ export const useConfigureAgentPlatform = <
     queryClient,
   );
 };
+export const discoverAgentFolders = (
+  id: string,
+  params?: DiscoverAgentFoldersParams,
+  signal?: AbortSignal,
+) => {
+  return customInstance<DiscoverAgentFolderResult>({
+    url: `/api/agents/${id}/discover-folders`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
+
+export const getDiscoverAgentFoldersQueryKey = (
+  id: string,
+  params?: DiscoverAgentFoldersParams,
+) => {
+  return [
+    `/api/agents/${id}/discover-folders`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getDiscoverAgentFoldersQueryOptions = <
+  TData = Awaited<ReturnType<typeof discoverAgentFolders>>,
+  TError = void,
+>(
+  id: string,
+  params?: DiscoverAgentFoldersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof discoverAgentFolders>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getDiscoverAgentFoldersQueryKey(id, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof discoverAgentFolders>>
+  > = ({ signal }) => discoverAgentFolders(id, params, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof discoverAgentFolders>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DiscoverAgentFoldersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof discoverAgentFolders>>
+>;
+export type DiscoverAgentFoldersQueryError = void;
+
+export function useDiscoverAgentFolders<
+  TData = Awaited<ReturnType<typeof discoverAgentFolders>>,
+  TError = void,
+>(
+  id: string,
+  params: undefined | DiscoverAgentFoldersParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof discoverAgentFolders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof discoverAgentFolders>>,
+          TError,
+          Awaited<ReturnType<typeof discoverAgentFolders>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDiscoverAgentFolders<
+  TData = Awaited<ReturnType<typeof discoverAgentFolders>>,
+  TError = void,
+>(
+  id: string,
+  params?: DiscoverAgentFoldersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof discoverAgentFolders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof discoverAgentFolders>>,
+          TError,
+          Awaited<ReturnType<typeof discoverAgentFolders>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDiscoverAgentFolders<
+  TData = Awaited<ReturnType<typeof discoverAgentFolders>>,
+  TError = void,
+>(
+  id: string,
+  params?: DiscoverAgentFoldersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof discoverAgentFolders>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useDiscoverAgentFolders<
+  TData = Awaited<ReturnType<typeof discoverAgentFolders>>,
+  TError = void,
+>(
+  id: string,
+  params?: DiscoverAgentFoldersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof discoverAgentFolders>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getDiscoverAgentFoldersQueryOptions(id, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
 export const revokeAgent = (id: string, signal?: AbortSignal) => {
   return customInstance<void>({
     url: `/api/agents/${id}/revoke`,
@@ -668,115 +836,4 @@ export const useRevokeAgent = <TError = void, TContext = unknown>(
   TContext
 > => {
   return useMutation(getRevokeAgentMutationOptions(options), queryClient);
-};
-export const automationAgentFeaturesConnectionsTestSendMessageTestScan = (
-  id: string,
-  testScanRequest: TestScanRequest,
-  signal?: AbortSignal,
-) => {
-  return customInstance<TestScanResponse>({
-    url: `/api/agents/${id}/test-scan`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: testScanRequest,
-    signal,
-  });
-};
-
-export const getAutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationOptions =
-  <TError = unknown, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
-        >
-      >,
-      TError,
-      { id: string; data: TestScanRequest },
-      TContext
-    >;
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<
-        typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
-      >
-    >,
-    TError,
-    { id: string; data: TestScanRequest },
-    TContext
-  > => {
-    const mutationKey = [
-      "automationAgentFeaturesConnectionsTestSendMessageTestScan",
-    ];
-    const { mutation: mutationOptions } = options
-      ? options.mutation &&
-        "mutationKey" in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey } };
-
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
-        >
-      >,
-      { id: string; data: TestScanRequest }
-    > = (props) => {
-      const { id, data } = props ?? {};
-
-      return automationAgentFeaturesConnectionsTestSendMessageTestScan(
-        id,
-        data,
-      );
-    };
-
-    return { mutationFn, ...mutationOptions };
-  };
-
-export type AutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<
-        typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
-      >
-    >
-  >;
-export type AutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationBody =
-  TestScanRequest;
-export type AutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationError =
-  unknown;
-
-export const useAutomationAgentFeaturesConnectionsTestSendMessageTestScan = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof automationAgentFeaturesConnectionsTestSendMessageTestScan
-        >
-      >,
-      TError,
-      { id: string; data: TestScanRequest },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<
-    ReturnType<typeof automationAgentFeaturesConnectionsTestSendMessageTestScan>
-  >,
-  TError,
-  { id: string; data: TestScanRequest },
-  TContext
-> => {
-  return useMutation(
-    getAutomationAgentFeaturesConnectionsTestSendMessageTestScanMutationOptions(
-      options,
-    ),
-    queryClient,
-  );
 };

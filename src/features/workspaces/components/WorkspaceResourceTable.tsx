@@ -41,9 +41,13 @@ export function WorkspaceResourceTable({
                 <FileCode className="size-4 text-primary" />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-foreground text-sm truncate">{item.name}</p>
-                {item.filePath && (
-                  <p className="text-xs text-muted-foreground truncate max-w-xs">{item.filePath}</p>
+                <p className="font-semibold text-foreground text-sm truncate">
+                  {item.displayName || item.name || "Unnamed Resource"}
+                </p>
+                {(item.relativePath || item.filePath) && (
+                  <p className="text-xs text-muted-foreground truncate max-w-xs">
+                    {item.relativePath || item.filePath}
+                  </p>
                 )}
               </div>
             </div>

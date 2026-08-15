@@ -68,7 +68,6 @@ export function AttachAgentForm({ workspaceId, onSubmit }: AttachAgentFormProps)
               </div>
 
               <FolderBrowser
-                workspaceId={workspaceId}
                 agentId={selectedAgentId}
                 selectedPath={currentRootPath}
                 height={280}

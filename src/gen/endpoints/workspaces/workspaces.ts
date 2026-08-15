@@ -23,10 +23,13 @@ import type {
 import type {
   AttachAgentToWorkspaceCommand,
   CreateWorkspaceCommand,
+  DiffResult,
   ErrorResponse,
-  IReadOnlyListOfDirectoryNodeDto,
+  GetWorkspaceResourcesParams,
   IReadOnlyListOfWorkspaceDto,
-  ScanWorkspaceDirectoryRequest,
+  PagedResultOfWorkspaceResourceDto,
+  SyncLocalChangesCommand,
+  SyncLocalChangesResult,
   UpdateWorkspaceRequest,
   WorkspaceAgentDto,
   WorkspaceDetailDto,
@@ -638,42 +641,35 @@ export const useAttachAgentToWorkspace = <
     queryClient,
   );
 };
-export const scanWorkspaceDirectory = (
+export const sCompareWorkspaceResource = (
   workspaceId: string,
   agentId: string,
-  scanWorkspaceDirectoryRequest: ScanWorkspaceDirectoryRequest,
   signal?: AbortSignal,
 ) => {
-  return customInstance<IReadOnlyListOfDirectoryNodeDto>({
-    url: `/api/workspaces/${workspaceId}/agents/${agentId}/scan-dir`,
+  return customInstance<DiffResult>({
+    url: `/api/workspaces/${workspaceId}/agents/${agentId}/compare`,
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: scanWorkspaceDirectoryRequest,
     signal,
   });
 };
 
-export const getScanWorkspaceDirectoryMutationOptions = <
+export const getSCompareWorkspaceResourceMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof scanWorkspaceDirectory>>,
+    Awaited<ReturnType<typeof sCompareWorkspaceResource>>,
     TError,
-    {
-      workspaceId: string;
-      agentId: string;
-      data: ScanWorkspaceDirectoryRequest;
-    },
+    { workspaceId: string; agentId: string },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof scanWorkspaceDirectory>>,
+  Awaited<ReturnType<typeof sCompareWorkspaceResource>>,
   TError,
-  { workspaceId: string; agentId: string; data: ScanWorkspaceDirectoryRequest },
+  { workspaceId: string; agentId: string },
   TContext
 > => {
-  const mutationKey = ["scanWorkspaceDirectory"];
+  const mutationKey = ["sCompareWorkspaceResource"];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -683,49 +679,289 @@ export const getScanWorkspaceDirectoryMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof scanWorkspaceDirectory>>,
-    {
-      workspaceId: string;
-      agentId: string;
-      data: ScanWorkspaceDirectoryRequest;
-    }
+    Awaited<ReturnType<typeof sCompareWorkspaceResource>>,
+    { workspaceId: string; agentId: string }
   > = (props) => {
-    const { workspaceId, agentId, data } = props ?? {};
+    const { workspaceId, agentId } = props ?? {};
 
-    return scanWorkspaceDirectory(workspaceId, agentId, data);
+    return sCompareWorkspaceResource(workspaceId, agentId);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type ScanWorkspaceDirectoryMutationResult = NonNullable<
-  Awaited<ReturnType<typeof scanWorkspaceDirectory>>
+export type SCompareWorkspaceResourceMutationResult = NonNullable<
+  Awaited<ReturnType<typeof sCompareWorkspaceResource>>
 >;
-export type ScanWorkspaceDirectoryMutationBody = ScanWorkspaceDirectoryRequest;
-export type ScanWorkspaceDirectoryMutationError = void;
 
-export const useScanWorkspaceDirectory = <TError = void, TContext = unknown>(
+export type SCompareWorkspaceResourceMutationError = void;
+
+export const useSCompareWorkspaceResource = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof scanWorkspaceDirectory>>,
+      Awaited<ReturnType<typeof sCompareWorkspaceResource>>,
       TError,
-      {
-        workspaceId: string;
-        agentId: string;
-        data: ScanWorkspaceDirectoryRequest;
-      },
+      { workspaceId: string; agentId: string },
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof scanWorkspaceDirectory>>,
+  Awaited<ReturnType<typeof sCompareWorkspaceResource>>,
   TError,
-  { workspaceId: string; agentId: string; data: ScanWorkspaceDirectoryRequest },
+  { workspaceId: string; agentId: string },
   TContext
 > => {
   return useMutation(
-    getScanWorkspaceDirectoryMutationOptions(options),
+    getSCompareWorkspaceResourceMutationOptions(options),
     queryClient,
   );
 };
+export const syncLocalChanges = (
+  workspaceId: string,
+  agentId: string,
+  syncLocalChangesCommand: SyncLocalChangesCommand,
+  signal?: AbortSignal,
+) => {
+  return customInstance<SyncLocalChangesResult>({
+    url: `/api/workspaces/${workspaceId}/agents/${agentId}/sync-local-changes`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: syncLocalChangesCommand,
+    signal,
+  });
+};
+
+export const getSyncLocalChangesMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof syncLocalChanges>>,
+    TError,
+    { workspaceId: string; agentId: string; data: SyncLocalChangesCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof syncLocalChanges>>,
+  TError,
+  { workspaceId: string; agentId: string; data: SyncLocalChangesCommand },
+  TContext
+> => {
+  const mutationKey = ["syncLocalChanges"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof syncLocalChanges>>,
+    { workspaceId: string; agentId: string; data: SyncLocalChangesCommand }
+  > = (props) => {
+    const { workspaceId, agentId, data } = props ?? {};
+
+    return syncLocalChanges(workspaceId, agentId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SyncLocalChangesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof syncLocalChanges>>
+>;
+export type SyncLocalChangesMutationBody = SyncLocalChangesCommand;
+export type SyncLocalChangesMutationError = void;
+
+export const useSyncLocalChanges = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof syncLocalChanges>>,
+      TError,
+      { workspaceId: string; agentId: string; data: SyncLocalChangesCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof syncLocalChanges>>,
+  TError,
+  { workspaceId: string; agentId: string; data: SyncLocalChangesCommand },
+  TContext
+> => {
+  return useMutation(getSyncLocalChangesMutationOptions(options), queryClient);
+};
+export const getWorkspaceResources = (
+  workspaceId: string,
+  params: GetWorkspaceResourcesParams,
+  signal?: AbortSignal,
+) => {
+  return customInstance<PagedResultOfWorkspaceResourceDto>({
+    url: `/api/workspaces/${workspaceId}/resources`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
+
+export const getGetWorkspaceResourcesQueryKey = (
+  workspaceId: string,
+  params?: GetWorkspaceResourcesParams,
+) => {
+  return [
+    `/api/workspaces/${workspaceId}/resources`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getGetWorkspaceResourcesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspaceResources>>,
+  TError = void,
+>(
+  workspaceId: string,
+  params: GetWorkspaceResourcesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspaceResources>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetWorkspaceResourcesQueryKey(workspaceId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspaceResources>>
+  > = ({ signal }) => getWorkspaceResources(workspaceId, params, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: workspaceId !== null && workspaceId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspaceResources>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetWorkspaceResourcesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspaceResources>>
+>;
+export type GetWorkspaceResourcesQueryError = void;
+
+export function useGetWorkspaceResources<
+  TData = Awaited<ReturnType<typeof getWorkspaceResources>>,
+  TError = void,
+>(
+  workspaceId: string,
+  params: GetWorkspaceResourcesParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspaceResources>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getWorkspaceResources>>,
+          TError,
+          Awaited<ReturnType<typeof getWorkspaceResources>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspaceResources<
+  TData = Awaited<ReturnType<typeof getWorkspaceResources>>,
+  TError = void,
+>(
+  workspaceId: string,
+  params: GetWorkspaceResourcesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspaceResources>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getWorkspaceResources>>,
+          TError,
+          Awaited<ReturnType<typeof getWorkspaceResources>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspaceResources<
+  TData = Awaited<ReturnType<typeof getWorkspaceResources>>,
+  TError = void,
+>(
+  workspaceId: string,
+  params: GetWorkspaceResourcesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspaceResources>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetWorkspaceResources<
+  TData = Awaited<ReturnType<typeof getWorkspaceResources>>,
+  TError = void,
+>(
+  workspaceId: string,
+  params: GetWorkspaceResourcesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspaceResources>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspaceResourcesQueryOptions(
+    workspaceId,
+    params,
+    options,
+  );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

@@ -3,11 +3,10 @@ import { Tree, type TreeApi } from "react-arborist";
 import type { FileTreeNodeData } from "./directory-tree-types";
 import { DirectoryTreeNode } from "./DirectoryTreeNode";
 import { DirectoryTreeToolbar } from "./DirectoryTreeToolbar";
-import { useScanWorkspaceDirectory } from "@/features/workspaces/hooks/useWorkspaces";
+import * as AgentsApi from "@/gen/endpoints/agents/agents";
 import { AlertCircle, HardDrive } from "lucide-react";
 
 interface DirectoryTreeProps {
-  workspaceId: string;
   agentId: string;
   initialPath?: string;
   onSelectNode?: (node: FileTreeNodeData) => void;
@@ -16,7 +15,6 @@ interface DirectoryTreeProps {
 }
 
 export function DirectoryTree({
-  workspaceId,
   agentId,
   initialPath = "",
   onSelectNode,
@@ -32,7 +30,6 @@ export function DirectoryTree({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const treeRef = useRef<TreeApi<FileTreeNodeData> | null>(null);
-  const scanDirectory = useScanWorkspaceDirectory();
 
   // Helper to recursive update node in tree structure
   const updateNodeChildren = (
@@ -64,7 +61,7 @@ export function DirectoryTree({
       id: dto.path,
       name: dto.name,
       path: dto.path,
-      isDirectory: dto.isDirectory,
+      isDirectory: dto.isDirectory ?? true,
       sizeBytes: dto.sizeBytes,
       children: dto.isDirectory ? [] : undefined,
       isLoaded: !dto.isDirectory,
@@ -73,22 +70,18 @@ export function DirectoryTree({
 
   // Load directory contents for given path
   const loadDirectory = useCallback(async (path: string) => {
-    if (!workspaceId || !agentId) return;
+    if (!agentId) return;
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const res: any = await scanDirectory.mutateAsync({
-        workspaceId,
-        agentId,
-        data: { relativePath: path },
-      });
+      const res = await AgentsApi.discoverAgentFolders(agentId, { path });
 
-      const items = Array.isArray(res) ? res : (res?.items || []);
+      const items = res?.items || [];
       const nodes = mapDtosToNodes(items);
       setTreeData(nodes);
 
-      if (res && !Array.isArray(res)) {
+      if (res) {
         setCurrentPath(res.currentPath ?? path);
         setParentPath(res.parentPath ?? "");
         setCanNavigateUp(Boolean(res.canNavigateUp));
@@ -100,7 +93,7 @@ export function DirectoryTree({
     } finally {
       setIsLoading(false);
     }
-  }, [workspaceId, agentId]);
+  }, [agentId]);
 
   useEffect(() => {
     loadDirectory(initialPath);
@@ -122,12 +115,8 @@ export function DirectoryTree({
     const targetNode = findNodeByPath(treeData, id);
     if (targetNode && targetNode.isDirectory && !targetNode.isLoaded) {
       try {
-        const res: any = await scanDirectory.mutateAsync({
-          workspaceId,
-          agentId,
-          data: { relativePath: targetNode.path },
-        });
-        const items = Array.isArray(res) ? res : (res?.items || []);
+        const res = await AgentsApi.discoverAgentFolders(agentId, { path: targetNode.path });
+        const items = res?.items || [];
         const childNodes = mapDtosToNodes(items);
         setTreeData((prev) => updateNodeChildren(prev, id, childNodes));
       } catch (err) {

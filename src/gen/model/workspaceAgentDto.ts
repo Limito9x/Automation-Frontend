@@ -12,5 +12,7 @@ export interface WorkspaceAgentDto {
   rootPath: string;
   createdAt: string;
   /** @nullable */
+  lastSyncAt: string | null;
+  /** @nullable */
   agent?: AgentDto | null;
 }

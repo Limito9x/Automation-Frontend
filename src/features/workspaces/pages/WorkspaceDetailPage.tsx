@@ -1,17 +1,17 @@
 import { useWorkspaceDetail } from "../hooks/useWorkspaces";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Loader2, Layers, HardDrive } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, Layers, RefreshCw } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useDialogStore } from "@/stores/dialogStore";
 import { WorkspaceStatsBar } from "../components/WorkspaceStatsBar";
 import { WorkspaceResourcesTab } from "../components/tabs/WorkspaceResourcesTab";
-import { WorkspaceAgentsTab } from "../components/tabs/WorkspaceAgentsTab";
+import { WorkspaceChangesTab } from "../components/tabs/WorkspaceChangesTab";
 import { useResourceQuery, type BaseSearchParams } from "@/lib/useResourceQuery";
 
 interface WorkspaceDetailPageProps {
   projectId: string;
   workspaceId: string;
-  useSearch: () => BaseSearchParams & { tab?: "resources" | "agents"; agentId?: string };
+  useSearch: () => BaseSearchParams & { tab?: "resources" | "changes"; agentId?: string };
   useNavigate: () => any;
 }
 
@@ -32,7 +32,7 @@ export function WorkspaceDetailPage({
 
   const selectedAgentId = search.agentId || workspace?.workspaceAgents[0]?.agentId || "";
 
-  const handleTabChange = (tab: "resources" | "agents") => {
+  const handleTabChange = (tab: "resources" | "changes") => {
     resource.onParamChange({ tab, page: 1 } as any, true);
   };
 
@@ -51,21 +51,51 @@ export function WorkspaceDetailPage({
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {isWorkspaceLoading ? "Loading Workspace..." : workspace?.name || "Workspace Detail"}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                {isWorkspaceLoading ? "Loading Workspace..." : workspace?.name || "Workspace Detail"}
+              </h1>
+            </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               Workspace ID: <code className="bg-muted px-1.5 py-0.5 rounded">{workspaceId}</code>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Tab Navigation & Actions in Header */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center p-1 rounded-xl bg-muted/60 border">
+            <button
+              type="button"
+              onClick={() => handleTabChange("resources")}
+              className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "resources"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <Layers className="size-3.5" />
+              <span>Overview & Resources</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleTabChange("changes")}
+              className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "changes"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <RefreshCw className="size-3.5" />
+              <span>Sync & Staging</span>
+            </button>
+          </div>
+
           <Button
             onClick={() => openDialog("attach-agent-workspace", { workspaceId })}
-            className="gap-2"
+            variant="outline"
+            className="gap-2 text-xs h-9"
           >
-            <Plus className="size-4" /> Add Agent to Workspace
+            <Plus className="size-3.5" /> Add Agent
           </Button>
         </div>
       </div>
@@ -91,49 +121,12 @@ export function WorkspaceDetailPage({
         <div className="space-y-6">
           {/* Stats Bar */}
           <WorkspaceStatsBar
-            agentCount={workspace.workspaceAgents.length}
-            resourceCount={0}
+            agentCount={workspace.agentCount ?? workspace.workspaceAgents.length}
+            resourceCount={workspace.resourceCount ?? 0}
+            locationCount={workspace.locationCount ?? 0}
           />
 
-          {/* Tab Navigation */}
-          <div className="flex items-center justify-between border-b pb-1">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleTabChange("resources")}
-                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  activeTab === "resources"
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <Layers className="size-4" />
-                <span>All Resources</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleTabChange("agents")}
-                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  activeTab === "agents"
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <HardDrive className="size-4" />
-                <span>Agent View</span>
-                {workspace.workspaceAgents.length > 0 && (
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                    activeTab === "agents" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground"
-                  }`}>
-                    {workspace.workspaceAgents.length}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Tab Content */}
+          {/* Tab 1: All Synchronized Resources */}
           {activeTab === "resources" && (
             <WorkspaceResourcesTab
               workspaceId={workspaceId}
@@ -143,14 +136,12 @@ export function WorkspaceDetailPage({
             />
           )}
 
-          {activeTab === "agents" && (
-            <WorkspaceAgentsTab
+          {/* Tab 2: Compare & Sync Local Changes */}
+          {activeTab === "changes" && (
+            <WorkspaceChangesTab
               workspace={workspace}
-              projectId={projectId}
               selectedAgentId={selectedAgentId}
               onAgentSelect={handleAgentSelect}
-              resource={resource}
-              search={search}
             />
           )}
         </div>

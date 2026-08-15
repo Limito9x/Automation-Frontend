@@ -9,6 +9,10 @@ import type {
   UpdateWorkspaceRequest,
   AttachAgentToWorkspaceCommand,
   DirectoryNodeDto,
+  DiffResult,
+  ResourceDiffItem,
+  SyncLocalChangesCommand,
+  SyncLocalChangesResult,
 } from "@/gen/model";
 
 export type {
@@ -19,6 +23,10 @@ export type {
   UpdateWorkspaceRequest,
   AttachAgentToWorkspaceCommand,
   DirectoryNodeDto,
+  DiffResult,
+  ResourceDiffItem,
+  SyncLocalChangesCommand,
+  SyncLocalChangesResult,
 };
 
 export const useWorkspaces = (projectId: string) => {
@@ -58,6 +66,17 @@ export const useAttachAgentToWorkspace = (workspaceId?: string) => {
   return createMutationHook(WorkspacesApi.useAttachAgentToWorkspace, [queryKey])();
 };
 
-export const useScanWorkspaceDirectory = () => {
-  return WorkspacesApi.useScanWorkspaceDirectory();
+
+export const useCompareWorkspace = () => {
+  return createMutationHook(WorkspacesApi.useSCompareWorkspaceResource, [])();
+};
+
+export const useSyncLocalChanges = (workspaceId?: string) => {
+  const queryKeys = workspaceId
+    ? [
+        WorkspacesApi.getGetWorkspaceByIdQueryKey(workspaceId),
+        ["workspaces", workspaceId, "resources"],
+      ]
+    : [["workspaces"]];
+  return createMutationHook(WorkspacesApi.useSyncLocalChanges, queryKeys)();
 };

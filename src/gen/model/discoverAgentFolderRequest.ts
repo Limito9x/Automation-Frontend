@@ -5,8 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface DirectoryNodeDto {
-  name: string;
-  path: string;
-  hasChildren?: boolean;
+export interface DiscoverAgentFolderRequest {
+  /** @nullable */
+  path: string | null;
 }

@@ -10,6 +10,9 @@ export interface WorkspaceDetailDto {
   id: string;
   projectId: string;
   name: string;
+  agentCount: number;
+  resourceCount: number;
+  locationCount: number;
   workspaceAgents: ListOfWorkspaceAgentDto;
   createdAt: string;
 }

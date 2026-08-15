@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { WorkspaceDetailPage } from '@/features/workspaces/pages/WorkspaceDetailPage'
 import { buildPagedSearchSchema } from '@/lib/schemas/pagedSearch.schema'
+import { getWorkspaceById } from '@/gen/endpoints/workspaces/workspaces'
 import { z } from 'zod'
 
 const baseSchema = buildPagedSearchSchema({
@@ -12,12 +13,20 @@ const baseSchema = buildPagedSearchSchema({
 })
 
 export const workspaceDetailSearchSchema = baseSchema.extend({
-  tab: z.enum(['resources', 'agents']).catch('resources').default('resources'),
+  tab: z.enum(['resources', 'changes']).catch('resources').default('resources'),
   agentId: z.string().optional(),
 })
 
 export const Route = createFileRoute('/_protected/_project/projects/$projectId/workspaces/$workspaceId')({
   validateSearch: workspaceDetailSearchSchema,
+  loader: async ({ params: { workspaceId } }) => {
+    try {
+      const workspace = await getWorkspaceById(workspaceId);
+      return { workspace };
+    } catch {
+      return { workspace: null };
+    }
+  },
   component: WorkspaceDetailRouteComponent,
 })
 
