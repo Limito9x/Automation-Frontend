@@ -4,6 +4,7 @@ import { registerDialog } from "@/lib/dialog-registry";
 declare module "@/lib/dialog-registry" {
     interface GlobalDialogRegistry {
         "delete-content-item": { id: string; typeKey: string; projectId: string };
+        "link-content-resources": { contentId: string; contentName: string; projectId: string };
     }
 }
 
@@ -13,7 +14,19 @@ const DeleteContentItemDialog = lazy(() =>
     }))
 );
 
+const LinkContentResourcesDialog = lazy(() =>
+    import("./LinkContentResourcesDialog").then((m) => ({
+        default: m.LinkContentResourcesDialog
+    }))
+);
+
 registerDialog({
     id: "delete-content-item",
     component: DeleteContentItemDialog
 });
+
+registerDialog({
+    id: "link-content-resources",
+    component: LinkContentResourcesDialog
+});
+

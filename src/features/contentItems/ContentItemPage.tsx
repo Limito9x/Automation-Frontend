@@ -15,8 +15,9 @@ import { BaseCard } from "@/components/custom-ui/data-display/card/BaseCard";
 import { ContentDisplayModes } from "./constants/contentDisplayModes";
 import { DataTableRowActions, type ActionItem } from "@/components/table/DataTableRowActions";
 import { Button } from "@/components/ui/button";
-import { LayoutGrid, List, EditIcon, TrashIcon } from "lucide-react";
-import type { ContentTypeDto } from "@/gen/model";
+import { LayoutGrid, List, EditIcon, TrashIcon, Layers } from "lucide-react";
+import type { ContentTypeDto, ContentItemDto } from "@/gen/model";
+import { ContentResourcesDrawer } from "./components/drawers/ContentResourcesDrawer";
 
 export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
     const { t } = useTranslation(["contentItems", "common"]);
@@ -36,6 +37,8 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
         from: "/_protected/_project/projects/$projectId/contents/$typeKey",
     });
 
+    const [drawerContent, setDrawerContent] = useState<{ id: string; name: string } | null>(null);
+
     const resourceQuery = useResourceQuery(search, navigate);
 
     const { data, isLoading } = useContentItems(search as any, {
@@ -43,12 +46,19 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
         contentTypeKey: typeKey,
     });
 
+    const handleViewResources = (item: ContentItemDto) => {
+        if (item.id) {
+            setDrawerContent({ id: item.id, name: item.name || "Content Item" });
+        }
+    };
+
     const { table, columns } = useContentItemTable({
         data: data?.items ?? [],
         totalCount: data?.totalCount ?? 0,
         resource: resourceQuery,
         typeKey,
         projectId,
+        onViewResources: handleViewResources,
     });
 
     const canCreate = hasPermission("contentitems:create");
@@ -87,6 +97,11 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
 
     const getItemActions = (item: any) => {
         const actions: ActionItem[] = [
+            {
+                label: t("actions.viewResources", { defaultValue: "View Resources" }),
+                icon: Layers,
+                onClick: () => handleViewResources(item),
+            },
             hasPermission("contentitems:update") && {
                 label: t("common:edit", { defaultValue: "Edit" }),
                 icon: EditIcon,
@@ -107,70 +122,81 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
     };
 
     return (
-        <ResourcePageShell
-            title={contentType?.displayName || t("page.title", { defaultValue: "ContentItem Management" })}
-            description={`Manage all ${contentType?.name} in project` || t("page.description", { defaultValue: "Manage all contentItems in the system." })}
-            onAdd={canCreate ? () => appNavigate({ to: "/projects/$projectId/contents/$typeKey/new", params: { projectId, typeKey } }) : undefined}
-            addLabel={contentType?.name ? `Add ${contentType.name}` : t("actions.create", { defaultValue: `Add Content Item` })}
-            resource={resourceQuery}
-            filterConfig={contentItemFilterConfig}
-            searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search..." })}
-            renderViewOptions={
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center border rounded-md p-0.5 bg-muted/20">
-                        <Button
-                            variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                            size="icon"
-                            className="h-7 w-7"
-                            onPress={() => setViewMode('grid')}
-                            aria-label="Grid View"
-                        >
-                            <LayoutGrid className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant={viewMode === 'table' ? 'secondary' : 'ghost'}
-                            size="icon"
-                            className="h-7 w-7"
-                            onPress={() => setViewMode('table')}
-                            aria-label="Table View"
-                        >
-                            <List className="h-4 w-4" />
-                        </Button>
+        <>
+            <ResourcePageShell
+                title={contentType?.displayName || t("page.title", { defaultValue: "ContentItem Management" })}
+                description={`Manage all ${contentType?.name} in project` || t("page.description", { defaultValue: "Manage all contentItems in the system." })}
+                onAdd={canCreate ? () => appNavigate({ to: "/projects/$projectId/contents/$typeKey/new", params: { projectId, typeKey } }) : undefined}
+                addLabel={contentType?.name ? `Add ${contentType.name}` : t("actions.create", { defaultValue: `Add Content Item` })}
+                resource={resourceQuery}
+                filterConfig={contentItemFilterConfig}
+                searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search..." })}
+                renderViewOptions={
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center border rounded-md p-0.5 bg-muted/20">
+                            <Button
+                                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                                size="icon"
+                                className="h-7 w-7"
+                                onPress={() => setViewMode('grid')}
+                                aria-label="Grid View"
+                            >
+                                <LayoutGrid className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                                size="icon"
+                                className="h-7 w-7"
+                                onPress={() => setViewMode('table')}
+                                aria-label="Table View"
+                            >
+                                <List className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        <DataTableViewOptions table={table} />
                     </div>
-                    <DataTableViewOptions table={table} />
-                </div>
-            }
-        >
-            {viewMode === 'table' ? (
-                <ContentItemTable
-                    table={table}
-                    columns={columns}
-                    isLoading={isLoading}
-                />
-            ) : (
-                <BaseCardGrid
-                    table={table}
-                    isLoading={isLoading}
-                    renderCard={(item) => {
-                        const { title, description, thumbnailUrl } = getCardData(item);
-                        const actions = getItemActions(item);
+                }
+            >
+                {viewMode === 'table' ? (
+                    <ContentItemTable
+                        table={table}
+                        columns={columns}
+                        isLoading={isLoading}
+                    />
+                ) : (
+                    <BaseCardGrid
+                        table={table}
+                        isLoading={isLoading}
+                        renderCard={(item) => {
+                            const { title, description, thumbnailUrl } = getCardData(item);
+                            const actions = getItemActions(item);
 
-                        return (
-                            <BaseCard
-                                key={item.id}
-                                title={title}
-                                description={description}
-                                thumbnailUrl={thumbnailUrl}
-                                action={actions.length > 0 ? <DataTableRowActions actions={actions} /> : undefined}
-                                onClick={() => appNavigate({
-                                    to: "/projects/$projectId/contents/$typeKey/$contentItemId/edit",
-                                    params: { projectId, typeKey, contentItemId: item.id }
-                                })}
-                            />
-                        );
-                    }}
-                />
-            )}
-        </ResourcePageShell>
+                            return (
+                                <BaseCard
+                                    key={item.id}
+                                    title={title}
+                                    description={description}
+                                    thumbnailUrl={thumbnailUrl}
+                                    action={actions.length > 0 ? <DataTableRowActions actions={actions} /> : undefined}
+                                    onClick={() => appNavigate({
+                                        to: "/projects/$projectId/contents/$typeKey/$contentItemId/edit",
+                                        params: { projectId, typeKey, contentItemId: item.id }
+                                    })}
+                                />
+                            );
+                        }}
+                    />
+                )}
+            </ResourcePageShell>
+
+            {/* Slide-over Drawer to View and Manage Linked Resources */}
+            <ContentResourcesDrawer
+                isOpen={Boolean(drawerContent)}
+                onClose={() => setDrawerContent(null)}
+                contentId={drawerContent?.id || null}
+                contentName={drawerContent?.name || ""}
+                projectId={projectId}
+            />
+        </>
     );
 }

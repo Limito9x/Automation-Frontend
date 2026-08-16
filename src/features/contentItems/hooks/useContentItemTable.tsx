@@ -6,7 +6,7 @@ import { DataTableRowActions, type ActionItem } from "@/components/table/DataTab
 import type { BaseSearchParams, useResourceQuery } from "@/lib/useResourceQuery";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ContentItemDto } from "@/gen/model";
-import { EditIcon, TrashIcon, TypeIcon, ImageIcon } from "lucide-react";
+import { EditIcon, TrashIcon, TypeIcon, ImageIcon, Layers } from "lucide-react";
 import { useDataTable } from "@/lib/useDataTable";
 import { useDialogStore } from "@/stores/dialogStore";
 
@@ -14,11 +14,12 @@ export interface UseContentItemTableOptions {
     data: ContentItemDto[];
     totalCount: number;
     resource: ReturnType<typeof useResourceQuery<BaseSearchParams>>;
-    typeKey: string
+    typeKey: string;
     projectId: string;
+    onViewResources?: (item: ContentItemDto) => void;
 }
 
-export function useContentItemTable({ data, totalCount, resource, typeKey, projectId }: UseContentItemTableOptions) {
+export function useContentItemTable({ data, totalCount, resource, typeKey, projectId, onViewResources }: UseContentItemTableOptions) {
     const { t } = useTranslation(["contentItems", "common"]);
     const navigate = useNavigate();
     const openDialog = useDialogStore((state) => state.openDialog);
@@ -57,6 +58,11 @@ export function useContentItemTable({ data, totalCount, resource, typeKey, proje
                 cell: ({ row }) => {
                     const item = row.original;
                     const actions = [
+                        onViewResources && {
+                            label: t("actions.viewResources", { defaultValue: "View Resources" }),
+                            icon: Layers,
+                            onClick: () => onViewResources(item),
+                        },
                         hasPermission("contentitems:update") && {
                             label: t("common:edit", { defaultValue: "Edit" }),
                             icon: EditIcon,
@@ -78,7 +84,7 @@ export function useContentItemTable({ data, totalCount, resource, typeKey, proje
                 },
             },
         ];
-    }, [navigate, hasPermission, t, projectId, openDialog]);
+    }, [navigate, hasPermission, t, projectId, openDialog, onViewResources, typeKey]);
 
     const table = useDataTable({ data, columns, totalCount, resource });
 

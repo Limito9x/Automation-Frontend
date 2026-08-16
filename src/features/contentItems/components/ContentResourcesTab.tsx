@@ -1,15 +1,32 @@
 import { useGetResourcesByContent, useAssignResourcesContent } from "@/features/workspaces/hooks/useWorkspaceResources";
-import { FileCode, GitBranch, HardDrive, Unlink, Loader2, FolderTree, Layers } from "lucide-react";
+import { FileCode, GitBranch, HardDrive, Unlink, Loader2, FolderTree, Layers, Plus, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDialogStore } from "@/stores/dialogStore";
 import { toast } from "sonner";
+import { useMemo } from "react";
 
 interface ContentResourcesTabProps {
   contentId: string;
+  contentName?: string;
+  projectId?: string;
 }
 
-export function ContentResourcesTab({ contentId }: ContentResourcesTabProps) {
+export function ContentResourcesTab({ contentId, contentName, projectId }: ContentResourcesTabProps) {
   const { data: resources, isLoading, refetch } = useGetResourcesByContent(contentId);
   const assignMutation = useAssignResourcesContent();
+  const openDialog = useDialogStore((state) => state.openDialog);
+
+  const handleOpenLinkDialog = () => {
+    if (!projectId) {
+      toast.warning("Project context is required to link resources.");
+      return;
+    }
+    openDialog("link-content-resources", {
+      contentId,
+      contentName: contentName || "Content Item",
+      projectId,
+    });
+  };
 
   const handleUnlink = (resourceId: string, resourceName: string) => {
     assignMutation.mutate(
@@ -39,6 +56,11 @@ export function ContentResourcesTab({ contentId }: ContentResourcesTabProps) {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   };
 
+  const totalSizeBytes = useMemo(() => {
+    if (!resources) return 0;
+    return resources.reduce((acc, item) => acc + (item.latestSizeBytes || 0), 0);
+  }, [resources]);
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
@@ -50,36 +72,77 @@ export function ContentResourcesTab({ contentId }: ContentResourcesTabProps) {
 
   if (!resources || resources.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed rounded-xl bg-card/50 space-y-3">
-        <div className="size-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+      <div className="flex flex-col items-center justify-center py-14 px-6 text-center border border-dashed rounded-xl bg-card/50 space-y-4">
+        <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
           <Layers className="size-6" />
         </div>
-        <div className="space-y-1">
-          <h4 className="font-semibold text-sm text-foreground">No resources assigned</h4>
-          <p className="text-xs text-muted-foreground max-w-sm">
-            You can assign project workspace files (.blend, .fbx, textures...) to this content item from the Workspace Resources page.
+        <div className="space-y-1 max-w-sm">
+          <h4 className="font-semibold text-sm text-foreground">No resources linked yet</h4>
+          <p className="text-xs text-muted-foreground">
+            Link workspace files (3D models, textures, animations, scripts) to this content item for centralized tracking.
           </p>
         </div>
+        {projectId && (
+          <Button
+            size="sm"
+            onClick={handleOpenLinkDialog}
+            className="gap-1.5 h-8 text-xs font-medium"
+          >
+            <Plus className="size-3.5" />
+            Link Resources
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Linked Workspace Resources ({resources.length})
-        </h3>
+    <div className="space-y-3.5">
+      {/* Header & Stats */}
+      <div className="flex items-center justify-between gap-2 p-3 rounded-xl border bg-muted/30">
+        <div className="flex items-center gap-3">
+          <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+            <Link2 className="size-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-foreground">
+                {resources.length} Linked Resource{resources.length > 1 ? "s" : ""}
+              </span>
+              {totalSizeBytes > 0 && (
+                <span className="text-[11px] text-muted-foreground">
+                  ({formatBytes(totalSizeBytes)})
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Files linked to &ldquo;{contentName || "this content item"}&rdquo;
+            </p>
+          </div>
+        </div>
+
+        {projectId && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleOpenLinkDialog}
+            className="h-7 px-2.5 text-xs gap-1.5 bg-background shadow-xs hover:bg-muted"
+          >
+            <Plus className="size-3.5" />
+            Link More
+          </Button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 gap-2.5">
+      {/* List of Resource Cards */}
+      <div className="grid grid-cols-1 gap-2">
         {resources.map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between p-3.5 rounded-xl border bg-card hover:border-primary/40 hover:shadow-sm transition-all"
+            className="group flex items-center justify-between p-3 rounded-xl border bg-card hover:border-primary/40 hover:shadow-xs transition-all"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="size-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <div className="size-8 rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary flex items-center justify-center shrink-0 transition-colors">
                 <FileCode className="size-4" />
               </div>
               <div className="min-w-0">
@@ -91,11 +154,18 @@ export function ContentResourcesTab({ contentId }: ContentResourcesTabProps) {
                     <GitBranch className="size-2.5 text-muted-foreground" />
                     v{item.latestVersionNo || 1}
                   </span>
+                  {item.versionCount > 1 && (
+                    <span className="text-[10px] text-muted-foreground">
+                      ({item.versionCount} versions)
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                   <span className="flex items-center gap-1 truncate max-w-xs">
-                    <FolderTree className="size-3 text-muted-foreground" />
-                    {item.workspaceName} / {item.relativePath}
+                    <FolderTree className="size-3 text-muted-foreground shrink-0" />
+                    <span className="font-medium text-foreground/80">{item.workspaceName}</span>
+                    <span className="text-muted-foreground/60">/</span>
+                    <span className="truncate">{item.relativePath}</span>
                   </span>
                   {item.latestSizeBytes > 0 && (
                     <span className="flex items-center gap-1 shrink-0">
@@ -112,9 +182,9 @@ export function ContentResourcesTab({ contentId }: ContentResourcesTabProps) {
               variant="ghost"
               isDisabled={assignMutation.isPending}
               onClick={() => handleUnlink(item.id, item.displayName)}
-              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 px-2.5 text-xs gap-1.5 shrink-0"
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-7 px-2 text-xs gap-1.5 shrink-0 transition-colors"
             >
-              <Unlink className="size-3.5" />
+              <Unlink className="size-3" />
               Unlink
             </Button>
           </div>

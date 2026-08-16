@@ -1,16 +1,22 @@
+import { useState, useMemo } from "react";
 import { FormPageShell } from "@/components/layout/shells/FormPageShell";
 import { ContentItemForm, type ContentItemFormValues } from "./components/ContentItemForm";
+import { ContentResourcesTab } from "./components/ContentResourcesTab";
 import { useGetContentItemById, useUpdateContentItem } from "./hooks/useContentItems";
+import { useGetResourcesByContent } from "@/features/workspaces/hooks/useWorkspaceResources";
 import { useLoaderData, useNavigate, useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { ContentTypeDto } from "@/gen/model";
-import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Layers, FileText } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function UpdateContentItemPage() {
     const { t } = useTranslation("contentItems");
     const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState<"details" | "resources">("details");
 
     const parentData = useLoaderData({
         from: "/_protected/_project/projects/$projectId/contents/$typeKey",
@@ -22,6 +28,7 @@ export function UpdateContentItemPage() {
     });
 
     const { data: itemData, isLoading, error } = useGetContentItemById(contentItemId);
+    const { data: linkedResources } = useGetResourcesByContent(contentItemId);
 
     const updateContentItem = useUpdateContentItem({ projectId: projectId, contentTypeKey: typeKey });
 
@@ -103,16 +110,73 @@ export function UpdateContentItemPage() {
         <FormPageShell
             title={t("actions.editTitle", { defaultValue: `Edit ${contentType.displayName || 'Content Item'}` })}
             description={t("actions.editDescription", { defaultValue: `Update details for ${itemData.name || 'this item'}.` })}
-            formId="update-content-item-form"
+            formId={activeTab === "details" ? "update-content-item-form" : undefined}
             isPending={updateContentItem.isPending}
             onCancel={handleCancel}
         >
-            <ContentItemForm
-                formId="update-content-item-form"
-                contentType={contentType}
-                initialData={initialFormValues}
-                onSubmit={handleSubmit}
-            />
+            <div className="space-y-6">
+                {/* Tab switcher */}
+                <div className="flex items-center p-1 rounded-xl bg-muted/60 border w-fit">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("details")}
+                        className={cn(
+                            "inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer",
+                            activeTab === "details"
+                                ? "bg-primary text-primary-foreground shadow-xs"
+                                : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <FileText className="size-3.5" />
+                        <span>Item Details</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("resources")}
+                        className={cn(
+                            "inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer",
+                            activeTab === "resources"
+                                ? "bg-primary text-primary-foreground shadow-xs"
+                                : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <Layers className="size-3.5" />
+                        <span>Workspace Resources</span>
+                        {linkedResources && linkedResources.length > 0 && (
+                            <span className={cn(
+                                "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold",
+                                activeTab === "resources"
+                                    ? "bg-primary-foreground/20 text-primary-foreground"
+                                    : "bg-primary/10 text-primary"
+                            )}>
+                                {linkedResources.length}
+                            </span>
+                        )}
+                    </button>
+                </div>
+
+                {/* Tab 1: Content Item Form */}
+                {activeTab === "details" && (
+                    <ContentItemForm
+                        formId="update-content-item-form"
+                        contentType={contentType}
+                        initialData={initialFormValues}
+                        onSubmit={handleSubmit}
+                    />
+                )}
+
+                {/* Tab 2: Linked Workspace Resources */}
+                {activeTab === "resources" && (
+                    <div className="pt-2">
+                        <ContentResourcesTab
+                            contentId={contentItemId}
+                            contentName={itemData.name}
+                            projectId={projectId}
+                        />
+                    </div>
+                )}
+            </div>
         </FormPageShell>
     );
 }
