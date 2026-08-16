@@ -4,49 +4,83 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { AssignUserRolesCommand, Result } from "../../model";
+import type {
+  CreateInspectorCommand,
+  CreateInspectorRuleCommand,
+  ErrorResponse,
+  IReadOnlyListOfInspectorDto,
+  IReadOnlyListOfInspectorRuleDto,
+  InspectorDto,
+  InspectorRuleDto,
+} from "../../model";
 
 import { customInstance } from "../../../lib/api-client";
 
-export const assignUserRoles = (
-  id: string,
-  assignUserRolesCommand: AssignUserRolesCommand,
+const withQueryKey = <T extends object, K>(
+  query: T,
+  queryKey: K,
+): T & { queryKey: K } => {
+  const result = { queryKey } as T & { queryKey: K };
+  for (const key of Object.keys(query)) {
+    // The explicit queryKey always wins, matching the previous
+    // `{ ...query, queryKey }` spread where it was set last.
+    if (key === "queryKey") continue;
+    Object.defineProperty(result, key, {
+      enumerable: true,
+      configurable: true,
+      get: () => (query as Record<string, unknown>)[key],
+    });
+  }
+  return result;
+};
+
+export const createInspectorRule = (
+  projectId: string,
+  createInspectorRuleCommand: CreateInspectorRuleCommand,
   signal?: AbortSignal,
 ) => {
-  return customInstance<Result>({
-    url: `/api/api/users/${id}/roles`,
+  return customInstance<InspectorRuleDto>({
+    url: `/api/projects/${projectId}/inspector-rules`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    data: assignUserRolesCommand,
+    data: createInspectorRuleCommand,
     signal,
   });
 };
 
-export const getAssignUserRolesMutationOptions = <
-  TError = void,
+export const getCreateInspectorRuleMutationOptions = <
+  TError = ErrorResponse | void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof assignUserRoles>>,
+    Awaited<ReturnType<typeof createInspectorRule>>,
     TError,
-    { id: string; data: AssignUserRolesCommand },
+    { projectId: string; data: CreateInspectorRuleCommand },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof assignUserRoles>>,
+  Awaited<ReturnType<typeof createInspectorRule>>,
   TError,
-  { id: string; data: AssignUserRolesCommand },
+  { projectId: string; data: CreateInspectorRuleCommand },
   TContext
 > => {
-  const mutationKey = ["assignUserRoles"];
+  const mutationKey = ["createInspectorRule"];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -56,38 +90,405 @@ export const getAssignUserRolesMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof assignUserRoles>>,
-    { id: string; data: AssignUserRolesCommand }
+    Awaited<ReturnType<typeof createInspectorRule>>,
+    { projectId: string; data: CreateInspectorRuleCommand }
   > = (props) => {
-    const { id, data } = props ?? {};
+    const { projectId, data } = props ?? {};
 
-    return assignUserRoles(id, data);
+    return createInspectorRule(projectId, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type AssignUserRolesMutationResult = NonNullable<
-  Awaited<ReturnType<typeof assignUserRoles>>
+export type CreateInspectorRuleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createInspectorRule>>
 >;
-export type AssignUserRolesMutationBody = AssignUserRolesCommand;
-export type AssignUserRolesMutationError = void;
+export type CreateInspectorRuleMutationBody = CreateInspectorRuleCommand;
+export type CreateInspectorRuleMutationError = ErrorResponse | void;
 
-export const useAssignUserRoles = <TError = void, TContext = unknown>(
+export const useCreateInspectorRule = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof assignUserRoles>>,
+      Awaited<ReturnType<typeof createInspectorRule>>,
       TError,
-      { id: string; data: AssignUserRolesCommand },
+      { projectId: string; data: CreateInspectorRuleCommand },
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof assignUserRoles>>,
+  Awaited<ReturnType<typeof createInspectorRule>>,
   TError,
-  { id: string; data: AssignUserRolesCommand },
+  { projectId: string; data: CreateInspectorRuleCommand },
   TContext
 > => {
-  return useMutation(getAssignUserRolesMutationOptions(options), queryClient);
+  return useMutation(
+    getCreateInspectorRuleMutationOptions(options),
+    queryClient,
+  );
 };
+export const getInspectorRules = (projectId: string, signal?: AbortSignal) => {
+  return customInstance<IReadOnlyListOfInspectorRuleDto>({
+    url: `/api/projects/${projectId}/inspector-rules`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetInspectorRulesQueryKey = (projectId: string) => {
+  return [`/api/projects/${projectId}/inspector-rules`] as const;
+};
+
+export const getGetInspectorRulesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getInspectorRules>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectorRules>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetInspectorRulesQueryKey(projectId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getInspectorRules>>
+  > = ({ signal }) => getInspectorRules(projectId, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: projectId !== null && projectId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getInspectorRules>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetInspectorRulesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getInspectorRules>>
+>;
+export type GetInspectorRulesQueryError = void;
+
+export function useGetInspectorRules<
+  TData = Awaited<ReturnType<typeof getInspectorRules>>,
+  TError = void,
+>(
+  projectId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectorRules>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getInspectorRules>>,
+          TError,
+          Awaited<ReturnType<typeof getInspectorRules>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInspectorRules<
+  TData = Awaited<ReturnType<typeof getInspectorRules>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectorRules>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getInspectorRules>>,
+          TError,
+          Awaited<ReturnType<typeof getInspectorRules>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInspectorRules<
+  TData = Awaited<ReturnType<typeof getInspectorRules>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectorRules>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetInspectorRules<
+  TData = Awaited<ReturnType<typeof getInspectorRules>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectorRules>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetInspectorRulesQueryOptions(projectId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const createInspector = (
+  projectId: string,
+  createInspectorCommand: CreateInspectorCommand,
+  signal?: AbortSignal,
+) => {
+  return customInstance<InspectorDto>({
+    url: `/api/projects/${projectId}/inspectors`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: createInspectorCommand,
+    signal,
+  });
+};
+
+export const getCreateInspectorMutationOptions = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createInspector>>,
+    TError,
+    { projectId: string; data: CreateInspectorCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createInspector>>,
+  TError,
+  { projectId: string; data: CreateInspectorCommand },
+  TContext
+> => {
+  const mutationKey = ["createInspector"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createInspector>>,
+    { projectId: string; data: CreateInspectorCommand }
+  > = (props) => {
+    const { projectId, data } = props ?? {};
+
+    return createInspector(projectId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateInspectorMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createInspector>>
+>;
+export type CreateInspectorMutationBody = CreateInspectorCommand;
+export type CreateInspectorMutationError = ErrorResponse | void;
+
+export const useCreateInspector = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createInspector>>,
+      TError,
+      { projectId: string; data: CreateInspectorCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof createInspector>>,
+  TError,
+  { projectId: string; data: CreateInspectorCommand },
+  TContext
+> => {
+  return useMutation(getCreateInspectorMutationOptions(options), queryClient);
+};
+export const getInspectors = (projectId: string, signal?: AbortSignal) => {
+  return customInstance<IReadOnlyListOfInspectorDto>({
+    url: `/api/projects/${projectId}/inspectors`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetInspectorsQueryKey = (projectId: string) => {
+  return [`/api/projects/${projectId}/inspectors`] as const;
+};
+
+export const getGetInspectorsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getInspectors>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInspectors>>, TError, TData>
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetInspectorsQueryKey(projectId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getInspectors>>> = ({
+    signal,
+  }) => getInspectors(projectId, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: projectId !== null && projectId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getInspectors>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetInspectorsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getInspectors>>
+>;
+export type GetInspectorsQueryError = void;
+
+export function useGetInspectors<
+  TData = Awaited<ReturnType<typeof getInspectors>>,
+  TError = void,
+>(
+  projectId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInspectors>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getInspectors>>,
+          TError,
+          Awaited<ReturnType<typeof getInspectors>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInspectors<
+  TData = Awaited<ReturnType<typeof getInspectors>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInspectors>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getInspectors>>,
+          TError,
+          Awaited<ReturnType<typeof getInspectors>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInspectors<
+  TData = Awaited<ReturnType<typeof getInspectors>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInspectors>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetInspectors<
+  TData = Awaited<ReturnType<typeof getInspectors>>,
+  TError = void,
+>(
+  projectId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInspectors>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetInspectorsQueryOptions(projectId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

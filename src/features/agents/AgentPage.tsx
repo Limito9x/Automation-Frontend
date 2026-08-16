@@ -1,7 +1,9 @@
 import { useState } from "react";
+import type { AgentDto } from "@/gen/model";
 import { useAgents } from "./hooks/useAgents";
 import { AgentCard } from "./components/AgentCard";
 import { GenerateSetupTokenDialog } from "./dialogs/GenerateSetupTokenDialog";
+import { AgentExecutorsDialog } from "./dialogs/AgentExecutorsDialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Server, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -9,7 +11,8 @@ import { useTranslation } from "react-i18next";
 export function AgentPage() {
     const { t } = useTranslation();
     const { data: agentsData, isLoading, refetch } = useAgents();
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [setupDialogOpen, setSetupDialogOpen] = useState(false);
+    const [executorsAgent, setExecutorsAgent] = useState<AgentDto | null>(null);
 
     const agents = Array.isArray(agentsData) ? agentsData : [];
 
@@ -27,11 +30,11 @@ export function AgentPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => refetch()}>
+                    <Button variant="outline" size="sm" onPress={() => refetch()}>
                         <RefreshCw className="w-4 h-4 mr-2" />
                         {t("common.refresh", { defaultValue: "Refresh" })}
                     </Button>
-                    <Button onClick={() => setDialogOpen(true)}>
+                    <Button onPress={() => setSetupDialogOpen(true)}>
                         <Plus className="w-4 h-4 mr-2" />
                         {t("agents.addAgent", { defaultValue: "Add Agent" })}
                     </Button>
@@ -42,7 +45,7 @@ export function AgentPage() {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-36 bg-muted/40 animate-pulse rounded-lg border" />
+                        <div key={i} className="h-44 bg-muted/40 animate-pulse rounded-lg border" />
                     ))}
                 </div>
             ) : agents.length === 0 ? (
@@ -58,7 +61,7 @@ export function AgentPage() {
                             {t("agents.noAgentsDesc", { defaultValue: "Click 'Add Agent' to generate a setup token and register your first machine." })}
                         </p>
                     </div>
-                    <Button onClick={() => setDialogOpen(true)}>
+                    <Button onPress={() => setSetupDialogOpen(true)}>
                         <Plus className="w-4 h-4 mr-2" />
                         {t("agents.addAgent", { defaultValue: "Add Agent" })}
                     </Button>
@@ -66,15 +69,28 @@ export function AgentPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {agents.map((agent: any) => (
-                        <AgentCard key={agent.id} agent={agent} />
+                        <AgentCard
+                            key={agent.id}
+                            agent={agent}
+                            onConfigureExecutors={(a) => setExecutorsAgent(a)}
+                        />
                     ))}
                 </div>
             )}
 
-            {/* Dialog */}
+            {/* Setup Token Dialog */}
             <GenerateSetupTokenDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
+                open={setupDialogOpen}
+                onOpenChange={setSetupDialogOpen}
+            />
+
+            {/* Executor Config & Scan Dialog */}
+            <AgentExecutorsDialog
+                open={!!executorsAgent}
+                onOpenChange={(open) => {
+                    if (!open) setExecutorsAgent(null);
+                }}
+                agent={executorsAgent}
             />
         </div>
     );

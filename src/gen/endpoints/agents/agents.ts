@@ -22,15 +22,19 @@ import type {
 
 import type {
   AgentDto2,
-  AgentPlatformConfigDto,
-  ConfigureAgentPlatformCommand,
+  AgentExecutorConfigDto,
+  ConfigureAgentExecutorCommand,
   DiscoverAgentFolderResult,
   DiscoverAgentFoldersParams,
   ErrorResponse,
   IReadOnlyListOfAgentDto,
+  IReadOnlyListOfAgentExecutorConfigDto,
+  IReadOnlyListOfExecutorCandidateDto,
   RegisterAgentCommand,
   RegisterAgentResultDto,
   RegisterAgentWithTokenCommand,
+  ReportExecutorConfigsCommand,
+  ScanExecutorsCommand,
   SetupTokenDto,
 } from "../../model";
 
@@ -519,37 +523,37 @@ export const useRegisterAgentWithToken = <
     queryClient,
   );
 };
-export const configureAgentPlatform = (
+export const reportExecutorConfigs = (
   agentId: string,
-  configureAgentPlatformCommand: ConfigureAgentPlatformCommand,
+  reportExecutorConfigsCommand: ReportExecutorConfigsCommand,
   signal?: AbortSignal,
 ) => {
-  return customInstance<AgentPlatformConfigDto>({
-    url: `/api/agents/${agentId}/platforms`,
+  return customInstance<IReadOnlyListOfAgentExecutorConfigDto>({
+    url: `/api/agents/${agentId}/executor-configs`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    data: configureAgentPlatformCommand,
+    data: reportExecutorConfigsCommand,
     signal,
   });
 };
 
-export const getConfigureAgentPlatformMutationOptions = <
+export const getReportExecutorConfigsMutationOptions = <
   TError = ErrorResponse | void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof configureAgentPlatform>>,
+    Awaited<ReturnType<typeof reportExecutorConfigs>>,
     TError,
-    { agentId: string; data: ConfigureAgentPlatformCommand },
+    { agentId: string; data: ReportExecutorConfigsCommand },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof configureAgentPlatform>>,
+  Awaited<ReturnType<typeof reportExecutorConfigs>>,
   TError,
-  { agentId: string; data: ConfigureAgentPlatformCommand },
+  { agentId: string; data: ReportExecutorConfigsCommand },
   TContext
 > => {
-  const mutationKey = ["configureAgentPlatform"];
+  const mutationKey = ["reportExecutorConfigs"];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -559,46 +563,202 @@ export const getConfigureAgentPlatformMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof configureAgentPlatform>>,
-    { agentId: string; data: ConfigureAgentPlatformCommand }
+    Awaited<ReturnType<typeof reportExecutorConfigs>>,
+    { agentId: string; data: ReportExecutorConfigsCommand }
   > = (props) => {
     const { agentId, data } = props ?? {};
 
-    return configureAgentPlatform(agentId, data);
+    return reportExecutorConfigs(agentId, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type ConfigureAgentPlatformMutationResult = NonNullable<
-  Awaited<ReturnType<typeof configureAgentPlatform>>
+export type ReportExecutorConfigsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof reportExecutorConfigs>>
 >;
-export type ConfigureAgentPlatformMutationBody = ConfigureAgentPlatformCommand;
-export type ConfigureAgentPlatformMutationError = ErrorResponse | void;
+export type ReportExecutorConfigsMutationBody = ReportExecutorConfigsCommand;
+export type ReportExecutorConfigsMutationError = ErrorResponse | void;
 
-export const useConfigureAgentPlatform = <
+export const useReportExecutorConfigs = <
   TError = ErrorResponse | void,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof configureAgentPlatform>>,
+      Awaited<ReturnType<typeof reportExecutorConfigs>>,
       TError,
-      { agentId: string; data: ConfigureAgentPlatformCommand },
+      { agentId: string; data: ReportExecutorConfigsCommand },
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof configureAgentPlatform>>,
+  Awaited<ReturnType<typeof reportExecutorConfigs>>,
   TError,
-  { agentId: string; data: ConfigureAgentPlatformCommand },
+  { agentId: string; data: ReportExecutorConfigsCommand },
   TContext
 > => {
   return useMutation(
-    getConfigureAgentPlatformMutationOptions(options),
+    getReportExecutorConfigsMutationOptions(options),
     queryClient,
   );
+};
+export const configureAgentExecutor = (
+  agentId: string,
+  configureAgentExecutorCommand: ConfigureAgentExecutorCommand,
+  signal?: AbortSignal,
+) => {
+  return customInstance<AgentExecutorConfigDto>({
+    url: `/api/agents/${agentId}/executors`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: configureAgentExecutorCommand,
+    signal,
+  });
+};
+
+export const getConfigureAgentExecutorMutationOptions = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof configureAgentExecutor>>,
+    TError,
+    { agentId: string; data: ConfigureAgentExecutorCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof configureAgentExecutor>>,
+  TError,
+  { agentId: string; data: ConfigureAgentExecutorCommand },
+  TContext
+> => {
+  const mutationKey = ["configureAgentExecutor"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof configureAgentExecutor>>,
+    { agentId: string; data: ConfigureAgentExecutorCommand }
+  > = (props) => {
+    const { agentId, data } = props ?? {};
+
+    return configureAgentExecutor(agentId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ConfigureAgentExecutorMutationResult = NonNullable<
+  Awaited<ReturnType<typeof configureAgentExecutor>>
+>;
+export type ConfigureAgentExecutorMutationBody = ConfigureAgentExecutorCommand;
+export type ConfigureAgentExecutorMutationError = ErrorResponse | void;
+
+export const useConfigureAgentExecutor = <
+  TError = ErrorResponse | void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof configureAgentExecutor>>,
+      TError,
+      { agentId: string; data: ConfigureAgentExecutorCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof configureAgentExecutor>>,
+  TError,
+  { agentId: string; data: ConfigureAgentExecutorCommand },
+  TContext
+> => {
+  return useMutation(
+    getConfigureAgentExecutorMutationOptions(options),
+    queryClient,
+  );
+};
+export const scanExecutors = (
+  agentId: string,
+  scanExecutorsCommand: ScanExecutorsCommand,
+  signal?: AbortSignal,
+) => {
+  return customInstance<IReadOnlyListOfExecutorCandidateDto>({
+    url: `/api/agents/${agentId}/executors/scan`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: scanExecutorsCommand,
+    signal,
+  });
+};
+
+export const getScanExecutorsMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof scanExecutors>>,
+    TError,
+    { agentId: string; data: ScanExecutorsCommand },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof scanExecutors>>,
+  TError,
+  { agentId: string; data: ScanExecutorsCommand },
+  TContext
+> => {
+  const mutationKey = ["scanExecutors"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof scanExecutors>>,
+    { agentId: string; data: ScanExecutorsCommand }
+  > = (props) => {
+    const { agentId, data } = props ?? {};
+
+    return scanExecutors(agentId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ScanExecutorsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof scanExecutors>>
+>;
+export type ScanExecutorsMutationBody = ScanExecutorsCommand;
+export type ScanExecutorsMutationError = void;
+
+export const useScanExecutors = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof scanExecutors>>,
+      TError,
+      { agentId: string; data: ScanExecutorsCommand },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof scanExecutors>>,
+  TError,
+  { agentId: string; data: ScanExecutorsCommand },
+  TContext
+> => {
+  return useMutation(getScanExecutorsMutationOptions(options), queryClient);
 };
 export const discoverAgentFolders = (
   id: string,

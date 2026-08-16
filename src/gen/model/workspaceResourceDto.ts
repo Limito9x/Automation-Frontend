@@ -25,4 +25,8 @@ export interface WorkspaceResourceDto {
   contentTypeIcon: string | null;
   versionCount: number;
   createdAt: string;
+  /** @nullable */
+  latestVersionId?: string | null;
+  /** @nullable */
+  latestVersionNo?: number | null;
 }

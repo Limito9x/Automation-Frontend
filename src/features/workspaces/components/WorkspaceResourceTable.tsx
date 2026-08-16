@@ -14,8 +14,9 @@ import type { WorkspaceResourceDto } from "../types/workspace-resources";
 import type { useResourceQuery, BaseSearchParams } from "@/lib/useResourceQuery";
 import { useWorkspaceResourceTable } from "../hooks/useWorkspaceResourceTable";
 import { AssignContentSidePanel } from "./drawers/AssignContentSidePanel";
+import { BatchTriggerInspectionDialog } from "@/features/inspections/dialogs/BatchTriggerInspectionDialog";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Search, Layers, Unlink, FileCode } from "lucide-react";
+import { Search, Layers, Unlink, FileCode, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ export function WorkspaceResourceTable({
   projectId,
 }: WorkspaceResourceTableProps) {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [batchInspectOpen, setBatchInspectOpen] = useState(false);
   const [activeDragItem, setActiveDragItem] = useState<{
     id: string;
     resourceIds: string[];
@@ -70,6 +72,7 @@ export function WorkspaceResourceTable({
     totalCount,
     resource,
     workspaceId,
+    projectId,
     onOpenAssignPanel: handleOpenAssignPanel,
   });
 
@@ -137,91 +140,101 @@ export function WorkspaceResourceTable({
       <>
         {/* Main Workspace Layout: Docked SidePanel on Left + Table & Toolbar on Right */}
         <div className="flex items-start gap-4">
-        {/* Left Side: Content Drop Targets Panel */}
-        {isPanelOpen && (
-          <div className="w-80 lg:w-96 shrink-0 sticky top-4">
-            <AssignContentSidePanel
-              isOpen={isPanelOpen}
-              onClose={() => setIsPanelOpen(false)}
-              projectId={projectId}
-              workspaceId={workspaceId}
-              selectedResourceIds={selectedRowIds}
-              onAssignSuccess={() => {
-                setRowSelection({});
-              }}
-            />
-          </div>
-        )}
-
-        {/* Right Side: Table Toolbar + Selection Bar + Table */}
-        <div className="flex-1 min-w-0 space-y-3">
-          {/* Table Toolbar & Search */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="relative w-full sm:w-80">
-              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search name, path, content..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                className="pl-9 text-xs"
+          {/* Left Side: Content Drop Targets Panel */}
+          {isPanelOpen && (
+            <div className="w-80 lg:w-96 shrink-0 sticky top-4">
+              <AssignContentSidePanel
+                isOpen={isPanelOpen}
+                onClose={() => setIsPanelOpen(false)}
+                projectId={projectId}
+                workspaceId={workspaceId}
+                selectedResourceIds={selectedRowIds}
+                onAssignSuccess={() => {
+                  setRowSelection({});
+                }}
               />
             </div>
+          )}
 
-            <div className="flex items-center gap-2">
-              {/* Batch Actions when items are selected */}
-              {selectedRowIds.length > 0 && (
-                <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
-                  <button
-                    type="button"
-                    onClick={() => setRowSelection({})}
-                    className="inline-flex items-center gap-1 h-8 px-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors cursor-pointer"
-                    title="Click to clear selection"
-                  >
-                    <span>{selectedRowIds.length} selected</span>
-                    <span className="text-[10px] opacity-70">✕</span>
-                  </button>
+          {/* Right Side: Table Toolbar + Selection Bar + Table */}
+          <div className="flex-1 min-w-0 space-y-3">
+            {/* Table Toolbar & Search */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="relative w-full sm:w-80">
+                <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search name, path, content..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  className="pl-9 text-xs"
+                />
+              </div>
 
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={handleBatchUnlink}
-                    isDisabled={assignMutation.isPending}
-                    className="h-8 text-xs gap-1 px-2.5"
-                  >
-                    <Unlink className="size-3.5" />
-                    Unlink ({selectedRowIds.length})
-                  </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Batch Actions when items are selected */}
+                {selectedRowIds.length > 0 && (
+                  <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                    <button
+                      type="button"
+                      onClick={() => setRowSelection({})}
+                      className="inline-flex items-center gap-1 h-8 px-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors cursor-pointer"
+                      title="Click to clear selection"
+                    >
+                      <span>{selectedRowIds.length} selected</span>
+                      <span className="text-[10px] opacity-70">✕</span>
+                    </button>
+
+                    {/* Batch Run Inspection Button */}
+                    <Button
+                      size="sm"
+                      onClick={() => setBatchInspectOpen(true)}
+                      className="h-8 text-xs gap-1.5 px-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
+                    >
+                      <Play className="size-3.5 fill-current" />
+                      Run Inspection ({selectedRowIds.length})
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={handleBatchUnlink}
+                      isDisabled={assignMutation.isPending}
+                      className="h-8 text-xs gap-1 px-2.5"
+                    >
+                      <Unlink className="size-3.5" />
+                      Unlink ({selectedRowIds.length})
+                    </Button>
+                  </div>
+                )}
+
+                {/* Toggle Left Content Panel */}
+                <Button
+                  size="sm"
+                  variant={isPanelOpen ? "default" : "outline"}
+                  onClick={() => setIsPanelOpen(!isPanelOpen)}
+                  className="h-8 text-xs gap-1.5 font-medium shadow-xs"
+                >
+                  <Layers className="size-3.5" />
+                  {isPanelOpen ? "Hide Content Panel" : "Assign Content Panel"}
+                </Button>
+
+                {/* Total Count */}
+                <div className="text-xs text-muted-foreground font-medium pl-1">
+                  <span className="text-foreground font-semibold">{data.length}</span> /{" "}
+                  <span className="text-foreground font-semibold">{totalCount}</span>
                 </div>
-              )}
-
-              {/* Toggle Left Content Panel */}
-              <Button
-                size="sm"
-                variant={isPanelOpen ? "default" : "outline"}
-                onClick={() => setIsPanelOpen(!isPanelOpen)}
-                className="h-8 text-xs gap-1.5 font-medium shadow-xs"
-              >
-                <Layers className="size-3.5" />
-                {isPanelOpen ? "Hide Content Panel" : "Assign Content Panel"}
-              </Button>
-
-              {/* Total Count */}
-              <div className="text-xs text-muted-foreground font-medium pl-1">
-                <span className="text-foreground font-semibold">{data.length}</span> /{" "}
-                <span className="text-foreground font-semibold">{totalCount}</span>
               </div>
             </div>
-          </div>
 
-          {/* Table */}
-          <BaseTable
-            table={table}
-            columns={columns}
-            isLoading={isLoading}
-            caption="Workspace Resources List"
-          />
+            {/* Table */}
+            <BaseTable
+              table={table}
+              columns={columns}
+              isLoading={isLoading}
+              caption="Workspace Resources List"
+            />
+          </div>
         </div>
-      </div>
 
         {/* Drag Overlay (Floating Card while dragging) */}
         <DragOverlay dropAnimation={null}>
@@ -246,6 +259,20 @@ export function WorkspaceResourceTable({
             </div>
           ) : null}
         </DragOverlay>
+
+        {/* Batch Trigger Inspection Dialog */}
+        <BatchTriggerInspectionDialog
+          open={batchInspectOpen}
+          onOpenChange={setBatchInspectOpen}
+          projectId={projectId}
+          selectedResourceVersionIds={selectedRowIds.map(id => {
+            const item = data.find(d => d.id === id);
+            return item?.latestVersionId || id;
+          })}
+          onSuccess={() => {
+            setRowSelection({});
+          }}
+        />
       </>
     </DndContext>
   );

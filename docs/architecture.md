@@ -1,166 +1,89 @@
-# HybridVSA Frontend — Architecture
+# Automation Frontend — Architecture & Design System
 
-## Tech Stack
+## 1. Tech Stack
 
-| Role | Library |
-|---|---|
-| Framework | React 19 + TypeScript + Vite |
-| Styling | Tailwind CSS v4 + shadcn/ui (Nova style) |
-| Routing | TanStack Router (file-based) |
-| Server State | TanStack Query v5 |
-| Form State | React Hook Form + Zod |
-| API Client | hey-api (generated from OpenAPI spec) |
-| Date/Time | Temporal API + `temporal-polyfill` (Safari fallback) |
-| Icons | Lucide React |
+| Role | Library | Ghi chú |
+|---|---|---|
+| Framework | React 19 + TypeScript + Vite | Tối ưu hóa hiệu năng & References Build |
+| Styling | Tailwind CSS v4 + React Aria Components | Custom Shadcn Stack xây trên React Aria, không dùng Radix UI thuần |
+| Routing | TanStack Router (file-based) | URL là Single Source of Truth (SSOT) cho search params / filters |
+| Server State | TanStack Query v5 | Quản lý cache và polling dữ liệu realtime từ API |
+| Client State | Zustand | Dùng cho Dialog Registry (`useDialogStore`) và Auth State (`useAuthStore`) |
+| Form State | React Hook Form + Zod | Schema validation và Zod `.transform()` mapping |
+| API Generation | Orval (`pnpm run gen:api`) | Sinh code TypeScript tự động từ OpenAPI Spec vào `src/gen/` |
+| Date/Time | Temporal API + `@/lib/temporal` | Nghiêm cấm dùng native `Date` ngoại trừ UI calendar boundary |
+| Icons | Lucide React | Hệ thống icon đồng bộ |
 
 ---
 
-## Project Structure
+## 2. Project Structure
 
 ```
 src/
-├── api/
-│   └── generated/              # hey-api output — KHÔNG sửa tay, chỉ re-generate
+├── gen/                        # Code tự sinh bởi Orval — TUYỆT ĐỐI KHÔNG SỬA TAY
+│   ├── endpoints/              # Generated API mutation/query functions
+│   └── model/                  # Generated TypeScript DTOs & Interfaces
 │
-├── components/                 # Shared, dùng 2+ feature
-│   ├── ui/                     # shadcn primitives — KHÔNG sửa tay
-│   ├── data-table/             # DataTable building blocks
-│   │   ├── DataTable.tsx
-│   │   ├── DataTableToolbar.tsx
-│   │   ├── DataTablePagination.tsx
-│   │   ├── DataTableColumnHeader.tsx
-│   │   └── index.ts
-│   └── layout/
-│       ├── AppShell.tsx        # Root layout wrapper
-│       ├── Sidebar.tsx
-│       └── PageHeader.tsx
-│
-├── hooks/                      # Shared hooks — dùng 2+ feature
-│   ├── useDebounce.ts
-│   └── useLocalStorage.ts
+├── components/                 # Component dùng chung toàn dự án
+│   ├── ui/                     # React Aria Primitives (Button, Dialog, Input...)
+│   ├── custom-ui/              # Custom UI nâng cao
+│   │   ├── tables/             # BaseTable, JsonTreeTable (Dynamic JSON viewer)
+│   │   └── overlays/           # BaseDialog, BaseFormDialog
+│   └── layout/                 # AppShell, ProjectSidebar, AppHeader
 │
 ├── lib/
-│   ├── temporal.ts             # Temporal helpers + convert utils
-│   ├── queryClient.ts          # TanStack Query global config
-│   ├── api-client.ts           # hey-api client config + middleware
-│   └── zod/                    # Shared Zod schemas
+│   ├── api-client.ts           # Axios client instance, auth interceptors & error toasts
+│   ├── upload-utils.ts         # Direct-to-S3 upload flow với SHA-256 calculation
+│   └── temporal.ts             # Temporal date manipulation helpers
 │
-├── features/
-│   └── [feature-name]/
-│       ├── components/         # UI component riêng của feature
-│       ├── hooks/              # useQuery/useMutation hooks
-│       ├── types.ts            # Filter types, form value types
-│       └── index.ts            # Public API của feature (re-export)
+├── features/                   # Tính năng tổ chức theo Vertical Slices
+│   ├── agents/                 # Quản lý Agent, gRPC status, Scan & Active Executable Runtimes
+│   ├── inspectors/             # Quản lý Project Inspectors, Script Versions (Upload .py/.zip), Rules
+│   ├── inspections/            # Tab xem kết quả kiểm định Resource & JsonTreeTable Viewer
+│   ├── workspaces/             # Quản lý Workspaces, Đồng bộ file & Diff Compare
+│   ├── contentTypes/           # Dynamic Form Schemas & Builder
+│   └── contents/               # Quản lý nội dung dữ liệu Content Items
 │
-└── routes/                     # TanStack Router file-based
-    ├── __root.tsx              # Root route + layout
-    ├── _layout.tsx             # Authenticated layout
-    ├── index.tsx               # / redirect
-    └── [feature]/
-        ├── index.tsx
-        └── $id.tsx
+└── routes/                     # TanStack Router File-Based Routing
+    ├── _protected/             # Routes yêu cầu xác thực
+    │   ├── _layout/            # Layout chung (GlobalSidebar)
+    │   └── _project/           # Layout dự án (ProjectSidebar)
+    │       └── projects/$projectId/
+    │           ├── overview.tsx
+    │           ├── workspaces.tsx
+    │           ├── inspectors.tsx # Giao diện cấu hình Inspectors & Rules
+    │           └── contents/
 ```
 
 ---
 
-## Data Flow
+## 3. Data Flow & Core Patterns
 
 ```
-OpenAPI Spec
-    ↓ hey-api generate
-src/api/generated/              # type-safe API functions
-    ↓ wrap bằng useQuery/useMutation
-features/*/hooks/               # server state hooks
-    ↓
-features/*/components/          # UI components
-    ↓ compose lên
-routes/                         # Pages
+OpenAPI Spec (Backend)
+     ↓ pnpm run gen:api (Orval)
+src/gen/endpoints/ & src/gen/model/
+     ↓ Wrap bằng useQuery / useMutation
+features/*/hooks/ (useInspectors, useAgentExecutors...)
+     ↓ Cung cấp dữ liệu và actions
+features/*/components/ & dialogs/ (InspectorsTable, AgentExecutorsDialog...)
+     ↓ Render trên Route Pages
+routes/_protected/...
 ```
 
----
+### 3.1. Dialog Architecture & Store
+- Mọi Dialog thêm/sửa/xóa đều tách thành component độc lập trong `features/*/dialogs/`.
+- Không nhúng state `useState(open)` rải rác trong Page. Kích hoạt Dialog thông qua `useDialogStore` hoặc state nội bộ rõ ràng.
 
-## Layer Responsibilities
+### 3.2. Direct-to-Storage Upload Flow (`uploadAssetFlow`)
+1. User chọn file script (`.py` hoặc `.zip`) hoặc file tài nguyên.
+2. `uploadAssetFlow(file)` tự động tính mã băm **SHA-256** bằng `crypto.subtle.digest`.
+3. Gọi API xin Presigned Upload URL từ Module Files.
+4. Gửi trực tiếp file qua HTTP `PUT` lên S3/R2 Cloud Storage.
+5. Gọi `confirmUpload` và trả về `assetId` liên kết với version mới.
 
-### `src/api/generated/`
-- Auto-generated từ OpenAPI spec bằng `hey-api`
-- **Không bao giờ sửa tay** — chạy lại generate nếu spec thay đổi
-- Chứa: API functions, request/response types
-
-### `src/lib/api-client.ts`
-- Config hey-api client: baseUrl, headers
-- Error handling middleware tập trung tại đây
-- Auth token injection (từ storage hoặc context)
-
-### `features/*/hooks/`
-- Wrap generated API functions bằng `useQuery` / `useMutation`
-- Define `queryKey` convention: `[feature, action, params]`
-- Không chứa UI logic
-
-### `features/*/components/`
-- Chỉ biết hooks của feature đó
-- Không gọi generated API trực tiếp
-- Không chứa business logic — delegate về hooks
-
-### `src/components/`
-- Hoàn toàn không biết feature nào tồn tại
-- Nhận data qua props
-- Tái sử dụng được không cần context
-
----
-
-## Routing Convention (TanStack Router file-based)
-
-```
-routes/
-├── __root.tsx          # RootRoute — wrap toàn app (QueryClient, ThemeProvider)
-├── _layout.tsx         # Authenticated layout — Sidebar + AppShell
-├── index.tsx           # / → redirect về dashboard
-│
-├── auth/
-│   ├── login.tsx       # /auth/login
-│   └── logout.tsx      # /auth/logout
-│
-└── dashboard/
-    ├── index.tsx       # /dashboard
-    └── users/
-        ├── index.tsx   # /dashboard/users
-        └── $userId.tsx # /dashboard/users/:userId
-```
-
-Prefix `_` = layout route (không tạo URL segment).
-Prefix `$` = dynamic param.
-Prefix `__` = root route.
-
----
-
-## State Management Philosophy
-
-| Loại state | Tool | Ghi chú |
-|---|---|---|
-| Server state | TanStack Query | Data từ API — không dùng useState cache |
-| Form state | React Hook Form | Local, chưa submit |
-| URL state | TanStack Router search params | Filter, pagination |
-| UI state | useState / useReducer | Modal open, tab active |
-| Global client state | Context API | Auth user, theme — chỉ khi thực sự cần |
-
-**Không dùng Redux / Zustand** — TanStack Query đã xử lý phần lớn state management.
-
----
-
-## Date/Time Convention
-
-Toàn app dùng `Temporal`. `Date` object chỉ xuất hiện tại boundary với UI components chưa support Temporal (shadcn Calendar, react-day-picker).
-
-```ts
-// lib/temporal.ts
-import { Temporal } from 'temporal-polyfill'
-export { Temporal }
-
-// Convert tại boundary — không leak Date ra ngoài component
-export const fromDate = (d: Date): Temporal.PlainDate => ...
-export const toDate = (t: Temporal.PlainDate): Date => ...
-export const fromISOString = (s: string): Temporal.PlainDate =>
-  Temporal.PlainDate.from(s)
-```
-
-**Rule:** API nhận/trả ISO string. FE parse về Temporal ngay khi nhận, serialize về string ngay khi gửi.
+### 3.3. Dynamic JSON Inspection Viewer (`JsonTreeTable`)
+- Tự động phân tích kết quả JSON trả về từ Agent máy trạm:
+  - **Array of Objects**: Chuyển đổi thành **Sub-Table** có thể đọc và phân tích từng metric.
+  - **Primitive Fields**: Hiển thị Key - Value kèm badges trạng thái (`PASSED`: Xanh, `WARNING`: Vàng, `FAILED`: Đỏ).
+  - **Nested Objects**: Cung cấp cây cấu trúc thu gọn/mở rộng (*Collapsible Tree*) tích hợp ô tìm kiếm lọc dữ liệu realtime.

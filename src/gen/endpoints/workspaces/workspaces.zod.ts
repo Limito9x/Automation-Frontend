@@ -241,7 +241,9 @@ export const GetWorkspaceResourcesResponse = /*#__PURE__*/ zod.object({
   "contentTypeColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "contentTypeIcon": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "versionCount": /*#__PURE__*/ zod.int(),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "latestVersionId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "latestVersionNo": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.int())
 }))),
   "totalCount": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),
   "page": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.int()),

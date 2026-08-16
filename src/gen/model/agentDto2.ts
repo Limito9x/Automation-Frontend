@@ -13,4 +13,6 @@ export interface AgentDto2 {
   /** @nullable */
   lastSeenAt: string | null;
   createdAt: string;
+  /** @nullable */
+  executorConfigs?: unknown[] | null;
 }

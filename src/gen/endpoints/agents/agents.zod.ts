@@ -13,7 +13,15 @@ export const GetAgentsResponseItem = /*#__PURE__*/ zod.object({
   "machineKey": /*#__PURE__*/ zod.string(),
   "isActive": /*#__PURE__*/ zod.boolean(),
   "lastSeenAt": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.iso.datetime({"offset":true})),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "executorConfigs": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "agentId": /*#__PURE__*/ zod.uuid(),
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "executablePath": /*#__PURE__*/ zod.string(),
+  "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})))
 })
 export const GetAgentsResponse = /*#__PURE__*/ zod.array(GetAgentsResponseItem)
 
@@ -28,7 +36,15 @@ export const GetMyAgentResponse = /*#__PURE__*/ zod.object({
   "machineKey": /*#__PURE__*/ zod.string(),
   "isActive": /*#__PURE__*/ zod.boolean(),
   "lastSeenAt": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.iso.datetime({"offset":true})),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "executorConfigs": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "agentId": /*#__PURE__*/ zod.uuid(),
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "executablePath": /*#__PURE__*/ zod.string(),
+  "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})))
 })
 
 export const registerAgentBodyNameMin = 0;
@@ -69,33 +85,72 @@ export const RegisterAgentWithTokenResponse = /*#__PURE__*/ zod.object({
   "registrationToken": /*#__PURE__*/ zod.string()
 })
 
-export const ConfigureAgentPlatformParams = /*#__PURE__*/ zod.object({
+export const ReportExecutorConfigsParams = /*#__PURE__*/ zod.object({
   "agentId": /*#__PURE__*/ zod.uuid()
 })
 
-
-export const configureAgentPlatformBodyExecutablePathMin = 0;
-export const configureAgentPlatformBodyExecutablePathMax = 500;
-
-export const configureAgentPlatformBodyVersionMin = 0;
-export const configureAgentPlatformBodyVersionMax = 50;
-
-
-
-export const ConfigureAgentPlatformBody = /*#__PURE__*/ zod.object({
-  "platformId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "executablePath": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(configureAgentPlatformBodyExecutablePathMin)).check(/*#__PURE__*/ zod.maxLength(configureAgentPlatformBodyExecutablePathMax)),
-  "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(configureAgentPlatformBodyVersionMin)).check(/*#__PURE__*/ zod.maxLength(configureAgentPlatformBodyVersionMax)))
+export const ReportExecutorConfigsBody = /*#__PURE__*/ zod.object({
+  "configs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "executablePath": /*#__PURE__*/ zod.string(),
+  "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+}))
 })
 
-export const ConfigureAgentPlatformResponse = /*#__PURE__*/ zod.object({
+export const ReportExecutorConfigsResponseItem = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "agentId": /*#__PURE__*/ zod.uuid(),
-  "platformId": /*#__PURE__*/ zod.uuid(),
+  "executorKey": /*#__PURE__*/ zod.string(),
   "executablePath": /*#__PURE__*/ zod.string(),
   "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })
+export const ReportExecutorConfigsResponse = /*#__PURE__*/ zod.array(ReportExecutorConfigsResponseItem)
+
+export const ConfigureAgentExecutorParams = /*#__PURE__*/ zod.object({
+  "agentId": /*#__PURE__*/ zod.uuid()
+})
+
+export const configureAgentExecutorBodyExecutorKeyMin = 0;
+export const configureAgentExecutorBodyExecutorKeyMax = 50;
+
+export const configureAgentExecutorBodyExecutablePathMin = 0;
+export const configureAgentExecutorBodyExecutablePathMax = 500;
+
+export const configureAgentExecutorBodyVersionMin = 0;
+export const configureAgentExecutorBodyVersionMax = 50;
+
+
+
+export const ConfigureAgentExecutorBody = /*#__PURE__*/ zod.object({
+  "executorKey": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(configureAgentExecutorBodyExecutorKeyMin)).check(/*#__PURE__*/ zod.maxLength(configureAgentExecutorBodyExecutorKeyMax)),
+  "executablePath": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(configureAgentExecutorBodyExecutablePathMin)).check(/*#__PURE__*/ zod.maxLength(configureAgentExecutorBodyExecutablePathMax)),
+  "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(configureAgentExecutorBodyVersionMin)).check(/*#__PURE__*/ zod.maxLength(configureAgentExecutorBodyVersionMax)))
+})
+
+export const ConfigureAgentExecutorResponse = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "agentId": /*#__PURE__*/ zod.uuid(),
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "executablePath": /*#__PURE__*/ zod.string(),
+  "version": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})
+
+export const ScanExecutorsParams = /*#__PURE__*/ zod.object({
+  "agentId": /*#__PURE__*/ zod.uuid()
+})
+
+export const ScanExecutorsBody = /*#__PURE__*/ zod.object({
+  "executorKey": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+})
+
+export const ScanExecutorsResponseItem = /*#__PURE__*/ zod.object({
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "executablePath": /*#__PURE__*/ zod.string(),
+  "version": /*#__PURE__*/ zod.string()
+})
+export const ScanExecutorsResponse = /*#__PURE__*/ zod.array(ScanExecutorsResponseItem)
 
 export const DiscoverAgentFoldersParams = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid()

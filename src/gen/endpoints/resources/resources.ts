@@ -52,7 +52,7 @@ export const assignResourcesContent = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>({
-    url: `/api/workspaces/resources/assign-content`,
+    url: `/api/resources/workspaces/resources/assign-content`,
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     data: assignResourcesContentCommand,
@@ -132,14 +132,16 @@ export const getResourcesByContent = (
   signal?: AbortSignal,
 ) => {
   return customInstance<ListOfContentResourceDto>({
-    url: `/api/workspaces/resources/by-content/${contentId}`,
+    url: `/api/resources/workspaces/resources/by-content/${contentId}`,
     method: "GET",
     signal,
   });
 };
 
 export const getGetResourcesByContentQueryKey = (contentId: string) => {
-  return [`/api/workspaces/resources/by-content/${contentId}`] as const;
+  return [
+    `/api/resources/workspaces/resources/by-content/${contentId}`,
+  ] as const;
 };
 
 export const getGetResourcesByContentQueryOptions = <
@@ -283,7 +285,11 @@ export function useGetResourcesByContent<
 }
 
 export const deleteResource = (id: string, signal?: AbortSignal) => {
-  return customInstance<void>({ url: `/api/${id}`, method: "DELETE", signal });
+  return customInstance<void>({
+    url: `/api/resources/${id}`,
+    method: "DELETE",
+    signal,
+  });
 };
 
 export const getDeleteResourceMutationOptions = <
@@ -349,14 +355,14 @@ export const useDeleteResource = <TError = void, TContext = unknown>(
 };
 export const getResourceById = (id: string, signal?: AbortSignal) => {
   return customInstance<ResourceItemDto>({
-    url: `/api/${id}`,
+    url: `/api/resources/${id}`,
     method: "GET",
     signal,
   });
 };
 
 export const getGetResourceByIdQueryKey = (id: string) => {
-  return [`/api/${id}`] as const;
+  return [`/api/resources/${id}`] as const;
 };
 
 export const getGetResourceByIdQueryOptions = <

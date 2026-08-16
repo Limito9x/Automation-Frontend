@@ -45,11 +45,15 @@ export function WorkspaceDetailPage({
       {/* Navigation & Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Link to="/projects/$projectId/workspaces" params={{ projectId }}>
-            <Button variant="outline" size="icon" className="size-9">
-              <ArrowLeft className="size-4" />
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 cursor-pointer"
+            onClick={() => navigate({ to: "/projects/$projectId/workspaces", params: { projectId } })}
+            aria-label="Back to workspaces"
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">

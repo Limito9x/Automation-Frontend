@@ -53,6 +53,14 @@ export const GetResourceByIdResponse = /*#__PURE__*/ zod.object({
   "filePath": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "platformExtensionId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid()),
   "contentId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "versions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "versionNo": /*#__PURE__*/ zod.int(),
+  "sizeBytes": /*#__PURE__*/ zod.int(),
+  "fileHash": /*#__PURE__*/ zod.string(),
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})))
 })
 

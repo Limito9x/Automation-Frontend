@@ -7,35 +7,117 @@
 import * as zod from 'zod/mini';
 
 
-export const AssignUserRolesParams = /*#__PURE__*/ zod.object({
-  "id": /*#__PURE__*/ zod.string()
+export const CreateInspectorRuleParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
 })
 
-export const AssignUserRolesBody = /*#__PURE__*/ zod.object({
-  "roles": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.string()))
+
+
+export const createInspectorRuleBodyEnabledDefault = true;
+
+export const CreateInspectorRuleBody = /*#__PURE__*/ zod.object({
+  "platformExtensionId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
+  "inspectorId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
+  "contentTypeId": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid()),
+  "enabled": /*#__PURE__*/ zod._default(/*#__PURE__*/ zod.boolean(), createInspectorRuleBodyEnabledDefault)
 })
 
-export const AssignUserRolesResponse = /*#__PURE__*/ zod.object({
-  "isFailed": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
-  "isSuccess": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
-  "reasons": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "message": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
-  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.looseObject({
+export const CreateInspectorRuleResponse = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "projectId": /*#__PURE__*/ zod.uuid(),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "contentTypeId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid()),
+  "inspectorId": /*#__PURE__*/ zod.uuid(),
+  "inspectorName": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "inspectorKey": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "executorKey": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "enabled": /*#__PURE__*/ zod.boolean(),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})
 
-}))
-}))),
-  "errors": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "reasons": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.unknown())),
-  "message": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
-  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.looseObject({
+export const GetInspectorRulesParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
+})
 
-}))
-}))),
-  "successes": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
-  "message": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
-  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.looseObject({
+export const GetInspectorRulesResponseItem = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "projectId": /*#__PURE__*/ zod.uuid(),
+  "platformExtensionId": /*#__PURE__*/ zod.uuid(),
+  "contentTypeId": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.uuid()),
+  "inspectorId": /*#__PURE__*/ zod.uuid(),
+  "inspectorName": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "inspectorKey": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "executorKey": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "enabled": /*#__PURE__*/ zod.boolean(),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})
+export const GetInspectorRulesResponse = /*#__PURE__*/ zod.array(GetInspectorRulesResponseItem)
 
-}))
+export const CreateInspectorParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
+})
+
+export const createInspectorBodyKeyMin = 0;
+export const createInspectorBodyKeyMax = 100;
+
+export const createInspectorBodyNameMin = 0;
+export const createInspectorBodyNameMax = 200;
+
+export const createInspectorBodyExecutorKeyMin = 0;
+export const createInspectorBodyExecutorKeyMax = 50;
+
+export const createInspectorBodyDescriptionMin = 0;
+export const createInspectorBodyDescriptionMax = 500;
+
+
+
+export const CreateInspectorBody = /*#__PURE__*/ zod.object({
+  "key": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyKeyMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyKeyMax)),
+  "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyNameMax)),
+  "executorKey": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyExecutorKeyMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyExecutorKeyMax)),
+  "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyDescriptionMax)))
+})
+
+export const CreateInspectorResponse = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "projectId": /*#__PURE__*/ zod.uuid(),
+  "key": /*#__PURE__*/ zod.string(),
+  "name": /*#__PURE__*/ zod.string(),
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "versions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "inspectorId": /*#__PURE__*/ zod.uuid(),
+  "version": /*#__PURE__*/ zod.string(),
+  "entryPoint": /*#__PURE__*/ zod.string(),
+  "scriptHash": /*#__PURE__*/ zod.string(),
+  "isPublished": /*#__PURE__*/ zod.boolean(),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })))
 })
+
+export const GetInspectorsParams = /*#__PURE__*/ zod.object({
+  "projectId": /*#__PURE__*/ zod.uuid()
+})
+
+export const GetInspectorsResponseItem = /*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "projectId": /*#__PURE__*/ zod.uuid(),
+  "key": /*#__PURE__*/ zod.string(),
+  "name": /*#__PURE__*/ zod.string(),
+  "executorKey": /*#__PURE__*/ zod.string(),
+  "description": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "versions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "inspectorId": /*#__PURE__*/ zod.uuid(),
+  "version": /*#__PURE__*/ zod.string(),
+  "entryPoint": /*#__PURE__*/ zod.string(),
+  "scriptHash": /*#__PURE__*/ zod.string(),
+  "isPublished": /*#__PURE__*/ zod.boolean(),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+})))
+})
+export const GetInspectorsResponse = /*#__PURE__*/ zod.array(GetInspectorsResponseItem)
 

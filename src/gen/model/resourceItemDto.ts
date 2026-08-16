@@ -17,4 +17,6 @@ export interface ResourceItemDto {
   /** @nullable */
   contentId: string | null;
   createdAt: string;
+  /** @nullable */
+  versions?: unknown[] | null;
 }

@@ -1,9 +1,10 @@
 import type { WorkspaceDto } from "../hooks/useWorkspaces";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Bot, FileText, MoreVertical, Edit3, Trash2, ArrowRight, Layers } from "lucide-react";
 import { useDialogStore } from "@/stores/dialogStore";
 import { Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import {
   Menu,
   MenuItem,
@@ -85,12 +86,13 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
         <Link
           to="/projects/$projectId/workspaces/$workspaceId"
           params={{ projectId: workspace.projectId, workspaceId: workspace.id }}
-          className="w-full"
+          className={cn(
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "w-full justify-between group-hover:border-primary/50 cursor-pointer"
+          )}
         >
-          <Button variant="outline" size="sm" className="w-full justify-between group-hover:border-primary/50">
-            <span>Open Workspace</span>
-            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
-          </Button>
+          <span>Open Workspace</span>
+          <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
         </Link>
       </CardFooter>
     </Card>
