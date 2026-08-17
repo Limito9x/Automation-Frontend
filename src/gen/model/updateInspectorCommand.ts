@@ -13,11 +13,6 @@ export interface UpdateInspectorCommand {
   name: string;
   /**
    * @minLength 0
-   * @maxLength 50
-   */
-  executorKey: string;
-  /**
-   * @minLength 0
    * @maxLength 500
    * @nullable
    */

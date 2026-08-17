@@ -4,5 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { AgentResourceDto } from "./agentResourceDto";
 
-export type ListOfGuid = string[];
+export type ListOfAgentResourceDto = AgentResourceDto[];

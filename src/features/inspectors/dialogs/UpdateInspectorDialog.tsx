@@ -43,7 +43,6 @@ export function UpdateInspectorDialog({ open, onOpenChange, projectId, inspector
                 id: inspector.id,
                 data: {
                     name: name.trim(),
-                    executorKey,
                     description: description.trim() || undefined,
                 }
             });
@@ -69,11 +68,10 @@ export function UpdateInspectorDialog({ open, onOpenChange, projectId, inspector
                         <button
                             type="button"
                             onClick={() => setExecutorKey("blender")}
-                            className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
-                                executorKey === "blender"
+                            className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${executorKey === "blender"
                                     ? "border-primary bg-primary/10 text-primary font-medium"
                                     : "border-border hover:bg-muted/50 text-muted-foreground"
-                            }`}
+                                }`}
                         >
                             <Cpu className="w-4 h-4 text-orange-500" />
                             <span>Blender Python</span>
@@ -81,11 +79,10 @@ export function UpdateInspectorDialog({ open, onOpenChange, projectId, inspector
                         <button
                             type="button"
                             onClick={() => setExecutorKey("python")}
-                            className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
-                                executorKey === "python"
+                            className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${executorKey === "python"
                                     ? "border-primary bg-primary/10 text-primary font-medium"
                                     : "border-border hover:bg-muted/50 text-muted-foreground"
-                            }`}
+                                }`}
                         >
                             <Terminal className="w-4 h-4 text-blue-500" />
                             <span>Standard Python</span>

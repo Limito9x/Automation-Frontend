@@ -57,14 +57,16 @@ export const CreateInspectorParams = /*#__PURE__*/ zod.object({
   "projectId": /*#__PURE__*/ zod.uuid()
 })
 
-export const createInspectorBodyKeyMin = 0;
-export const createInspectorBodyKeyMax = 100;
-
 export const createInspectorBodyNameMin = 0;
 export const createInspectorBodyNameMax = 200;
 
 export const createInspectorBodyExecutorKeyMin = 0;
 export const createInspectorBodyExecutorKeyMax = 50;
+
+export const createInspectorBodyEntryPointMin = 0;
+export const createInspectorBodyEntryPointMax = 100;
+
+
 
 export const createInspectorBodyDescriptionMin = 0;
 export const createInspectorBodyDescriptionMax = 500;
@@ -72,9 +74,11 @@ export const createInspectorBodyDescriptionMax = 500;
 
 
 export const CreateInspectorBody = /*#__PURE__*/ zod.object({
-  "key": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyKeyMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyKeyMax)),
   "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyNameMax)),
   "executorKey": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyExecutorKeyMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyExecutorKeyMax)),
+  "entryPoint": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyEntryPointMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyEntryPointMax)),
+  "scriptHash": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(1)),
+  "assetId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
   "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorBodyDescriptionMax)))
 })
 

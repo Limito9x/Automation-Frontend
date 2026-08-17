@@ -164,6 +164,7 @@ export function InspectorsPage({ projectId }: InspectorsPageProps) {
                     ) : (
                         <InspectorRulesTable
                             rules={rules}
+                            projectId={projectId}
                             onToggleRule={handleToggleRule}
                             onDeleteRule={handleDeleteRule}
                         />

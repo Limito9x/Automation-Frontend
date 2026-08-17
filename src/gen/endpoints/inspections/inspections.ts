@@ -21,10 +21,9 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
-  ErrorResponse,
   IReadOnlyListOfInspectionDto,
   InspectionDto,
-  TriggerInspectionCommand,
+  ManualTriggerInspectionCommand,
 } from "../../model";
 
 import { customInstance } from "../../../lib/api-client";
@@ -47,198 +46,36 @@ const withQueryKey = <T extends object, K>(
   return result;
 };
 
-export const getInspectionsByResourceVersion = (
-  resourceVersionId: string,
+export const manualTriggerInspection = (
+  manualTriggerInspectionCommand: ManualTriggerInspectionCommand,
   signal?: AbortSignal,
 ) => {
   return customInstance<IReadOnlyListOfInspectionDto>({
-    url: `/api/inspections/resource-versions/${resourceVersionId}`,
-    method: "GET",
-    signal,
-  });
-};
-
-export const getGetInspectionsByResourceVersionQueryKey = (
-  resourceVersionId: string,
-) => {
-  return [`/api/inspections/resource-versions/${resourceVersionId}`] as const;
-};
-
-export const getGetInspectionsByResourceVersionQueryOptions = <
-  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-  TError = void,
->(
-  resourceVersionId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGetInspectionsByResourceVersionQueryKey(resourceVersionId);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
-  > = ({ signal }) =>
-    getInspectionsByResourceVersion(resourceVersionId, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: resourceVersionId !== null && resourceVersionId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type GetInspectionsByResourceVersionQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
->;
-export type GetInspectionsByResourceVersionQueryError = void;
-
-export function useGetInspectionsByResourceVersion<
-  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-  TError = void,
->(
-  resourceVersionId: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-          TError,
-          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetInspectionsByResourceVersion<
-  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-  TError = void,
->(
-  resourceVersionId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-          TError,
-          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetInspectionsByResourceVersion<
-  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-  TError = void,
->(
-  resourceVersionId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useGetInspectionsByResourceVersion<
-  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-  TError = void,
->(
-  resourceVersionId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetInspectionsByResourceVersionQueryOptions(
-    resourceVersionId,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-export const triggerInspection = (
-  triggerInspectionCommand: TriggerInspectionCommand,
-  signal?: AbortSignal,
-) => {
-  return customInstance<IReadOnlyListOfInspectionDto>({
-    url: `/api/inspections/trigger`,
+    url: `/api/inspections/manual-trigger`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    data: triggerInspectionCommand,
+    data: manualTriggerInspectionCommand,
     signal,
   });
 };
 
-export const getTriggerInspectionMutationOptions = <
-  TError = ErrorResponse | void,
+export const getManualTriggerInspectionMutationOptions = <
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof triggerInspection>>,
+    Awaited<ReturnType<typeof manualTriggerInspection>>,
     TError,
-    { data: TriggerInspectionCommand },
+    { data: ManualTriggerInspectionCommand },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof triggerInspection>>,
+  Awaited<ReturnType<typeof manualTriggerInspection>>,
   TError,
-  { data: TriggerInspectionCommand },
+  { data: ManualTriggerInspectionCommand },
   TContext
 > => {
-  const mutationKey = ["triggerInspection"];
+  const mutationKey = ["manualTriggerInspection"];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -248,43 +85,44 @@ export const getTriggerInspectionMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof triggerInspection>>,
-    { data: TriggerInspectionCommand }
+    Awaited<ReturnType<typeof manualTriggerInspection>>,
+    { data: ManualTriggerInspectionCommand }
   > = (props) => {
     const { data } = props ?? {};
 
-    return triggerInspection(data);
+    return manualTriggerInspection(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type TriggerInspectionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof triggerInspection>>
+export type ManualTriggerInspectionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof manualTriggerInspection>>
 >;
-export type TriggerInspectionMutationBody = TriggerInspectionCommand;
-export type TriggerInspectionMutationError = ErrorResponse | void;
+export type ManualTriggerInspectionMutationBody =
+  ManualTriggerInspectionCommand;
+export type ManualTriggerInspectionMutationError = void;
 
-export const useTriggerInspection = <
-  TError = ErrorResponse | void,
-  TContext = unknown,
->(
+export const useManualTriggerInspection = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof triggerInspection>>,
+      Awaited<ReturnType<typeof manualTriggerInspection>>,
       TError,
-      { data: TriggerInspectionCommand },
+      { data: ManualTriggerInspectionCommand },
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof triggerInspection>>,
+  Awaited<ReturnType<typeof manualTriggerInspection>>,
   TError,
-  { data: TriggerInspectionCommand },
+  { data: ManualTriggerInspectionCommand },
   TContext
 > => {
-  return useMutation(getTriggerInspectionMutationOptions(options), queryClient);
+  return useMutation(
+    getManualTriggerInspectionMutationOptions(options),
+    queryClient,
+  );
 };
 export const getInspectionById = (id: string, signal?: AbortSignal) => {
   return customInstance<InspectionDto>({
@@ -428,6 +266,168 @@ export function useGetInspectionById<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetInspectionByIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getInspectionsByResourceVersion = (
+  resourceVersionId: string,
+  signal?: AbortSignal,
+) => {
+  return customInstance<IReadOnlyListOfInspectionDto>({
+    url: `/api/resource-versions/${resourceVersionId}/inspections`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetInspectionsByResourceVersionQueryKey = (
+  resourceVersionId: string,
+) => {
+  return [`/api/resource-versions/${resourceVersionId}/inspections`] as const;
+};
+
+export const getGetInspectionsByResourceVersionQueryOptions = <
+  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+  TError = void,
+>(
+  resourceVersionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetInspectionsByResourceVersionQueryKey(resourceVersionId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
+  > = ({ signal }) =>
+    getInspectionsByResourceVersion(resourceVersionId, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: resourceVersionId !== null && resourceVersionId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetInspectionsByResourceVersionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
+>;
+export type GetInspectionsByResourceVersionQueryError = void;
+
+export function useGetInspectionsByResourceVersion<
+  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+  TError = void,
+>(
+  resourceVersionId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+          TError,
+          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInspectionsByResourceVersion<
+  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+  TError = void,
+>(
+  resourceVersionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+          TError,
+          Awaited<ReturnType<typeof getInspectionsByResourceVersion>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInspectionsByResourceVersion<
+  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+  TError = void,
+>(
+  resourceVersionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetInspectionsByResourceVersion<
+  TData = Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+  TError = void,
+>(
+  resourceVersionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getInspectionsByResourceVersion>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetInspectionsByResourceVersionQueryOptions(
+    resourceVersionId,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

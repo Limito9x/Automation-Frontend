@@ -49,7 +49,6 @@ export function InspectorVersionsDialog({ open, onOpenChange, projectId, inspect
             await createVersion({
                 file: selectedFile,
                 entryPoint: entryPoint.trim(),
-                version: versionNumber.trim() || "1.0.0",
             });
             // Reset
             setSelectedFile(null);
@@ -188,9 +187,8 @@ export function InspectorVersionsDialog({ open, onOpenChange, projectId, inspect
                             {versions.map((ver) => (
                                 <div
                                     key={ver.id}
-                                    className={`p-3.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                                        ver.isPublished ? "bg-primary/5 font-medium" : "hover:bg-muted/30"
-                                    }`}
+                                    className={`p-3.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${ver.isPublished ? "bg-primary/5 font-medium" : "hover:bg-muted/30"
+                                        }`}
                                 >
                                     <div className="space-y-1.5 min-w-0 flex-1">
                                         <div className="flex items-center gap-2">

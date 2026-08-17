@@ -7,6 +7,30 @@
 import * as zod from 'zod/mini';
 
 
+export const GetAvailableAgentsBody = /*#__PURE__*/ zod.object({
+  "resourceIds": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()),
+  "workspaceId": /*#__PURE__*/ zod.uuid()
+})
+
+export const GetAvailableAgentsResponseItem = /*#__PURE__*/ zod.object({
+  "agentId": /*#__PURE__*/ zod.uuid(),
+  "agentName": /*#__PURE__*/ zod.string(),
+  "isAvailable": /*#__PURE__*/ zod.boolean(),
+  "availableExecutors": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.string()),
+  "availableResources": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "resourceId": /*#__PURE__*/ zod.uuid(),
+  "latestVersion": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.object({
+  "id": /*#__PURE__*/ zod.uuid(),
+  "versionNo": /*#__PURE__*/ zod.int(),
+  "sizeBytes": /*#__PURE__*/ zod.int(),
+  "fileHash": /*#__PURE__*/ zod.string(),
+  "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}))
+}))
+})
+export const GetAvailableAgentsResponse = /*#__PURE__*/ zod.array(GetAvailableAgentsResponseItem)
+
 
 
 

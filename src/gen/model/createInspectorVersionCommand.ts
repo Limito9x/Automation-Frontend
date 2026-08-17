@@ -10,11 +10,6 @@ export interface CreateInspectorVersionCommand {
   inspectorId: string;
   /**
    * @minLength 0
-   * @maxLength 50
-   */
-  version: string;
-  /**
-   * @minLength 0
    * @maxLength 500
    */
   entryPoint: string;
@@ -23,9 +18,7 @@ export interface CreateInspectorVersionCommand {
    * @maxLength 64
    */
   scriptHash: string;
+  publish: boolean;
   /** @minLength 1 */
   assetId: string;
-  /** @nullable */
-  originalFileName?: string | null;
-  isPublished?: boolean;
 }

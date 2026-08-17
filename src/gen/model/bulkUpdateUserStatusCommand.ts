@@ -4,10 +4,10 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ListOfGuid } from "./listOfGuid";
+import type { ListOfGuidOp34A29FC8B5EF } from "./listOfGuidOp34A29FC8B5EF";
 import type { UserStatus } from "./userStatus";
 
 export interface BulkUpdateUserStatusCommand {
-  userIds: ListOfGuid;
+  userIds: ListOfGuidOp34A29FC8B5EF;
   targetStatus: UserStatus;
 }

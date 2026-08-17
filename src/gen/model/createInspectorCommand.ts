@@ -8,11 +8,6 @@
 export interface CreateInspectorCommand {
   /**
    * @minLength 0
-   * @maxLength 100
-   */
-  key: string;
-  /**
-   * @minLength 0
    * @maxLength 200
    */
   name: string;
@@ -21,6 +16,15 @@ export interface CreateInspectorCommand {
    * @maxLength 50
    */
   executorKey: string;
+  /**
+   * @minLength 0
+   * @maxLength 100
+   */
+  entryPoint: string;
+  /** @minLength 1 */
+  scriptHash: string;
+  /** @minLength 1 */
+  assetId: string;
   /**
    * @minLength 0
    * @maxLength 500

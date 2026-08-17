@@ -25,7 +25,6 @@ import type {
   ErrorResponse,
   InspectorDto,
   InspectorVersionDto,
-  PublishInspectorVersionCommand,
   UpdateInspectorCommand,
 } from "../../model";
 
@@ -431,14 +430,11 @@ export const useCreateInspectorVersion = <
 export const publishInspectorVersion = (
   id: string,
   versionId: string,
-  publishInspectorVersionCommand: PublishInspectorVersionCommand,
   signal?: AbortSignal,
 ) => {
   return customInstance<InspectorVersionDto>({
     url: `/api/inspectors/${id}/versions/${versionId}/publish`,
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    data: publishInspectorVersionCommand,
     signal,
   });
 };
@@ -450,13 +446,13 @@ export const getPublishInspectorVersionMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof publishInspectorVersion>>,
     TError,
-    { id: string; versionId: string; data: PublishInspectorVersionCommand },
+    { id: string; versionId: string },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof publishInspectorVersion>>,
   TError,
-  { id: string; versionId: string; data: PublishInspectorVersionCommand },
+  { id: string; versionId: string },
   TContext
 > => {
   const mutationKey = ["publishInspectorVersion"];
@@ -470,11 +466,11 @@ export const getPublishInspectorVersionMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof publishInspectorVersion>>,
-    { id: string; versionId: string; data: PublishInspectorVersionCommand }
+    { id: string; versionId: string }
   > = (props) => {
-    const { id, versionId, data } = props ?? {};
+    const { id, versionId } = props ?? {};
 
-    return publishInspectorVersion(id, versionId, data);
+    return publishInspectorVersion(id, versionId);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -483,8 +479,7 @@ export const getPublishInspectorVersionMutationOptions = <
 export type PublishInspectorVersionMutationResult = NonNullable<
   Awaited<ReturnType<typeof publishInspectorVersion>>
 >;
-export type PublishInspectorVersionMutationBody =
-  PublishInspectorVersionCommand;
+
 export type PublishInspectorVersionMutationError = void;
 
 export const usePublishInspectorVersion = <TError = void, TContext = unknown>(
@@ -492,7 +487,7 @@ export const usePublishInspectorVersion = <TError = void, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof publishInspectorVersion>>,
       TError,
-      { id: string; versionId: string; data: PublishInspectorVersionCommand },
+      { id: string; versionId: string },
       TContext
     >;
   },
@@ -500,7 +495,7 @@ export const usePublishInspectorVersion = <TError = void, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof publishInspectorVersion>>,
   TError,
-  { id: string; versionId: string; data: PublishInspectorVersionCommand },
+  { id: string; versionId: string },
   TContext
 > => {
   return useMutation(

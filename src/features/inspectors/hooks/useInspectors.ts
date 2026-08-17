@@ -73,3 +73,5 @@ export function useInspectorMutations(projectId: string) {
         isDeleting: deleteMutation.isPending,
     };
 }
+
+

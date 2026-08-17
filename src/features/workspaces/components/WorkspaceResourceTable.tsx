@@ -265,10 +265,8 @@ export function WorkspaceResourceTable({
           open={batchInspectOpen}
           onOpenChange={setBatchInspectOpen}
           projectId={projectId}
-          selectedResourceVersionIds={selectedRowIds.map(id => {
-            const item = data.find(d => d.id === id);
-            return item?.latestVersionId || id;
-          })}
+          workspaceId={workspaceId}
+          selectedResourceIds={selectedRowIds}
           onSuccess={() => {
             setRowSelection({});
           }}

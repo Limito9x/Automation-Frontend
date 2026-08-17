@@ -15,8 +15,7 @@ export interface InspectionDto {
   inspectorName: string | null;
   /** @nullable */
   inspectorKey: string | null;
-  /** @nullable */
-  inspectorVersionString: string | null;
+  version: number;
   /** @nullable */
   executorKey: string | null;
   status: InspectionStatus;

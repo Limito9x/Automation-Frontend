@@ -23,6 +23,8 @@ import type {
 import type {
   AssignResourcesContentCommand,
   ErrorResponse,
+  GetAvailableAgentsQuery,
+  ListOfAvailableAgentDto,
   ListOfContentResourceDto,
   ResourceItemDto,
 } from "../../model";
@@ -47,6 +49,83 @@ const withQueryKey = <T extends object, K>(
   return result;
 };
 
+export const getAvailableAgents = (
+  getAvailableAgentsQuery: GetAvailableAgentsQuery,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ListOfAvailableAgentDto>({
+    url: `/api/resources/available-agents`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: getAvailableAgentsQuery,
+    signal,
+  });
+};
+
+export const getGetAvailableAgentsMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getAvailableAgents>>,
+    TError,
+    { data: GetAvailableAgentsQuery },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getAvailableAgents>>,
+  TError,
+  { data: GetAvailableAgentsQuery },
+  TContext
+> => {
+  const mutationKey = ["getAvailableAgents"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getAvailableAgents>>,
+    { data: GetAvailableAgentsQuery }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return getAvailableAgents(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GetAvailableAgentsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getAvailableAgents>>
+>;
+export type GetAvailableAgentsMutationBody = GetAvailableAgentsQuery;
+export type GetAvailableAgentsMutationError = void;
+
+export const useGetAvailableAgents = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof getAvailableAgents>>,
+      TError,
+      { data: GetAvailableAgentsQuery },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof getAvailableAgents>>,
+  TError,
+  { data: GetAvailableAgentsQuery },
+  TContext
+> => {
+  return useMutation(
+    getGetAvailableAgentsMutationOptions(options),
+    queryClient,
+  );
+};
 export const assignResourcesContent = (
   assignResourcesContentCommand: AssignResourcesContentCommand,
   signal?: AbortSignal,

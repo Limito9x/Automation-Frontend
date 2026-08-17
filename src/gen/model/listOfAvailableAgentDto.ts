@@ -4,5 +4,6 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { AvailableAgentDto } from "./availableAgentDto";
 
-export type ListOfGuid = string[];
+export type ListOfAvailableAgentDto = AvailableAgentDto[];

@@ -108,10 +108,10 @@ export function InspectionReportCard({ inspection, defaultExpanded = false }: In
 
                     {/* Right: Version info + Copy JSON */}
                     <div className="flex items-center gap-2 ml-auto" onClick={(e) => e.stopPropagation()}>
-                        {inspection.inspectorVersionString && (
+                        {inspection.version != null && (
                             <Badge variant="outline" className="bg-background/80 text-muted-foreground text-xs font-mono py-1 px-2.5 border-border">
                                 <Layers className="w-3 h-3 mr-1.5 text-primary" />
-                                Inspector v{inspection.inspectorVersionString}
+                                Inspector v{inspection.version}
                             </Badge>
                         )}
                         <Button

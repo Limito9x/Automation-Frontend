@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { BaseDialog } from "@/components/custom-ui/overlays/dialog/BaseDialog";
 import { useInspectorMutations } from "../hooks/useInspectors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, Cpu, Terminal } from "lucide-react";
+import { uploadAssetFlow, calculateFileHash } from "@/lib/upload-utils";
+import { Loader2, Plus, Cpu, Terminal, FileCode, Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 interface CreateInspectorDialogProps {
     open: boolean;
@@ -18,38 +20,74 @@ export function CreateInspectorDialog({ open, onOpenChange, projectId }: CreateI
     const { t } = useTranslation();
     const { createInspector, isCreating } = useInspectorMutations(projectId);
 
-    const [key, setKey] = useState("");
     const [name, setName] = useState("");
     const [executorKey, setExecutorKey] = useState("blender");
     const [description, setDescription] = useState("");
+    const [entryPoint, setEntryPoint] = useState("main.py");
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            if (file.name.endsWith(".py")) {
+                setEntryPoint(file.name);
+            }
+        }
+    };
+
+    const handleReset = () => {
+        setName("");
+        setDescription("");
+        setEntryPoint("main.py");
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!key.trim() || !name.trim()) return;
+        if (!name.trim() || !selectedFile || !entryPoint.trim()) return;
 
+        setIsUploading(true);
         try {
+            // 1. Tính hash và upload script file độc lập tại component
+            const scriptHash = await calculateFileHash(selectedFile);
+            const assetId = await uploadAssetFlow(selectedFile);
+
+            // 2. Gửi dữ liệu hoàn chỉnh vào mutation API
             await createInspector({
-                key: key.trim().toLowerCase(),
                 name: name.trim(),
                 executorKey,
+                entryPoint: entryPoint.trim(),
+                scriptHash,
+                assetId,
                 description: description.trim() || undefined,
             });
-            // Reset form
-            setKey("");
-            setName("");
-            setDescription("");
+
+            handleReset();
             onOpenChange(false);
-        } catch {
-            // Error handled in hook
+        } catch (err: any) {
+            const errorMsg = err?.response?.data?.message || err?.message || "Failed to upload script or create inspector";
+            toast.error(errorMsg);
+        } finally {
+            setIsUploading(false);
         }
     };
+
+    const isLoading = isCreating || isUploading;
 
     return (
         <BaseDialog
             open={open}
-            onOpenChange={onOpenChange}
+            onOpenChange={(val) => {
+                if (!val) handleReset();
+                onOpenChange(val);
+            }}
             title={t("inspectors.createTitle", { defaultValue: "Create New Inspector" })}
-            description={t("inspectors.createDesc", { defaultValue: "Define an automated validator script runner for this project." })}
+            description={t("inspectors.createDesc", { defaultValue: "Define an automated validator and upload its initial script." })}
             size="lg"
         >
             <form onSubmit={handleSubmit} className="space-y-4 py-2">
@@ -85,32 +123,71 @@ export function CreateInspectorDialog({ open, onOpenChange, projectId }: CreateI
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <Label htmlFor="inspectorKey" className="text-xs">
-                            {t("inspectors.key", { defaultValue: "Unique Key" })} *
-                        </Label>
-                        <Input
-                            id="inspectorKey"
-                            value={key}
-                            onChange={(e) => setKey(e.target.value)}
-                            placeholder="e.g. mesh-polycount-check"
-                            className="h-8 text-xs font-mono mt-1"
-                            required
-                        />
+                <div>
+                    <Label htmlFor="inspectorName" className="text-xs">
+                        {t("inspectors.name", { defaultValue: "Display Name" })} *
+                    </Label>
+                    <Input
+                        id="inspectorName"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g. Mesh Polycount Inspector"
+                        className="h-8 text-xs mt-1"
+                        required
+                    />
+                </div>
+
+                <div className="p-3 rounded-lg border bg-muted/30 space-y-3">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                        <Upload className="w-3.5 h-3.5 text-primary" />
+                        {t("inspectors.scriptSection", { defaultValue: "Script Package" })} *
                     </div>
-                    <div>
-                        <Label htmlFor="inspectorName" className="text-xs">
-                            {t("inspectors.name", { defaultValue: "Display Name" })} *
-                        </Label>
-                        <Input
-                            id="inspectorName"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="e.g. Mesh Polycount Inspector"
-                            className="h-8 text-xs mt-1"
-                            required
-                        />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <Label htmlFor="scriptFile" className="text-xs">
+                                {t("inspectors.scriptFile", { defaultValue: "Script File (.py / .zip)" })} *
+                            </Label>
+                            <input
+                                id="scriptFile"
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept=".py,.zip"
+                                className="hidden"
+                            />
+                            <div className="flex items-center gap-2 mt-1">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 text-xs shrink-0"
+                                    onPress={() => fileInputRef.current?.click()}
+                                >
+                                    <FileCode className="w-3.5 h-3.5 mr-1" />
+                                    {selectedFile
+                                        ? t("common.changeFile", { defaultValue: "Change" })
+                                        : t("common.chooseFile", { defaultValue: "Choose File" })}
+                                </Button>
+                                <span className="text-xs text-muted-foreground truncate font-mono">
+                                    {selectedFile ? selectedFile.name : t("inspectors.noFileSelected", { defaultValue: "No file selected" })}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <Label htmlFor="entryPoint" className="text-xs">
+                                {t("inspectors.entryPoint", { defaultValue: "Entry Point" })} *
+                            </Label>
+                            <Input
+                                id="entryPoint"
+                                value={entryPoint}
+                                onChange={(e) => setEntryPoint(e.target.value)}
+                                placeholder="main.py"
+                                className="h-8 text-xs font-mono mt-1"
+                                required
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -128,14 +205,16 @@ export function CreateInspectorDialog({ open, onOpenChange, projectId }: CreateI
                 </div>
 
                 <div className="flex justify-end gap-2 pt-3 border-t">
-                    <Button variant="outline" type="button" onPress={() => onOpenChange(false)} isDisabled={isCreating}>
+                    <Button variant="outline" type="button" onPress={() => onOpenChange(false)} isDisabled={isLoading}>
                         {t("common.cancel", { defaultValue: "Cancel" })}
                     </Button>
-                    <Button type="submit" isDisabled={isCreating || !key.trim() || !name.trim()}>
-                        {isCreating ? (
+                    <Button type="submit" isDisabled={isLoading || !name.trim() || !selectedFile || !entryPoint.trim()}>
+                        {isLoading ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                                {t("common.creating", { defaultValue: "Creating..." })}
+                                {isUploading
+                                    ? t("inspectors.uploadingScript", { defaultValue: "Uploading Script..." })
+                                    : t("common.creating", { defaultValue: "Creating..." })}
                             </>
                         ) : (
                             <>
@@ -149,3 +228,4 @@ export function CreateInspectorDialog({ open, onOpenChange, projectId }: CreateI
         </BaseDialog>
     );
 }
+

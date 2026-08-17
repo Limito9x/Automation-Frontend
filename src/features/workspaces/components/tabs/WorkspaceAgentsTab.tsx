@@ -1,4 +1,4 @@
-import { useWorkspaceAgentResources } from "../../hooks/useWorkspaceResources";
+import { useWorkspaceResources } from "../../hooks/useWorkspaceResources";
 import { WorkspaceAgentResourceTable } from "../WorkspaceAgentResourceTable";
 import type { useResourceQuery, BaseSearchParams } from "@/lib/useResourceQuery";
 import type { WorkspaceDetailDto } from "@/gen/model";
@@ -29,11 +29,10 @@ export function WorkspaceAgentsTab({
   resource,
   search,
 }: WorkspaceAgentsTabProps) {
-  const { data, isLoading } = useWorkspaceAgentResources(
+  const { data, isLoading } = useWorkspaceResources(
     workspace.id,
-    selectedAgentId,
-    projectId,
     {
+      projectId,
       globalKeyword: search.globalKeyword,
       page: search.page,
       pageSize: search.pageSize,
@@ -119,7 +118,18 @@ export function WorkspaceAgentsTab({
       {/* Agent Resources Table */}
       <div className="p-6 rounded-xl border bg-card shadow-xs space-y-4">
         <WorkspaceAgentResourceTable
-          data={data?.items || []}
+          data={(data?.items || []).map((r) => ({
+            resourceId: r.id,
+            resourceName: r.displayName || "",
+            relativePath: r.relativePath || "",
+            versionNo: r.versionCount || 1,
+            isOrigin: true,
+            discoveredAt: r.createdAt,
+            contentId: r.contentId,
+            contentName: r.contentName,
+            contentTypeName: r.contentTypeName,
+            contentTypeColor: r.contentTypeColor,
+          }))}
           totalCount={data?.totalCount || 0}
           isLoading={isLoading}
           resource={resource}

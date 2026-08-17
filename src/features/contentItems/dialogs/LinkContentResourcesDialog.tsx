@@ -40,8 +40,8 @@ export function LinkContentResourcesDialog({
   // Fetch resources for selected workspace
   const { data: resourcesData, isLoading: isResourcesLoading, refetch } = useWorkspaceResources(
     activeWorkspaceId,
-    projectId,
     {
+      projectId,
       page: 1,
       pageSize: 50,
       globalKeyword: keyword.trim() || undefined,

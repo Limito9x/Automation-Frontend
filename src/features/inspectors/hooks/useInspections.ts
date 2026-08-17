@@ -1,8 +1,11 @@
-import { useGetInspectionsByResourceVersion, useTriggerInspection as useOrvalTriggerInspection } from "@/gen/endpoints/inspections/inspections";
+import {
+    useGetInspectionsByResourceVersion,
+    useManualTriggerInspection as useOrvalManualTriggerInspection,
+} from "@/gen/endpoints/inspections/inspections";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import type { TriggerInspectionCommand, InspectionDto } from "@/gen/model";
+import type { ManualTriggerInspectionCommand, InspectionDto } from "@/gen/model";
 
 export function useResourceInspections(resourceVersionId: string) {
     return useGetInspectionsByResourceVersion(resourceVersionId, {
@@ -18,11 +21,11 @@ export function useResourceInspections(resourceVersionId: string) {
     });
 }
 
-export function useTriggerInspection(resourceVersionId?: string) {
+export function useManualTriggerInspection(resourceVersionId?: string) {
     const queryClient = useQueryClient();
     const { t } = useTranslation();
 
-    const mutation = useOrvalTriggerInspection({
+    const mutation = useOrvalManualTriggerInspection({
         mutation: {
             onSuccess: () => {
                 toast.success(t("inspections.triggerSuccess", { defaultValue: "Inspection job dispatched to agent worker" }));
@@ -40,7 +43,7 @@ export function useTriggerInspection(resourceVersionId?: string) {
     });
 
     return {
-        triggerInspection: (command: TriggerInspectionCommand) => mutation.mutateAsync({ data: command }),
+        manualTrigger: (command: ManualTriggerInspectionCommand) => mutation.mutateAsync({ data: command }),
         isTriggering: mutation.isPending,
     };
 }

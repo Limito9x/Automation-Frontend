@@ -4,8 +4,8 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ListOfGuid } from "./listOfGuid";
+import type { ListOfGuidOp34A29FC8B5EF } from "./listOfGuidOp34A29FC8B5EF";
 
 export interface ConfirmUploadCommand {
-  assetIds: ListOfGuid;
+  assetIds: ListOfGuidOp34A29FC8B5EF;
 }

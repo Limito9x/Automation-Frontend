@@ -43,9 +43,6 @@ export const UpdateInspectorParams = /*#__PURE__*/ zod.object({
 export const updateInspectorBodyNameMin = 0;
 export const updateInspectorBodyNameMax = 200;
 
-export const updateInspectorBodyExecutorKeyMin = 0;
-export const updateInspectorBodyExecutorKeyMax = 50;
-
 export const updateInspectorBodyDescriptionMin = 0;
 export const updateInspectorBodyDescriptionMax = 500;
 
@@ -53,7 +50,6 @@ export const updateInspectorBodyDescriptionMax = 500;
 
 export const UpdateInspectorBody = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateInspectorBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(updateInspectorBodyNameMax)),
-  "executorKey": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateInspectorBodyExecutorKeyMin)).check(/*#__PURE__*/ zod.maxLength(updateInspectorBodyExecutorKeyMax)),
   "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(updateInspectorBodyDescriptionMin)).check(/*#__PURE__*/ zod.maxLength(updateInspectorBodyDescriptionMax)))
 })
 
@@ -81,9 +77,6 @@ export const CreateInspectorVersionParams = /*#__PURE__*/ zod.object({
 })
 
 
-export const createInspectorVersionBodyVersionMin = 0;
-export const createInspectorVersionBodyVersionMax = 50;
-
 export const createInspectorVersionBodyEntryPointMin = 0;
 export const createInspectorVersionBodyEntryPointMax = 500;
 
@@ -91,16 +84,14 @@ export const createInspectorVersionBodyScriptHashMin = 0;
 export const createInspectorVersionBodyScriptHashMax = 64;
 
 
-export const createInspectorVersionBodyIsPublishedDefault = false;
+
 
 export const CreateInspectorVersionBody = /*#__PURE__*/ zod.object({
   "inspectorId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "version": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorVersionBodyVersionMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorVersionBodyVersionMax)),
   "entryPoint": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorVersionBodyEntryPointMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorVersionBodyEntryPointMax)),
   "scriptHash": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createInspectorVersionBodyScriptHashMin)).check(/*#__PURE__*/ zod.maxLength(createInspectorVersionBodyScriptHashMax)),
-  "assetId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "originalFileName": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
-  "isPublished": /*#__PURE__*/ zod._default(/*#__PURE__*/ zod.boolean(), createInspectorVersionBodyIsPublishedDefault)
+  "publish": /*#__PURE__*/ zod.boolean(),
+  "assetId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1))
 })
 
 export const CreateInspectorVersionResponse = /*#__PURE__*/ zod.object({
@@ -116,12 +107,6 @@ export const CreateInspectorVersionResponse = /*#__PURE__*/ zod.object({
 export const PublishInspectorVersionParams = /*#__PURE__*/ zod.object({
   "versionId": /*#__PURE__*/ zod.uuid(),
   "id": /*#__PURE__*/ zod.uuid()
-})
-
-export const publishInspectorVersionBodyIsPublishedDefault = true;
-
-export const PublishInspectorVersionBody = /*#__PURE__*/ zod.object({
-  "isPublished": /*#__PURE__*/ zod._default(/*#__PURE__*/ zod.boolean(), publishInspectorVersionBodyIsPublishedDefault)
 })
 
 export const PublishInspectorVersionResponse = /*#__PURE__*/ zod.object({

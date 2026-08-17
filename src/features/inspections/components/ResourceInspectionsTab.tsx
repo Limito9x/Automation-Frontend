@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { useResourceInspections, useTriggerInspection } from "@/features/inspectors/hooks/useInspections";
-import { useInspectors } from "@/features/inspectors/hooks/useInspectors";
+import { useResourceInspections } from "@/features/inspectors/hooks/useInspections";
 import { InspectionReportCard } from "./InspectionReportCard";
-import { BaseDialog } from "@/components/custom-ui/overlays/dialog/BaseDialog";
+import { BatchTriggerInspectionDialog } from "@/features/inspections/dialogs/BatchTriggerInspectionDialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Loader2, Play, RefreshCw, ShieldCheck, Layers } from "lucide-react";
+import { Play, RefreshCw, ShieldCheck, Layers } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ResourceVersionDto } from "@/gen/model";
 
 interface ResourceInspectionsTabProps {
     resourceVersionId: string;
     projectId: string;
+    workspaceId?: string;
+    resourceId?: string;
     versions?: ResourceVersionDto[];
     selectedVersionId?: string;
     onSelectVersionId?: (versionId: string) => void;
@@ -20,6 +20,8 @@ interface ResourceInspectionsTabProps {
 export function ResourceInspectionsTab({
     resourceVersionId,
     projectId,
+    workspaceId = "",
+    resourceId = "",
     versions = [],
     selectedVersionId,
     onSelectVersionId,
@@ -28,28 +30,9 @@ export function ResourceInspectionsTab({
     const activeVersionId = selectedVersionId || resourceVersionId;
 
     const { data: inspectionsData, isLoading, refetch } = useResourceInspections(activeVersionId);
-    const { triggerInspection, isTriggering } = useTriggerInspection(activeVersionId);
-    const { data: inspectorsData } = useInspectors(projectId);
-
     const inspections = Array.isArray(inspectionsData) ? inspectionsData : [];
-    const inspectors = Array.isArray(inspectorsData) ? inspectorsData : [];
 
     const [triggerDialogOpen, setTriggerDialogOpen] = useState(false);
-    const [selectedInspectorId, setSelectedInspectorId] = useState<string>("");
-
-    const handleRunInspection = async () => {
-        try {
-            await triggerInspection({
-                projectId,
-                resourceVersionIds: [activeVersionId],
-                specificInspectorId: selectedInspectorId || undefined,
-            });
-            setTriggerDialogOpen(false);
-            setSelectedInspectorId("");
-        } catch {
-            // Handled in hook
-        }
-    };
 
     return (
         <div className="space-y-4">
@@ -61,10 +44,10 @@ export function ResourceInspectionsTab({
                     </div>
                     <div>
                         <div className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                            Select Resource Version:
+                            {t("inspections.selectResourceVersion", { defaultValue: "Select Resource Version:" })}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                            Inspection reports and metric details for the selected version
+                            {t("inspections.versionDetailDesc", { defaultValue: "Inspection reports and metric details for the selected version" })}
                         </div>
                     </div>
                 </div>
@@ -141,7 +124,7 @@ export function ResourceInspectionsTab({
                         {t("inspections.noInspectionsYet", { defaultValue: "No inspections have been run on this version yet." })}
                     </p>
                     <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                        Click the button below to select an inspector and validate this file via Agent workstation.
+                        {t("inspections.noInspectionsHelp", { defaultValue: "Click the button below to select an inspector and validate this file via Agent workstation." })}
                     </p>
                     <Button size="sm" variant="outline" className="gap-1.5" onPress={() => setTriggerDialogOpen(true)}>
                         <Play className="w-3.5 h-3.5 fill-current" />
@@ -160,63 +143,15 @@ export function ResourceInspectionsTab({
                 </div>
             )}
 
-            {/* Trigger Dialog */}
-            <BaseDialog
+            {/* Unified Trigger Dialog with Available Agents */}
+            <BatchTriggerInspectionDialog
                 open={triggerDialogOpen}
                 onOpenChange={setTriggerDialogOpen}
-                title={t("inspections.triggerDialogTitle", { defaultValue: "Run Quality Inspection" })}
-                description={t("inspections.triggerDialogDesc", {
-                    defaultValue: "Select an inspector to evaluate this file, or choose auto-detect to trigger all matching rules.",
-                })}
-                size="md"
-            >
-                <div className="space-y-4 py-2">
-                    <div>
-                        <Label htmlFor="selectSpecificInspector" className="text-xs font-medium">
-                            {t("inspections.selectSpecificInspector", { defaultValue: "Specific Inspector:" })}
-                        </Label>
-                        <select
-                            id="selectSpecificInspector"
-                            value={selectedInspectorId}
-                            onChange={(e) => setSelectedInspectorId(e.target.value)}
-                            className="w-full h-9 px-3 text-xs rounded-md border border-input bg-background mt-1.5 focus:ring-1 focus:ring-primary outline-hidden"
-                        >
-                            <option value="">
-                                {t("inspections.allMatchingRules", { defaultValue: "-- Auto-detect from Automation Rules --" })}
-                            </option>
-                            {inspectors.map((inspector) => (
-                                <option key={inspector.id} value={inspector.id}>
-                                    {inspector.name} ({inspector.executorKey})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-3 border-t">
-                        <Button
-                            variant="outline"
-                            type="button"
-                            onPress={() => setTriggerDialogOpen(false)}
-                            isDisabled={isTriggering}
-                        >
-                            {t("common.cancel", { defaultValue: "Cancel" })}
-                        </Button>
-                        <Button onPress={handleRunInspection} isDisabled={isTriggering} className="gap-1.5">
-                            {isTriggering ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                                    {t("inspections.dispatching", { defaultValue: "Dispatching..." })}
-                                </>
-                            ) : (
-                                <>
-                                    <Play className="w-4 h-4 mr-1.5 fill-current" />
-                                    {t("inspections.runNow", { defaultValue: "Run Now" })}
-                                </>
-                            )}
-                        </Button>
-                    </div>
-                </div>
-            </BaseDialog>
+                projectId={projectId}
+                workspaceId={workspaceId}
+                selectedResourceIds={resourceId ? [resourceId] : []}
+                onSuccess={() => refetch()}
+            />
         </div>
     );
 }

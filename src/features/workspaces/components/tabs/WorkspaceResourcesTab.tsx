@@ -15,7 +15,8 @@ export function WorkspaceResourcesTab({
   resource,
   search,
 }: WorkspaceResourcesTabProps) {
-  const { data, isLoading } = useWorkspaceResources(workspaceId, projectId, {
+  const { data, isLoading } = useWorkspaceResources(workspaceId, {
+    projectId,
     globalKeyword: search.globalKeyword,
     page: search.page,
     pageSize: search.pageSize,
