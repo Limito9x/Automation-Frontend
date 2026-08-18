@@ -4,13 +4,24 @@ import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronRight, CheckCircle2, XCircle, AlertTriangle, Search, Braces, Table2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { TagDroppableCell } from "@/features/tags/components/TagDroppableCell";
+import type { TagLinkDetailDto } from "@/features/tags/types";
 
 interface JsonTreeTableProps {
     data: any;
     className?: string;
+    tagsByPath?: Record<string, TagLinkDetailDto[]>;
+    entityId?: string;
+    entityType?: string;
 }
 
-export function JsonTreeTable({ data, className = "" }: JsonTreeTableProps) {
+export function JsonTreeTable({
+    data,
+    className = "",
+    tagsByPath = {},
+    entityId,
+    entityType = "Inspection",
+}: JsonTreeTableProps) {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -48,29 +59,70 @@ export function JsonTreeTable({ data, className = "" }: JsonTreeTableProps) {
 
             {/* Tree / Table Content */}
             <div className="border rounded-lg bg-card overflow-hidden divide-y divide-border">
-                {renderNode("", parsedData, searchQuery)}
+                {renderNode("", parsedData, searchQuery, "", { tagsByPath, entityId, entityType })}
             </div>
         </div>
     );
 }
 
-function renderNode(key: string, value: any, search: string): React.ReactNode {
+interface RenderContext {
+    tagsByPath: Record<string, TagLinkDetailDto[]>;
+    entityId?: string;
+    entityType: string;
+}
+
+function renderNode(
+    key: string,
+    value: any,
+    search: string,
+    currentPath: string,
+    ctx: RenderContext
+): React.ReactNode {
+    // Build next path
+    const nodePath = currentPath ? (key ? `${currentPath}.${key}` : currentPath) : key;
+
     // 1. Nếu là Array of Objects -> Render Sub-Table
     if (Array.isArray(value) && value.length > 0 && typeof value[0] === "object" && value[0] !== null) {
-        return <ArrayOfObjectsTable key={key} tableKey={key} items={value} search={search} />;
+        return (
+            <ArrayOfObjectsTable
+                key={nodePath || "root-array"}
+                tableKey={key}
+                basePath={nodePath}
+                items={value}
+                search={search}
+                ctx={ctx}
+            />
+        );
     }
 
     // 2. Nếu là Array các kiểu primitive
     if (Array.isArray(value)) {
         return (
-            <div key={key} className="p-2.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div
+                key={nodePath || "array-item"}
+                className="p-2.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+            >
                 <span className="font-mono font-medium text-foreground">{key}:</span>
-                <div className="flex flex-wrap gap-1">
-                    {value.map((item, idx) => (
-                        <Badge key={idx} variant="secondary" className="font-mono text-[11px]">
-                            {String(item)}
-                        </Badge>
-                    ))}
+                <div className="flex flex-wrap gap-1.5 items-center">
+                    {value.map((item, idx) => {
+                        const itemPath = `${nodePath}[${idx}]`;
+                        const existingTags = ctx.tagsByPath[itemPath] || [];
+                        return (
+                            <TagDroppableCell
+                                key={itemPath}
+                                path={itemPath}
+                                value={item}
+                                entityId={ctx.entityId}
+                                entityType={ctx.entityType}
+                                existingTags={existingTags}
+                                renderValueContent={(val) => (
+                                    <Badge variant="secondary" className="font-mono text-[11px]">
+                                        {String(val)}
+                                    </Badge>
+                                )}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         );
@@ -80,16 +132,17 @@ function renderNode(key: string, value: any, search: string): React.ReactNode {
     if (typeof value === "object" && value !== null) {
         const entries = Object.entries(value);
         const filteredEntries = search
-            ? entries.filter(([k, v]) => 
-                k.toLowerCase().includes(search.toLowerCase()) || 
-                JSON.stringify(v).toLowerCase().includes(search.toLowerCase())
+            ? entries.filter(
+                  ([k, v]) =>
+                      k.toLowerCase().includes(search.toLowerCase()) ||
+                      JSON.stringify(v).toLowerCase().includes(search.toLowerCase())
               )
             : entries;
 
         if (filteredEntries.length === 0 && search) return null;
 
         return (
-            <Collapsible key={key} defaultExpanded className="w-full">
+            <Collapsible key={nodePath || "root-obj"} defaultExpanded className="w-full">
                 <div className="flex items-center p-2.5 bg-muted/20 hover:bg-muted/40 transition-colors">
                     <CollapsibleTrigger className="p-1 rounded hover:bg-muted mr-1.5 flex items-center justify-center [&[aria-expanded=true]_.chevron]:rotate-90 [&[data-expanded=true]_.chevron]:rotate-90">
                         <ChevronRight className="h-3.5 w-3.5 chevron transition-transform duration-200 text-muted-foreground" />
@@ -106,7 +159,7 @@ function renderNode(key: string, value: any, search: string): React.ReactNode {
                 <CollapsibleContent>
                     <div className="pl-6 pr-3 pb-2 pt-1 border-t divide-y divide-border/60">
                         {filteredEntries.map(([childKey, childVal]) =>
-                            renderNode(childKey, childVal, search)
+                            renderNode(childKey, childVal, search, nodePath, ctx)
                         )}
                     </div>
                 </CollapsibleContent>
@@ -116,14 +169,30 @@ function renderNode(key: string, value: any, search: string): React.ReactNode {
 
     // 4. Primitive (Boolean, Number, String)
     const stringVal = String(value);
-    if (search && !key.toLowerCase().includes(search.toLowerCase()) && !stringVal.toLowerCase().includes(search.toLowerCase())) {
+    if (
+        search &&
+        !key.toLowerCase().includes(search.toLowerCase()) &&
+        !stringVal.toLowerCase().includes(search.toLowerCase())
+    ) {
         return null;
     }
 
+    const existingTags = ctx.tagsByPath[nodePath] || [];
+
     return (
-        <div key={key} className="p-2.5 text-xs flex items-center justify-between gap-4 hover:bg-muted/10">
+        <div
+            key={nodePath}
+            className="p-2 text-xs flex items-center justify-between gap-4 hover:bg-muted/10"
+        >
             <span className="font-mono text-muted-foreground font-medium">{key}</span>
-            <div>{renderValueBadge(value)}</div>
+            <TagDroppableCell
+                path={nodePath}
+                value={value}
+                entityId={ctx.entityId}
+                entityType={ctx.entityType}
+                existingTags={existingTags}
+                renderValueContent={(val) => renderValueBadge(val)}
+            />
         </div>
     );
 }
@@ -160,12 +229,24 @@ function renderValueBadge(value: any) {
     return <span className="font-mono text-foreground">{String(value)}</span>;
 }
 
-function ArrayOfObjectsTable({ tableKey, items, search }: { tableKey: string; items: any[]; search: string }) {
+function ArrayOfObjectsTable({
+    tableKey,
+    basePath,
+    items,
+    search,
+    ctx,
+}: {
+    tableKey: string;
+    basePath: string;
+    items: any[];
+    search: string;
+    ctx: RenderContext;
+}) {
     const columns = useMemo(() => {
         const keysSet = new Set<string>();
-        items.forEach(item => {
+        items.forEach((item) => {
             if (typeof item === "object" && item !== null) {
-                Object.keys(item).forEach(k => keysSet.add(k));
+                Object.keys(item).forEach((k) => keysSet.add(k));
             }
         });
         return Array.from(keysSet);
@@ -174,7 +255,7 @@ function ArrayOfObjectsTable({ tableKey, items, search }: { tableKey: string; it
     const filteredItems = useMemo(() => {
         if (!search) return items;
         const s = search.toLowerCase();
-        return items.filter(item => JSON.stringify(item).toLowerCase().includes(s));
+        return items.filter((item) => JSON.stringify(item).toLowerCase().includes(s));
     }, [items, search]);
 
     if (filteredItems.length === 0 && search) return null;
@@ -209,11 +290,22 @@ function ArrayOfObjectsTable({ tableKey, items, search }: { tableKey: string; it
                         <tbody className="divide-y divide-border">
                             {filteredItems.map((item, rowIdx) => (
                                 <tr key={rowIdx} className="hover:bg-muted/20">
-                                    {columns.map((col) => (
-                                        <td key={col} className="p-2">
-                                            {renderValueBadge(item[col])}
-                                        </td>
-                                    ))}
+                                    {columns.map((col) => {
+                                        const cellPath = `${basePath}[${rowIdx}].${col}`;
+                                        const existingTags = ctx.tagsByPath[cellPath] || [];
+                                        return (
+                                            <td key={col} className="p-1.5">
+                                                <TagDroppableCell
+                                                    path={cellPath}
+                                                    value={item[col]}
+                                                    entityId={ctx.entityId}
+                                                    entityType={ctx.entityType}
+                                                    existingTags={existingTags}
+                                                    renderValueContent={(val) => renderValueBadge(val)}
+                                                />
+                                            </td>
+                                        );
+                                    })}
                                 </tr>
                             ))}
                         </tbody>

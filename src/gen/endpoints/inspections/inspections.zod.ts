@@ -55,6 +55,7 @@ export const GetInspectionsByResourceVersionParams = /*#__PURE__*/ zod.object({
 })
 
 export const GetInspectionsByResourceVersionResponseItem = /*#__PURE__*/ zod.object({
+  "inspection": /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "resourceVersionId": /*#__PURE__*/ zod.uuid(),
   "inspectorVersionId": /*#__PURE__*/ zod.uuid(),
@@ -68,6 +69,17 @@ export const GetInspectionsByResourceVersionResponseItem = /*#__PURE__*/ zod.obj
   "summaryMessage": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
   "inspectedAt": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.iso.datetime({"offset":true})),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+}),
+  "tagMap": /*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "tagLinkId": /*#__PURE__*/ zod.uuid(),
+  "tagId": /*#__PURE__*/ zod.uuid(),
+  "tagName": /*#__PURE__*/ zod.string(),
+  "tagColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "tagGroupId": /*#__PURE__*/ zod.uuid(),
+  "tagGroupScope": /*#__PURE__*/ zod.string(),
+  "tagGroupName": /*#__PURE__*/ zod.string(),
+  "metadataJson": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+})))
 })
 export const GetInspectionsByResourceVersionResponse = /*#__PURE__*/ zod.array(GetInspectionsByResourceVersionResponseItem)
 

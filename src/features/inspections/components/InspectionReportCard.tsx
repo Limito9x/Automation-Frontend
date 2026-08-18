@@ -15,13 +15,19 @@ import {
 } from "lucide-react";
 import { JsonTreeTable } from "@/components/custom-ui/tables/JsonTreeTable";
 import type { InspectionDto } from "@/gen/model";
+import type { TagLinkDetailDto } from "@/features/tags/types";
 
 interface InspectionReportCardProps {
     inspection: InspectionDto;
+    tagsByPath?: Record<string, TagLinkDetailDto[]>;
     defaultExpanded?: boolean;
 }
 
-export function InspectionReportCard({ inspection, defaultExpanded = false }: InspectionReportCardProps) {
+export function InspectionReportCard({
+    inspection,
+    tagsByPath = {},
+    defaultExpanded = false,
+}: InspectionReportCardProps) {
     const [isExpanded, setIsExpanded] = useState(defaultExpanded);
     const [copied, setCopied] = useState(false);
 
@@ -149,17 +155,22 @@ export function InspectionReportCard({ inspection, defaultExpanded = false }: In
                 <div className="px-4 pb-4 pt-1 border-t border-border/40">
                     <div className="mb-2 mt-1 flex items-center justify-between text-xs text-muted-foreground font-mono">
                         <span className="uppercase tracking-wider font-semibold text-[11px] text-primary/80">
-                            Cấu trúc kết quả phân tích (JSON Tree Table)
+                            Analysis Structure (JSON Tree Table)
                         </span>
                         <span className="text-[11px] text-muted-foreground/70">
-                            Nhấp để mở rộng / thu gọn các nhánh và bảng đối tượng
+                            Click to expand or collapse branches and tables
                         </span>
                     </div>
                     {inspection.data ? (
-                        <JsonTreeTable data={inspection.data} />
+                        <JsonTreeTable
+                            data={inspection.data}
+                            tagsByPath={tagsByPath}
+                            entityId={inspection.id}
+                            entityType="Inspection"
+                        />
                     ) : (
                         <div className="py-8 text-center text-sm text-muted-foreground bg-accent/10 rounded-lg border border-dashed border-border/60">
-                            Không có dữ liệu chi tiết cho đợt kiểm tra này.
+                            No detailed data available for this inspection.
                         </div>
                     )}
                 </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useResourceInspections } from "@/features/inspectors/hooks/useInspections";
 import { InspectionReportCard } from "./InspectionReportCard";
+import { TagTool } from "@/features/tags/components/TagTool";
 import { BatchTriggerInspectionDialog } from "@/features/inspections/dialogs/BatchTriggerInspectionDialog";
 import { Button } from "@/components/ui/button";
 import { Play, RefreshCw, ShieldCheck, Layers } from "lucide-react";
@@ -111,6 +112,12 @@ export function ResourceInspectionsTab({
             </div>
 
             {/* Vertical Inspection Cards List */}
+            <TagTool
+                projectId={projectId}
+                scope="inspection"
+                contextTitle={resourceId ? `Resource: ${resourceId.slice(0, 8)}...` : "Inspection"}
+            />
+
             {isLoading ? (
                 <div className="space-y-3">
                     {[1, 2].map((i) => (
@@ -133,13 +140,19 @@ export function ResourceInspectionsTab({
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {inspections.map((ins, index) => (
-                        <InspectionReportCard
-                            key={ins.id}
-                            inspection={ins}
-                            defaultExpanded={index === 0}
-                        />
-                    ))}
+                    {inspections.map((item: any, index) => {
+                        const inspectionObj = item.inspection || item;
+                        const tagMap = item.tagMap || {};
+
+                        return (
+                            <InspectionReportCard
+                                key={inspectionObj.id}
+                                inspection={inspectionObj}
+                                tagsByPath={tagMap}
+                                defaultExpanded={index === 0}
+                            />
+                        );
+                    })}
                 </div>
             )}
 

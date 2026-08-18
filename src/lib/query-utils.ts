@@ -36,8 +36,19 @@ export function createMutationHook<TMutationHook extends (options?: any) => any>
                 ...options?.mutation,
                 onSuccess: (...args: any[]) => {
                     // Invalidate specified query keys
-                    queryKeysToInvalidate.forEach(key => {
+                    queryKeysToInvalidate.forEach((key) => {
                         queryClient.invalidateQueries({ queryKey: key });
+
+                        // Support URL prefix matching for dynamic route queries (e.g. /api/resource-versions/...)
+                        if (key.length === 1 && typeof key[0] === "string") {
+                            const prefix = key[0];
+                            queryClient.invalidateQueries({
+                                predicate: (query) => {
+                                    const first = query.queryKey[0];
+                                    return typeof first === "string" && first.startsWith(prefix);
+                                },
+                            });
+                        }
                     });
                     
                     // Call the original onSuccess if provided

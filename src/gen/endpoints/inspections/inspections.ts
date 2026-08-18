@@ -21,6 +21,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  IReadOnlyListOfInspectionDetailDto,
   IReadOnlyListOfInspectionDto,
   InspectionDto,
   ManualTriggerInspectionCommand,
@@ -279,7 +280,7 @@ export const getInspectionsByResourceVersion = (
   resourceVersionId: string,
   signal?: AbortSignal,
 ) => {
-  return customInstance<IReadOnlyListOfInspectionDto>({
+  return customInstance<IReadOnlyListOfInspectionDetailDto>({
     url: `/api/resource-versions/${resourceVersionId}/inspections`,
     method: "GET",
     signal,
