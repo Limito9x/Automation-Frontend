@@ -14,8 +14,17 @@
 - **State**: Filter/pagination MUST use TanStack Router search params. NO `useState` for URL state.
 - **Forms**: MUST use React Hook Form + Zod. NO manual validation.
 - **Dates**: MUST use `Temporal API` (`@/lib/temporal`). Native `Date` is forbidden except at UI boundaries.
-- **API**: NEVER call generated API functions directly in components. MUST wrap them in `useQuery`/`useMutation` inside `features/*/hooks/`.
 - **Error Handling**: Handled centrally in `api-client.ts`. NO `try-catch` inside components.
+- **Custom Hooks Architecture (MANDATORY)**:
+  - Tất cả custom hooks của 1 feature phải nằm trong `src/features/<feature>/hooks/use<Feature>.ts`.
+  - **TUYỆT ĐỐI KHÔNG** gọi trực tiếp `customInstance` hoặc viết raw axios thủ công bên trong hook khi Orval đã sinh sẵn API trong `src/gen/endpoints/`.
+  - **Namespace Import:** Luôn import API tự sinh theo namespace: `import * as Api from "@/gen/endpoints/<feature>/<feature>";`.
+  - **Re-export Types:** Luôn re-export toàn bộ DTO request/response từ `@/gen/model` ở đầu file hook để các components chỉ cần import tập trung từ `hooks/use<Feature>`.
+  - **Query Hooks:** Bọc các hàm `useGet...` tự sinh, cấu hình `placeholderData: keepPreviousData` (cho list query) và `enabled: !!id` (cho get by id query).
+  - **Mutation Hooks:**
+    - **BẮT BUỘC** sử dụng factory `createMutationHook(Api.useMutationName, [queryKeysToInvalidate])()`.
+    - Tự động invalidate cache chính xác khi mutation thành công, không gọi `queryClient.invalidateQueries` thủ công trong Dialog/Component.
+    - Với các mutation cần URL params (như `id` hay `pipelineId`), bọc hàm trả về `{ ...mutation, mutate: (data) => mutation.mutate({ id, data }), mutateAsync: (data) => mutation.mutateAsync({ id, data }) }` để Component sử dụng tiện dụng và chuẩn kiểu dữ liệu.
 
 ## 11. Language Preference & i18n
 - **UI Strings**: MUST use `i18n` keys for all user-facing text, notifications, validation errors, and UI strings. DO NOT hardcode raw strings in components.

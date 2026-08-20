@@ -43,6 +43,8 @@ export async function uploadAssetFlow(file: File): Promise<string> {
     throw new Error("File must have an extension");
   }
 
+  const detectedType = file.type || (extension.toLowerCase() === "py" ? "text/x-python" : "application/octet-stream");
+
   // 3. Request upload
   const requestPayload = {
     items: [
@@ -50,7 +52,7 @@ export async function uploadAssetFlow(file: File): Promise<string> {
         hashSha256,
         extension: `.${extension.toLowerCase()}`,
         sizeBytes: file.size,
-        contentType: file.type,
+        contentType: detectedType,
       },
     ],
   };
@@ -66,10 +68,11 @@ export async function uploadAssetFlow(file: File): Promise<string> {
   if (!isAlreadyExists && presignedUrl) {
     await axios.put(presignedUrl, file, {
       headers: {
-        "Content-Type": file.type,
+        "Content-Type": detectedType,
       },
     });
   }
+
 
   // 5. Confirm upload
   await confirmUpload({ assetIds: [assetId] });

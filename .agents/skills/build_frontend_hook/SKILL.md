@@ -22,8 +22,25 @@ KHÔNG import trực tiếp hook từ `src/gen/endpoints/` vào các file giao d
 - Thêm cấu hình `query: { enabled: !!id }` để tránh gọi API rác khi ID chưa sẵn sàng.
 
 ## 4. Các Mutation Hook (Create, Update, Delete, v.v...)
-- **Tuyệt đối KHÔNG** tự gọi queryClient invalidate bên trong Dialog UI.
+- **Tuyệt đối KHÔNG** tự gọi `queryClient.invalidateQueries` bên trong Dialog/Component UI.
 - Phải sử dụng utility `createMutationHook` từ `@/lib/query-utils`.
 - Export mutation bằng cách bọc hook tự sinh: 
-  `export const useUpdateFeature = createMutationHook(Api.useUpdateFeature, [Api.getGetFeaturesQueryKey()]);`
-- Bằng cách này, mọi thao tác mutation thành công sẽ tự động làm mới (invalidate) danh sách của query key tương ứng.
+  `export const useCreateFeature = (scopeId?: string) => createMutationHook(Api.useCreateFeature, [Api.getGetFeaturesQueryKey(scopeId)])();`
+- **Đối với Mutation có URL Param (như `id`, `pipelineId`, `nodeId`):**
+  Bọc wrapper nhận param từ ngoài để Component gọi tiện dụng và chuẩn types:
+  ```ts
+  export const useUpdateItem = (parentId?: string) => {
+    const queryKey = parentId ? Api.getGetParentQueryKey(parentId) : ["parents"];
+    const mutation = createMutationHook(Api.useUpdateItem, [queryKey])();
+    return {
+      ...mutation,
+      mutate: ({ itemId, data }: { itemId: string; data: UpdateItemRequest }, options?: any) =>
+        mutation.mutate({ parentId: parentId!, itemId, data }, options),
+      mutateAsync: ({ itemId, data }: { itemId: string; data: UpdateItemRequest }, options?: any) =>
+        mutation.mutateAsync({ parentId: parentId!, itemId, data }, options),
+    };
+  };
+  ```
+
+## 5. Re-export Types
+- BẮT BUỘC re-export toàn bộ Request/Response DTO types từ `@/gen/model` ở đầu file `use{Feature}.ts` để các components/dialogs chỉ cần import tập trung từ file hook mà không phải đi tìm trong `gen/model`.

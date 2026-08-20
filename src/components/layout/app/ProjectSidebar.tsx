@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Settings, Logs, Folder, ChevronRight, Layers, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Settings, Logs, Folder, ChevronRight, Layers, ShieldCheck, Workflow } from "lucide-react";
 import { NavUser } from "./NavUser";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useGetProjectById } from "@/features/projects/hooks/useProjects";
@@ -44,6 +44,11 @@ export function ProjectSidebar() {
       title: "Inspectors & Rules",
       url: `/projects/${currentProjectId}/inspectors`,
       icon: ShieldCheck
+    },
+    {
+      title: "Pipelines",
+      url: `/projects/${currentProjectId}/pipeline`,
+      icon: Workflow
     },
     {
       title: "Content Types",
@@ -90,6 +95,56 @@ export function ProjectSidebar() {
               {projectNavItems.map((item) => {
                 const Icon = item.icon;
                 const isContents = item.title === "Contents";
+                const isPipelines = item.title === "Pipelines";
+
+                if (isPipelines) {
+                  const isPipelineActive =
+                    pathname === `/projects/${currentProjectId}/pipeline` ||
+                    (pathname.startsWith(`/projects/${currentProjectId}/pipeline/`) &&
+                      !pathname.includes("/pipeline/nodes"));
+                  const isNodesActive = pathname.startsWith(
+                    `/projects/${currentProjectId}/pipeline/nodes`
+                  );
+
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <Collapsible
+                        defaultExpanded={pathname.startsWith(`/projects/${currentProjectId}/pipeline`)}
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuButton tooltip={item.title} slot="trigger">
+                          <Icon />
+                          <span>{item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[expanded]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton isActive={isPipelineActive}>
+                                <Link
+                                  to="/projects/$projectId/pipeline"
+                                  params={{ projectId: currentProjectId }}
+                                >
+                                  <span>All Pipelines</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton isActive={isNodesActive}>
+                                <Link
+                                  to="/projects/$projectId/pipeline/nodes"
+                                  params={{ projectId: currentProjectId }}
+                                >
+                                  <span>Node Library</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </SidebarMenuItem>
+                  );
+                }
 
                 if (isContents) {
                   return (
