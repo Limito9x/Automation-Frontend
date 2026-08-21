@@ -67,6 +67,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
           inputs: n.inputs || [],
           outputs: n.outputs || [],
           configValues: n.configValues || {},
+          pipelineId: graph.id,
         } as CustomPipelineNodeData,
       };
     });
@@ -137,6 +138,19 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
   const addEdgeMutation = useAddPipelineEdge(graph.id);
   const deleteEdgeMutation = useDeletePipelineEdge(graph.id);
   const validateMutation = useValidatePipeline(graph.id);
+
+  // Listen to node config updates dispatched from canvas components
+  useEffect(() => {
+    const handleCustomUpdate = (e: Event) => {
+      const { nodeId, configValues } = (e as CustomEvent).detail;
+      updateNodeMutation.mutate({
+        nodeId,
+        data: { configValues },
+      });
+    };
+    window.addEventListener("pipeline:update-node-config", handleCustomUpdate);
+    return () => window.removeEventListener("pipeline:update-node-config", handleCustomUpdate);
+  }, [updateNodeMutation]);
 
   // Strict Connection Validation
   const isValidConnection = useCallback(
@@ -212,11 +226,50 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             filtered
           );
         });
+
+        // Auto-Infer Struct Type for BreakStruct node when wired to Target pin
+        const targetNode = nodes.find((n) => n.id === params.target);
+        const isTargetBreakStruct = (targetNode?.data as any)?.refId?.toLowerCase() === "breakstruct";
+        if (isTargetBreakStruct && (params.targetHandle === "Target" || params.targetHandle === "target")) {
+          const sourceNode = nodes.find((n) => n.id === params.source);
+          const sourcePins = (sourceNode?.data as any)?.outputs || [];
+          const sourcePin = sourcePins.find((p: any) => p.id === params.sourceHandle);
+          const pinText = `${sourcePin?.id || ""} ${sourcePin?.label || ""} ${(sourcePin?.metadata as any) || ""}`.toLowerCase();
+
+          let inferredStructType = "Resource";
+          if (pinText.includes("inspection")) inferredStructType = "Inspection";
+          else if (pinText.includes("workspace")) inferredStructType = "Workspace";
+          else if (pinText.includes("resource")) inferredStructType = "Resource";
+
+          setNodes((nds) =>
+            nds.map((n) => {
+              if (n.id !== params.target) return n;
+              const nodeData = n.data as any;
+              const currentConfig = nodeData.configValues || {};
+              const updatedConfig = { ...currentConfig, StructType: inferredStructType };
+
+              updateNodeMutation.mutate({
+                nodeId: params.target,
+                data: {
+                  configValues: updatedConfig,
+                },
+              });
+
+              return {
+                ...n,
+                data: {
+                  ...n.data,
+                  configValues: updatedConfig,
+                },
+              };
+            })
+          );
+        }
       } catch {
         // Handled by toast
       }
     },
-    [addEdgeMutation, setEdges]
+    [addEdgeMutation, setEdges, nodes, updateNodeMutation, setNodes]
   );
 
   // Drag stop handler (Node moved) -> Calls PATCH /api/pipelines/{id}/nodes/{nodeId}
@@ -310,6 +363,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             inputs: createdNode.inputs || [],
             outputs: createdNode.outputs || [],
             configValues: createdNode.configValues || {},
+            pipelineId: graph.id,
           } as CustomPipelineNodeData,
         };
 
@@ -328,7 +382,8 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
       setNodes((nds) =>
         nds.map((n) => {
           if (n.id !== nodeId) return n;
-          const currentConfig = (n.data as any).configValues || {};
+          const nodeData = n.data as any;
+          const currentConfig = nodeData.configValues || {};
           const updatedConfig = { ...currentConfig, [pinId]: value };
 
           updateNodeMutation.mutate({
@@ -433,9 +488,8 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             className="bg-dot-grid"
           >
             <Background variant={BackgroundVariant.Dots} gap={16} size={1} className="opacity-40" />
-            <Controls className="!border-border !bg-background/90 !shadow-md !rounded-lg" />
+            <Controls />
             <MiniMap
-              className="!border-border !bg-background/90 !shadow-md !rounded-lg overflow-hidden hidden md:block"
               zoomable
               pannable
               nodeColor={(node) => {

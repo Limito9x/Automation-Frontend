@@ -14,6 +14,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useReactFlow } from "@xyflow/react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/custom-ui/theme/ThemeToggle";
 
 interface CanvasToolbarProps {
   projectId: string;
@@ -38,7 +39,7 @@ export function CanvasToolbar({
   const { fitView, zoomIn, zoomOut } = useReactFlow();
 
   return (
-    <div className="flex h-14 w-full items-center justify-between border-b border-border/80 bg-background/95 backdrop-blur-md px-4 shadow-sm z-30">
+    <div className="flex h-14 w-full items-center justify-between border-b border-border/80 bg-background px-4 shadow-sm z-30">
       {/* Left: Back & Title */}
       <div className="flex items-center gap-3 min-w-0">
         <Link
@@ -88,6 +89,9 @@ export function CanvasToolbar({
             <Maximize2 className="h-3.5 w-3.5" />
           </Button>
         </div>
+
+        {/* Theme Toggle */}
+        <ThemeToggle className="h-8 w-8" />
 
         {/* History / Executions Drawer Trigger */}
         {onOpenHistory && (

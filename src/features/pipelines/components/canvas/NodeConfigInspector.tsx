@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Node, Edge } from "@xyflow/react";
 import type { CustomPipelineNodeData } from "./CustomPipelineNode";
 import { isBooleanPin, isNumberPin, isEntityRefPin, isAssetPin, getPinVisual } from "./CustomPipelineNode";
@@ -29,6 +29,76 @@ import {
   useDeletePipelineInput,
 } from "../../hooks/usePipelineGraph";
 import { toast } from "sonner";
+
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 350,
+  ...props
+}: {
+  value: string | number;
+  onChange: (value: any) => void;
+  debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (value !== initialValue) {
+        onChange(value);
+      }
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value, debounce, onChange, initialValue]);
+
+  return (
+    <Input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
+
+function DebouncedTextarea({
+  value: initialValue,
+  onChange,
+  debounce = 400,
+  ...props
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  debounce?: number;
+} & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange">) {
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (value !== initialValue) {
+        onChange(value);
+      }
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value, debounce, onChange, initialValue]);
+
+  return (
+    <Textarea
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
 
 interface NodeConfigInspectorProps {
   pipelineId?: string;
@@ -428,6 +498,27 @@ export function NodeConfigInspector({
           </div>
         ) : (
           <div className="space-y-4">
+            {data.refId?.toLowerCase() === "breakstruct" && (
+              <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-3 space-y-2 shadow-sm">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400">
+                  <Box className="h-3.5 w-3.5" />
+                  <span>Struct Type</span>
+                </div>
+                <select
+                  value={configValues["StructType"] || "Resource"}
+                  onChange={(e) => onUpdateConfig(node.id, "StructType", e.target.value)}
+                  className="w-full h-8 rounded-lg border border-sky-500/40 bg-background px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-sky-500"
+                >
+                  <option value="Resource">Resource (File, BaseName, FullPath, Workspace)</option>
+                  <option value="Workspace">Workspace (RootPath, WorkspaceId)</option>
+                  <option value="Inspection">Inspection (MainObjects, Status, SkeletonBones)</option>
+                </select>
+                <p className="text-[10px] text-muted-foreground leading-tight">
+                  Selecting a struct type dynamically updates output pins to match the entity schema.
+                </p>
+              </div>
+            )}
+
             <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               <Sliders className="h-3.5 w-3.5 text-primary" />
               <span>Input Properties</span>
@@ -492,11 +583,11 @@ export function NodeConfigInspector({
                             />
                           </div>
                         ) : isNumberPin(pin.primitiveType) ? (
-                          <Input
+                          <DebouncedInput
                             type="number"
                             value={currentVal}
-                            onChange={(e) =>
-                              onUpdateConfig(node.id, pinId, e.target.value === "" ? null : Number(e.target.value))
+                            onChange={(val) =>
+                              onUpdateConfig(node.id, pinId, val === "" ? null : Number(val))
                             }
                             placeholder="Enter number..."
                             className="h-8 text-xs"
@@ -516,17 +607,17 @@ export function NodeConfigInspector({
                             placeholder={`Select ${entityType}...`}
                           />
                         ) : pin.primitiveType === 0 && (pin.id?.toLowerCase().includes("json") || pin.id?.toLowerCase().includes("script")) ? (
-                          <Textarea
+                          <DebouncedTextarea
                             value={currentVal}
-                            onChange={(e) => onUpdateConfig(node.id, pinId, e.target.value)}
+                            onChange={(val) => onUpdateConfig(node.id, pinId, val)}
                             placeholder="Enter value..."
                             className="text-xs min-h-[70px] font-mono"
                           />
                         ) : (
-                          <Input
+                          <DebouncedInput
                             type="text"
                             value={currentVal}
-                            onChange={(e) => onUpdateConfig(node.id, pinId, e.target.value)}
+                            onChange={(val) => onUpdateConfig(node.id, pinId, val)}
                             placeholder="Enter value..."
                             className="h-8 text-xs"
                           />

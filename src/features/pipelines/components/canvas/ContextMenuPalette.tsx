@@ -27,6 +27,7 @@ export function ContextMenuPalette({
   // Auto-focus input when opened
   useEffect(() => {
     if (position) {
+      setSearch("");
       setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
@@ -99,7 +100,7 @@ export function ContextMenuPalette({
     <div
       ref={containerRef}
       style={style}
-      className="fixed z-50 w-72 rounded-xl border border-border/80 bg-popover/95 backdrop-blur-md p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-100"
+      className="fixed z-50 w-72 rounded-xl border border-border/80 bg-popover p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-100"
     >
       <div className="relative mb-2">
         <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />

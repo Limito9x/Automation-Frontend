@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { Handle, Position } from "@xyflow/react";
+import { memo, useCallback } from "react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
 import type { NodeProps } from "@xyflow/react";
 import type { PinDefinition, PinPrimitiveType } from "@/gen/model";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,8 @@ import {
   Loader2,
   Box,
   PlayCircle,
+  Plus,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +26,7 @@ export interface CustomPipelineNodeData extends Record<string, unknown> {
   configValues?: Record<string, any>;
   executionStatus?: "idle" | "running" | "succeeded" | "failed";
   executionError?: string | null;
+  pipelineId?: string;
 }
 
 export interface PinTypeVisual {
@@ -117,13 +120,19 @@ export function isAssetPin(type?: PinPrimitiveType | number | string) {
   return type === 5 || type === "5" || type === "Asset" || type === "asset" || type === "file";
 }
 
-export const CustomPipelineNode = memo(({ data, selected }: NodeProps) => {
+export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
+  const { setNodes } = useReactFlow();
   const nodeData = data as unknown as CustomPipelineNodeData;
   const rawKind = (nodeData.kind || "").toLowerCase();
   const rawRefId = (nodeData.refId || "").toLowerCase();
 
   const isStart = rawKind === "start" || rawRefId === "start" || rawRefId === "beginexecute";
   const isTool = rawKind === "tool" && !isStart;
+  const isBreakStruct = rawRefId === "breakstruct";
+  const isAppend = rawRefId === "appendstring" || rawRefId === "append";
+  const isMakeArray = rawRefId === "makearray";
+  const structType = nodeData.configValues?.["StructType"] || "Resource";
+
   const inputs = nodeData.inputs || [];
   const outputs = nodeData.outputs || [];
   const status = nodeData.executionStatus || "idle";
@@ -137,18 +146,120 @@ export const CustomPipelineNode = memo(({ data, selected }: NodeProps) => {
   const hasExecInPin = inputs.some((p) => p.id === "exec_in" || (p as any).kind === 1 || (p as any).kind === "Exec");
   const hasExecOutPin = outputs.some((p) => p.id === "exec_out" || (p as any).kind === 1 || (p as any).kind === "Exec");
 
+  const isPureNode = isBreakStruct ||
+                     isAppend ||
+                     isMakeArray ||
+                     rawRefId === "gettagvaluefrominspection" ||
+                     rawRefId === "combinepath" ||
+                     rawRefId === "getresourceinspection" ||
+                     rawRefId === "getinspection" ||
+                     (nodeData as any).isPure === true ||
+                     (!isStart && isTool && !hasExecInPin && !hasExecOutPin);
+
   // Pure nodes don't have exec pins in inputs/outputs
-  const showExecIn = !isStart && (hasExecInPin || (!isTool && !isStart));
-  const showExecOut = isStart || hasExecOutPin || (!isTool && !isStart);
+  const showExecIn = !isStart && !isPureNode && (hasExecInPin || !isTool);
+  const showExecOut = !isPureNode && (isStart || hasExecOutPin || !isTool);
   const hasExecFlow = showExecIn || showExecOut;
 
   const dataInputs = isStart ? [] : inputs.filter((p: PinDefinition) => !isExecPin(p));
   const dataOutputs = outputs.filter((p: PinDefinition) => !isExecPin(p));
 
+  const handleAddDynamicPin = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setNodes((nds) =>
+        nds.map((n) => {
+          if (n.id !== id) return n;
+          const currentInputs: PinDefinition[] = (n.data as any).inputs || [];
+          let updatedInputs = currentInputs;
+
+          if (isAppend) {
+            const letterPins = currentInputs.filter((p) => p.id !== "Separator" && p.id !== "exec_in");
+            const nextCharCode = 65 + letterPins.length; // A = 65, B = 66, C = 67...
+            const nextChar = String.fromCharCode(nextCharCode <= 90 ? nextCharCode : 65 + (letterPins.length % 26));
+            const newPinId = letterPins.some((p) => p.id === nextChar) ? `${nextChar}_${letterPins.length}` : nextChar;
+
+            const newPin: PinDefinition = {
+              id: newPinId,
+              label: newPinId,
+              primitiveType: 0 as any, // String
+              cardinality: 0 as any,
+              isRequired: false,
+            };
+
+            updatedInputs = [...currentInputs, newPin];
+          } else if (isMakeArray) {
+            const newIndex = currentInputs.length + 1;
+            const newPin: PinDefinition = {
+              id: `Item_${newIndex}`,
+              label: `Item ${newIndex}`,
+              primitiveType: 0 as any,
+              cardinality: 0 as any,
+              isRequired: false,
+            };
+            updatedInputs = [...currentInputs, newPin];
+          }
+
+          const dynamicPinIds = updatedInputs.filter((p) => !isExecPin(p)).map((p) => p.id);
+          const currentConfig = (n.data as any).configValues || {};
+          const updatedConfig = { ...currentConfig, DynamicPins: dynamicPinIds };
+
+          window.dispatchEvent(
+            new CustomEvent("pipeline:update-node-config", {
+              detail: { nodeId: id, configValues: updatedConfig },
+            })
+          );
+
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              inputs: updatedInputs,
+              configValues: updatedConfig,
+            },
+          };
+        })
+      );
+    },
+    [id, isAppend, isMakeArray, setNodes]
+  );
+
+  const handleRemoveDynamicPin = useCallback(
+    (e: React.MouseEvent, pinId: string) => {
+      e.stopPropagation();
+      setNodes((nds) =>
+        nds.map((n) => {
+          if (n.id !== id) return n;
+          const currentInputs: PinDefinition[] = (n.data as any).inputs || [];
+          const updatedInputs = currentInputs.filter((p) => p.id !== pinId);
+          const dynamicPinIds = updatedInputs.filter((p) => !isExecPin(p)).map((p) => p.id);
+          const currentConfig = (n.data as any).configValues || {};
+          const updatedConfig = { ...currentConfig, DynamicPins: dynamicPinIds };
+
+          window.dispatchEvent(
+            new CustomEvent("pipeline:update-node-config", {
+              detail: { nodeId: id, configValues: updatedConfig },
+            })
+          );
+
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              inputs: updatedInputs,
+              configValues: updatedConfig,
+            },
+          };
+        })
+      );
+    },
+    [id, setNodes]
+  );
+
   return (
     <div
       className={cn(
-        "group relative min-w-[300px] max-w-[380px] rounded-xl border bg-card/95 backdrop-blur-md shadow-lg transition-all duration-200",
+        "group relative min-w-[300px] max-w-[380px] rounded-xl border bg-card shadow-md transition-[border-color,box-shadow] duration-150",
         selected ? "border-primary ring-2 ring-primary/40 shadow-primary/15" : "border-border/80 hover:border-primary/50",
         isStart && "border-emerald-500/40 bg-gradient-to-b from-emerald-500/5 to-transparent",
         status === "running" && "border-amber-500 ring-2 ring-amber-500/40 animate-pulse",
@@ -198,6 +309,10 @@ export const CustomPipelineNode = memo(({ data, selected }: NodeProps) => {
           {isStart ? (
             <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
               Entry
+            </Badge>
+          ) : isBreakStruct ? (
+            <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono border-sky-500/40 text-sky-600 dark:text-sky-400 bg-sky-500/10 font-semibold">
+              {structType}
             </Badge>
           ) : nodeData.executor ? (
             <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono capitalize">
@@ -320,10 +435,35 @@ export const CustomPipelineNode = memo(({ data, selected }: NodeProps) => {
                       {hasConfig && (
                         <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Configured statically" />
                       )}
+
+                      {/* Remove Dynamic Pin Button */}
+                      {(isAppend && pinId !== "A" && pinId !== "B" && pinId !== "Separator") || (isMakeArray && dataInputs.length > 1) ? (
+                        <button
+                          type="button"
+                          onClick={(e) => handleRemoveDynamicPin(e, pinId)}
+                          className="opacity-0 group-hover/pin:opacity-100 text-muted-foreground/60 hover:text-destructive transition-opacity p-0.5 rounded"
+                          title="Remove Pin"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      ) : null}
                     </div>
                   </div>
                 );
               })}
+
+              {/* Dynamic Add Pin Button */}
+              {(isAppend || isMakeArray) && (
+                <button
+                  type="button"
+                  onClick={handleAddDynamicPin}
+                  className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded transition-colors mt-1"
+                  title="Add Pin"
+                >
+                  <Plus className="h-3 w-3" />
+                  <span>Add Pin</span>
+                </button>
+              )}
             </div>
 
             {/* Right: Output Data Pins */}
@@ -368,7 +508,32 @@ export const CustomPipelineNode = memo(({ data, selected }: NodeProps) => {
           </div>
         </div>
       )}
+
+      {/* Node Error Banner / Highlight at the bottom */}
+      {(status === "failed" || nodeData.executionError) && (
+        <div className="rounded-b-xl border-t border-destructive/40 bg-destructive/10 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5 animate-in fade-in">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+          <span className="leading-tight break-words flex-1 font-medium">
+            {nodeData.executionError || "Execution failed on this node."}
+          </span>
+        </div>
+      )}
     </div>
+  );
+}, (prev, next) => {
+  if (prev.id !== next.id || prev.selected !== next.selected) return false;
+  const pData = prev.data as any;
+  const nData = next.data as any;
+  if (pData === nData) return true;
+  return (
+    pData?.refId === nData?.refId &&
+    pData?.kind === nData?.kind &&
+    pData?.label === nData?.label &&
+    pData?.executionStatus === nData?.executionStatus &&
+    pData?.executionError === nData?.executionError &&
+    pData?.inputs === nData?.inputs &&
+    pData?.outputs === nData?.outputs &&
+    pData?.configValues === nData?.configValues
   );
 });
 
