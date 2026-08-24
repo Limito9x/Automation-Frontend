@@ -7,4 +7,6 @@
 
 export interface UpdateWorkspaceRequest {
   name?: string;
+  /** @nullable */
+  platformIds?: unknown[] | null;
 }

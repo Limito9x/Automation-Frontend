@@ -3,7 +3,13 @@ import { CreateWorkspaceForm } from "../components/CreateWorkspaceForm";
 import { useUpdateWorkspace } from "../hooks/useWorkspaces";
 import type { DialogProps } from "@/lib/dialog-registry";
 
-export function UpdateWorkspaceDialog({ open, onOpenChange, data }: DialogProps<{ id: string; name: string }>) {
+export interface UpdateWorkspaceDialogProps {
+  id: string;
+  name: string;
+  platformIds?: string[];
+}
+
+export function UpdateWorkspaceDialog({ open, onOpenChange, data }: DialogProps<UpdateWorkspaceDialogProps>) {
   const updateWorkspace = useUpdateWorkspace();
 
   return (
@@ -16,11 +22,11 @@ export function UpdateWorkspaceDialog({ open, onOpenChange, data }: DialogProps<
       size="md"
     >
       <CreateWorkspaceForm
-        defaultValues={{ name: data?.name }}
+        defaultValues={{ name: data?.name, platformIds: data?.platformIds }}
         onSubmit={(values) => {
           if (!data) return;
           updateWorkspace.mutate(
-            { id: data.id, data: { name: values.name } },
+            { id: data.id, data: { name: values.name, platformIds: values.platformIds } },
             {
               onSuccess: () => onOpenChange(false),
             }

@@ -19,7 +19,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, data }: DialogProps<
         onSubmit={(values) => {
           if (!data) return;
           createWorkspace.mutate(
-            { data: { projectId: data.projectId, name: values.name } },
+            { data: { projectId: data.projectId, name: values.name, platformIds: values.platformIds } },
             {
               onSuccess: () => onOpenChange(false),
             }

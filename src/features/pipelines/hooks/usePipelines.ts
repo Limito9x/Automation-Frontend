@@ -23,6 +23,7 @@ import {
   getPipelines,
   getGetPipelinesQueryKey,
   createPipeline,
+  deletePipeline,
 } from "@/gen/endpoints/pipelines/pipelines";
 import type {
   CreatePipelineCommand,
@@ -61,6 +62,30 @@ export function useCreatePipelineMutation(projectId?: string) {
       const errorMsg =
         err?.response?.data?.message || err?.message || "Failed to create pipeline";
       toast.error(t("pipelines.createFailed", { defaultValue: errorMsg }));
+    },
+  });
+}
+
+export function useDeletePipelineMutation(projectId?: string) {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: (id: string) => deletePipeline(id),
+    onSuccess: () => {
+      toast.success(
+        t("pipelines.deleteSuccess", { defaultValue: "Pipeline deleted successfully" })
+      );
+      if (projectId) {
+        queryClient.invalidateQueries({
+          queryKey: getGetPipelinesQueryKey({ projectId }),
+        });
+      }
+    },
+    onError: (err: any) => {
+      const errorMsg =
+        err?.response?.data?.message || err?.message || "Failed to delete pipeline";
+      toast.error(t("pipelines.deleteFailed", { defaultValue: errorMsg }));
     },
   });
 }

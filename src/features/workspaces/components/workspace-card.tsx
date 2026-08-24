@@ -1,8 +1,10 @@
 import type { WorkspaceDto } from "../hooks/useWorkspaces";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Bot, FileText, MoreVertical, Edit3, Trash2, ArrowRight, Layers } from "lucide-react";
 import { useDialogStore } from "@/stores/dialogStore";
+import { usePlatforms } from "@/features/platforms/hooks/usePlatforms";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import {
@@ -18,6 +20,10 @@ interface WorkspaceCardProps {
 
 export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
   const openDialog = useDialogStore((state) => state.openDialog);
+  const { data: platforms } = usePlatforms();
+
+  const platformMap = new Map((platforms || []).map((p) => [p.id, p.name]));
+  const platformIds = (workspace as any).platformIds as string[] | undefined;
 
   return (
     <Card className="group relative border bg-card hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden">
@@ -46,11 +52,17 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
             <Popover className="min-w-[140px] rounded-md border bg-popover p-1 shadow-md text-popover-foreground">
               <Menu className="outline-none">
                 <MenuItem
-                  onAction={() => openDialog("update-workspace", { id: workspace.id, name: workspace.name })}
+                  onAction={() =>
+                    openDialog("update-workspace", {
+                      id: workspace.id,
+                      name: workspace.name,
+                      platformIds: platformIds,
+                    })
+                  }
                   className="flex items-center gap-2 px-2 py-1.5 text-xs rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground outline-none"
                 >
                   <Edit3 className="size-3.5" />
-                  <span>Edit Name</span>
+                  <span>Edit</span>
                 </MenuItem>
                 <MenuItem
                   onAction={() => openDialog("delete-workspace", { id: workspace.id, name: workspace.name })}
@@ -65,7 +77,17 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="px-6 py-3">
+      <CardContent className="px-6 py-3 space-y-2.5">
+        {platformIds && platformIds.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {platformIds.map((pId) => (
+              <Badge key={pId} variant="secondary" className="text-[11px] px-2 py-0.5">
+                {platformMap.get(pId) || "Platform"}
+              </Badge>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border/50 text-xs">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Bot className="size-4 text-primary/70" />

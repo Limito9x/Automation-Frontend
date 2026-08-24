@@ -15,4 +15,6 @@ export interface WorkspaceDetailDto {
   locationCount: number;
   workspaceAgents: ListOfWorkspaceAgentDto;
   createdAt: string;
+  /** @nullable */
+  platformIds?: unknown[] | null;
 }

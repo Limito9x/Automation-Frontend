@@ -4,7 +4,7 @@ import { registerDialog } from "@/lib/dialog-registry";
 declare module "@/lib/dialog-registry" {
   interface GlobalDialogRegistry {
     "create-workspace": { projectId: string };
-    "update-workspace": { id: string; name: string };
+    "update-workspace": { id: string; name: string; platformIds?: string[] };
     "delete-workspace": { id: string; name: string };
     "attach-agent-workspace": { workspaceId: string };
   }

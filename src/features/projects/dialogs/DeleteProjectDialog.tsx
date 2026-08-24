@@ -11,7 +11,7 @@ export function DeleteProjectDialog({ open, onOpenChange, data }: DialogProps<{ 
     const handleDelete = () => {
         if (!data?.id) return;
         deleteProject.mutate(
-            { path: { id: data.id } },
+            { id: data.id },
             {
                 onSuccess: () => {
                     toast.success(t("actions.deleteSuccess", { defaultValue: "Deleted successfully" }));

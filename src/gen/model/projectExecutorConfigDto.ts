@@ -4,14 +4,15 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { JsonDocument } from "./jsonDocument";
 
-export interface WorkspaceDto {
+export interface ProjectExecutorConfigDto {
   id: string;
   projectId: string;
-  name: string;
-  agentCount: number;
-  resourceCount: number;
+  agentId: string;
+  executorKey: string;
+  settings: JsonDocument;
   createdAt: string;
   /** @nullable */
-  platformIds?: unknown[] | null;
+  updatedAt: string | null;
 }

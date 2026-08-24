@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { usePipelines, useCreatePipelineMutation } from "../hooks/usePipelines";
+import {
+  usePipelines,
+  useCreatePipelineMutation,
+  useDeletePipelineMutation,
+} from "../hooks/usePipelines";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Workflow,
@@ -19,9 +24,19 @@ import {
   Layers,
   FileCode,
   Loader2,
+  MoreVertical,
+  Trash2,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Menu,
+  MenuItem,
+  MenuTrigger,
+  Popover,
+} from "react-aria-components";
 import { cn } from "@/lib/utils";
+import type { PipelineSummaryDto } from "@/gen/model";
 
 interface PipelineListPageProps {
   projectId: string;
@@ -31,9 +46,11 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
   const navigate = useNavigate();
   const { data: pipelines = [], isLoading } = usePipelines(projectId);
   const createMutation = useCreatePipelineMutation(projectId);
+  const deleteMutation = useDeletePipelineMutation(projectId);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [pipelineName, setPipelineName] = useState("");
+  const [pipelineToDelete, setPipelineToDelete] = useState<PipelineSummaryDto | null>(null);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +72,16 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
           params: { projectId, pipelineId: created.id },
         });
       }
+    } catch {
+      // Handled by toast
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!pipelineToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(pipelineToDelete.id);
+      setPipelineToDelete(null);
     } catch {
       // Handled by toast
     }
@@ -134,6 +161,35 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                         </CardDescription>
                       </div>
                     </div>
+
+                    <MenuTrigger>
+                      <Button variant="ghost" size="icon" className="size-7 text-muted-foreground hover:text-foreground">
+                        <MoreVertical className="size-4" />
+                      </Button>
+                      <Popover className="min-w-[140px] rounded-md border bg-popover p-1 shadow-md text-popover-foreground">
+                        <Menu className="outline-none">
+                          <MenuItem
+                            onAction={() =>
+                              navigate({
+                                to: "/projects/$projectId/pipeline/$pipelineId",
+                                params: { projectId, pipelineId: p.id },
+                              })
+                            }
+                            className="flex items-center gap-2 px-2 py-1.5 text-xs rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground outline-none"
+                          >
+                            <ExternalLink className="size-3.5" />
+                            <span>Open Canvas</span>
+                          </MenuItem>
+                          <MenuItem
+                            onAction={() => setPipelineToDelete(p)}
+                            className="flex items-center gap-2 px-2 py-1.5 text-xs rounded-sm cursor-pointer text-destructive hover:bg-destructive/10 outline-none"
+                          >
+                            <Trash2 className="size-3.5" />
+                            <span>Delete</span>
+                          </MenuItem>
+                        </Menu>
+                      </Popover>
+                    </MenuTrigger>
                   </div>
                 </CardHeader>
 
@@ -209,6 +265,47 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
             </Button>
           </DialogFooter>
         </form>
+      </Dialog>
+
+      {/* Delete Pipeline Confirmation Dialog */}
+      <Dialog
+        isOpen={!!pipelineToDelete}
+        onOpenChange={(open) => !open && setPipelineToDelete(null)}
+      >
+        <div className="space-y-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base font-semibold text-destructive">
+              <Trash2 className="h-4 w-4" />
+              <span>Delete Pipeline</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground pt-1">
+              Are you sure you want to delete pipeline{" "}
+              <strong className="text-foreground font-medium">"{pipelineToDelete?.name}"</strong>?
+              This will permanently delete all nodes, edges, execution history, and linked configurations.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onPress={() => setPipelineToDelete(null)}
+              isDisabled={deleteMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onPress={handleDelete}
+              isDisabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete Pipeline"}
+            </Button>
+          </DialogFooter>
+        </div>
       </Dialog>
     </div>
   );

@@ -5,7 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * @minItems 1
- */
 export type IReadOnlyListOfGuid = string[];

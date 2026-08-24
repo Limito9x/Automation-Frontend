@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Settings, Logs, Folder, ChevronRight, Layers, ShieldCheck, Workflow } from "lucide-react";
+import { LayoutDashboard, Settings, Logs, Folder, ChevronRight, Layers, ShieldCheck, Workflow, Cpu } from "lucide-react";
 import { NavUser } from "./NavUser";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useGetProjectById } from "@/features/projects/hooks/useProjects";
@@ -59,6 +59,11 @@ export function ProjectSidebar() {
       title: "Contents",
       url: `/projects/${currentProjectId}/contents`,
       icon: Logs
+    },
+    {
+      title: "Executor Settings",
+      url: `/projects/${currentProjectId}/executor-settings`,
+      icon: Cpu
     }
   ];
 

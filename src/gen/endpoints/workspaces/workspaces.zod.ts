@@ -17,7 +17,8 @@ export const GetWorkspacesResponseItem = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
   "agentCount": /*#__PURE__*/ zod.int(),
   "resourceCount": /*#__PURE__*/ zod.int(),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "platformIds": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()))
 })
 export const GetWorkspacesResponse = /*#__PURE__*/ zod.array(GetWorkspacesResponseItem)
 
@@ -29,7 +30,8 @@ export const createWorkspaceBodyNameMax = 100;
 
 export const CreateWorkspaceBody = /*#__PURE__*/ zod.object({
   "projectId": /*#__PURE__*/ zod.uuid().check(/*#__PURE__*/ zod.minLength(1)),
-  "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createWorkspaceBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createWorkspaceBodyNameMax))
+  "name": /*#__PURE__*/ zod.string().check(/*#__PURE__*/ zod.minLength(createWorkspaceBodyNameMin)).check(/*#__PURE__*/ zod.maxLength(createWorkspaceBodyNameMax)),
+  "platformIds": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()))
 })
 
 export const CreateWorkspaceResponse = /*#__PURE__*/ zod.object({
@@ -38,7 +40,8 @@ export const CreateWorkspaceResponse = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
   "agentCount": /*#__PURE__*/ zod.int(),
   "resourceCount": /*#__PURE__*/ zod.int(),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "platformIds": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()))
 })
 
 export const DeleteWorkspaceParams = /*#__PURE__*/ zod.object({
@@ -73,7 +76,8 @@ export const GetWorkspaceByIdResponse = /*#__PURE__*/ zod.object({
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 }))
 })),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "platformIds": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()))
 })
 
 export const UpdateWorkspaceParams = /*#__PURE__*/ zod.object({
@@ -81,7 +85,8 @@ export const UpdateWorkspaceParams = /*#__PURE__*/ zod.object({
 })
 
 export const UpdateWorkspaceBody = /*#__PURE__*/ zod.object({
-  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string())
+  "name": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
+  "platformIds": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()))
 })
 
 export const UpdateWorkspaceResponse = /*#__PURE__*/ zod.object({
@@ -90,7 +95,8 @@ export const UpdateWorkspaceResponse = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
   "agentCount": /*#__PURE__*/ zod.int(),
   "resourceCount": /*#__PURE__*/ zod.int(),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "platformIds": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()))
 })
 
 export const AttachAgentToWorkspaceParams = /*#__PURE__*/ zod.object({

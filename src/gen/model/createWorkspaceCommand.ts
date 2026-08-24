@@ -13,4 +13,6 @@ export interface CreateWorkspaceCommand {
    * @maxLength 100
    */
   name: string;
+  /** @nullable */
+  platformIds?: unknown[] | null;
 }

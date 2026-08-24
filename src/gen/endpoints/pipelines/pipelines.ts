@@ -27,6 +27,7 @@ import type {
   CreatePipelineCommand,
   GetPipelinesParams,
   IReadOnlyListOfPipelineInputDto,
+  ListOfPipelineExecutionDto,
   ListOfPipelineSummaryDto,
   PipelineEdgeGraphDto,
   PipelineExecutionDto,
@@ -418,6 +419,75 @@ export function useGetPipelineExecution<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const deletePipeline = (id: string, signal?: AbortSignal) => {
+  return customInstance<void>({
+    url: `/api/pipelines/${id}`,
+    method: "DELETE",
+    signal,
+  });
+};
+
+export const getDeletePipelineMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deletePipeline>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deletePipeline>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["deletePipeline"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deletePipeline>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deletePipeline(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeletePipelineMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deletePipeline>>
+>;
+
+export type DeletePipelineMutationError = void;
+
+export const useDeletePipeline = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deletePipeline>>,
+      TError,
+      { id: string },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deletePipeline>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getDeletePipelineMutationOptions(options), queryClient);
+};
 export const getPipelineGraph = (id: string, signal?: AbortSignal) => {
   return customInstance<PipelineGraphDto>({
     url: `/api/pipelines/${id}/graph`,
@@ -795,6 +865,164 @@ export const useDeletePipelineEdge = <TError = unknown, TContext = unknown>(
     queryClient,
   );
 };
+export const getPipelineExecutions = (
+  pipelineId: string,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ListOfPipelineExecutionDto>({
+    url: `/api/pipelines/${pipelineId}/executions`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetPipelineExecutionsQueryKey = (pipelineId: string) => {
+  return [`/api/pipelines/${pipelineId}/executions`] as const;
+};
+
+export const getGetPipelineExecutionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPipelineExecutions>>,
+  TError = void,
+>(
+  pipelineId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPipelineExecutions>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetPipelineExecutionsQueryKey(pipelineId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getPipelineExecutions>>
+  > = ({ signal }) => getPipelineExecutions(pipelineId, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: pipelineId !== null && pipelineId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPipelineExecutions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetPipelineExecutionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPipelineExecutions>>
+>;
+export type GetPipelineExecutionsQueryError = void;
+
+export function useGetPipelineExecutions<
+  TData = Awaited<ReturnType<typeof getPipelineExecutions>>,
+  TError = void,
+>(
+  pipelineId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPipelineExecutions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPipelineExecutions>>,
+          TError,
+          Awaited<ReturnType<typeof getPipelineExecutions>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPipelineExecutions<
+  TData = Awaited<ReturnType<typeof getPipelineExecutions>>,
+  TError = void,
+>(
+  pipelineId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPipelineExecutions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPipelineExecutions>>,
+          TError,
+          Awaited<ReturnType<typeof getPipelineExecutions>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPipelineExecutions<
+  TData = Awaited<ReturnType<typeof getPipelineExecutions>>,
+  TError = void,
+>(
+  pipelineId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPipelineExecutions>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetPipelineExecutions<
+  TData = Awaited<ReturnType<typeof getPipelineExecutions>>,
+  TError = void,
+>(
+  pipelineId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPipelineExecutions>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetPipelineExecutionsQueryOptions(
+    pipelineId,
+    options,
+  );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
 export const getPipelineInputSchema = (
   pipelineId: string,
   signal?: AbortSignal,
