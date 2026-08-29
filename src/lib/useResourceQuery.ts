@@ -18,7 +18,7 @@ export interface ResourcePageProps {
   useNavigate: () => NavigateFn<BaseSearchParams>
 }
 
-type NavigateFn<T> = (opts: { search: (prev: T) => T; replace?: boolean }) => void
+export type NavigateFn<T> = (opts: { search?: (prev: T) => T; to?: string; replace?: boolean; [key: string]: any }) => void
 
 export function useResourceQuery<T extends BaseSearchParams>(
   search: T,

@@ -19,6 +19,8 @@ import type { CustomPipelineNodeData } from "./CustomPipelineNode";
 import { ContextMenuPalette } from "./ContextMenuPalette";
 import { NodeConfigInspector } from "./NodeConfigInspector";
 import { CanvasToolbar } from "./CanvasToolbar";
+import { VariablePanel } from "./VariablePanel";
+import { VariableDropMenu } from "./VariableDropMenu";
 import { RunPipelineModal } from "../../dialogs/RunPipelineModal";
 import { LiveExecutionDrawer } from "./LiveExecutionDrawer";
 import {
@@ -29,12 +31,13 @@ import {
   useDeletePipelineEdge,
   useValidatePipeline,
 } from "../../hooks/usePipelineGraph";
-import type { PipelineGraphDto, NodePaletteItemDto } from "@/gen/model";
+import type { ExtendedPipelineGraphDto } from "../../hooks/usePipelineGraph";
+import type { NodePaletteItemDto } from "@/gen/model";
 import { toast } from "sonner";
 
 interface PipelineCanvasProps {
   projectId: string;
-  graph: PipelineGraphDto;
+  graph: ExtendedPipelineGraphDto;
 }
 
 const nodeTypes = {
@@ -73,13 +76,24 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
     });
   }, [graph.nodes]);
 
+  // Helper to determine if a handle is Exec Flow
+  const isExecHandle = (handleId?: string | null) => {
+    if (!handleId) return false;
+    return (
+      handleId === "exec_in" ||
+      handleId === "exec_out" ||
+      handleId === "loop_body" ||
+      handleId === "completed"
+    );
+  };
+
   // Helper to determine if edge is Exec Flow
   const isExecEdge = (sourcePin?: string | null, targetPin?: string | null, kind?: any) => {
     return (
       kind === 1 ||
       kind === "Exec" ||
-      sourcePin === "exec_out" ||
-      targetPin === "exec_in"
+      isExecHandle(sourcePin) ||
+      isExecHandle(targetPin)
     );
   };
 
@@ -130,6 +144,12 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
   const [activeExecutionId, setActiveExecutionId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [drawerDefaultTab, setDrawerDefaultTab] = useState<"history" | "inspect">("inspect");
+  const [isVariablesOpen, setIsVariablesOpen] = useState(true);
+  const [varDropState, setVarDropState] = useState<{
+    varName: string;
+    screenPos: { x: number; y: number };
+    flowPos: { x: number; y: number };
+  } | null>(null);
 
   // Granular CRUD Mutations
   const addNodeMutation = useAddPipelineNode(graph.id);
@@ -159,8 +179,8 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
       if (connection.source === connection.target) return false;
       if (!connection.sourceHandle || !connection.targetHandle) return false;
 
-      const isSourceExec = connection.sourceHandle === "exec_out";
-      const isTargetExec = connection.targetHandle === "exec_in";
+      const isSourceExec = isExecHandle(connection.sourceHandle);
+      const isTargetExec = isExecHandle(connection.targetHandle);
 
       // 2. Exec flow can only connect to Exec flow
       if (isSourceExec || isTargetExec) {
@@ -376,6 +396,105 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
     [flowCoordinates, addNodeMutation, setNodes]
   );
 
+  // Spawn Get/Set Variable Node at specific coordinates
+  const handleSpawnVariableNodeAt = useCallback(
+    async (
+      toolKey: "GetVariable" | "SetVariable",
+      varName: string,
+      position: { x: number; y: number }
+    ) => {
+      try {
+        const isGet = toolKey === "GetVariable";
+        const label = isGet ? `Get ${varName}` : `Set ${varName}`;
+        const createdNode = await addNodeMutation.mutateAsync({
+          refId: toolKey,
+          kind: "Tool",
+          positionX: position.x,
+          positionY: position.y,
+          configValues: {
+            VariableName: varName,
+          },
+        });
+
+        const newNode: Node = {
+          id: createdNode.id,
+          type: "pipelineNode",
+          position: { x: createdNode.position.x, y: createdNode.position.y },
+          data: {
+            refId: createdNode.refId,
+            kind: createdNode.kind,
+            label: createdNode.label || label,
+            category: createdNode.category || "Variables",
+            executor: createdNode.executor || "builtin",
+            inputs: createdNode.inputs || [],
+            outputs: createdNode.outputs || [],
+            configValues: createdNode.configValues || { VariableName: varName },
+            pipelineId: graph.id,
+          } as CustomPipelineNodeData,
+        };
+
+        setNodes((nds) => [...nds, newNode]);
+        setSelectedNodeId(createdNode.id);
+        toast.success(`Spawned '${label}' node`);
+      } catch (err: any) {
+        toast.error(err?.message || `Failed to spawn ${toolKey}`);
+      }
+    },
+    [addNodeMutation, graph.id, setNodes]
+  );
+
+  // Spawn Get/Set Variable Node directly from VariablePanel button
+  const handleSpawnVariableNode = useCallback(
+    (toolKey: "GetVariable" | "SetVariable", varName: string) => {
+      handleSpawnVariableNodeAt(toolKey, varName, {
+        x: 300 + Math.random() * 60,
+        y: 250 + Math.random() * 60,
+      });
+    },
+    [handleSpawnVariableNodeAt]
+  );
+
+  // Drag over Canvas handler
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  }, []);
+
+  // Drop Variable onto Canvas handler (Unreal-style)
+  const onDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const rawVar = e.dataTransfer.getData("application/pipeline-variable");
+      if (!rawVar) return;
+
+      try {
+        const varData = JSON.parse(rawVar);
+        const varName = varData.name;
+        if (!varName) return;
+
+        const flowPos = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+
+        if (e.ctrlKey) {
+          // Ctrl+Drop -> Immediately spawn Get
+          handleSpawnVariableNodeAt("GetVariable", varName, flowPos);
+        } else if (e.altKey) {
+          // Alt+Drop -> Immediately spawn Set
+          handleSpawnVariableNodeAt("SetVariable", varName, flowPos);
+        } else {
+          // Normal Drop -> Show sleek Unreal popup menu right at cursor
+          setVarDropState({
+            varName,
+            screenPos: { x: e.clientX, y: e.clientY },
+            flowPos,
+          });
+        }
+      } catch {
+        // Ignore malformed drop
+      }
+    },
+    [screenToFlowPosition, handleSpawnVariableNodeAt]
+  );
+
   // Update Config for an unwired input pin -> Calls PATCH /api/pipelines/{id}/nodes/{nodeId}
   const handleUpdateConfig = useCallback(
     (nodeId: string, pinId: string, value: any) => {
@@ -482,6 +601,8 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             onNodeClick={(_, node) => setSelectedNodeId(node.id)}
             onPaneClick={() => setSelectedNodeId(null)}
             onPaneContextMenu={onPaneContextMenu}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
             fitView
             fitViewOptions={{ padding: 0.2 }}
             proOptions={{ hideAttribution: true }}
@@ -509,6 +630,29 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             onSelect={handleSelectPaletteItem}
           />
 
+          {/* Unreal-style Variable Drop Context Menu */}
+          {varDropState && (
+            <VariableDropMenu
+              varName={varDropState.varName}
+              position={varDropState.screenPos}
+              onSelect={(action) => {
+                const toolKey = action === "Get" ? "GetVariable" : "SetVariable";
+                handleSpawnVariableNodeAt(toolKey, varDropState.varName, varDropState.flowPos);
+                setVarDropState(null);
+              }}
+              onClose={() => setVarDropState(null)}
+            />
+          )}
+
+          {/* Left-side Blackboard Variables Panel */}
+          <VariablePanel
+            pipelineId={graph.id}
+            variables={graph.variables || []}
+            onSpawnNode={handleSpawnVariableNode}
+            isOpen={isVariablesOpen}
+            onToggle={() => setIsVariablesOpen((prev) => !prev)}
+          />
+
           {/* Live Execution Run & History Drawer */}
           {isDrawerOpen && (
             <LiveExecutionDrawer
@@ -528,6 +672,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
         {selectedNode && (
           <NodeConfigInspector
             pipelineId={graph.id}
+            variables={graph.variables || []}
             node={selectedNode}
             edges={edges}
             nodes={nodes}

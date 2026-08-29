@@ -10,7 +10,7 @@ export function UpdateSystemSettingDialog({ open, onOpenChange, data }: DialogPr
     
     if (!data?.id) return null;
 
-    const { data: setting, isLoading: isFetching } = useGetSystemSettingById(data.id);
+    const { data: setting } = useGetSystemSettingById(data.id);
     const { mutateAsync: updateSetting, isPending } = useUpdateSystemSetting();
 
     const handleSubmit = async (formData: UpdateSystemSettingValues) => {

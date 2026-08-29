@@ -1,7 +1,6 @@
 import { z } from "zod"
-import type { FieldConfigMap } from "@/lib/field-registry"
+import type { GlobalFieldRegistry, FieldDefinition } from "@/lib/field-registry"
 import type { FilterOption } from "@/components/table/QuickFilterChip"
-import type { FieldDefinition } from "@/lib/field-registry"
 
 // ─── Filter operators ─────────────────────────────────────────────────────────
 export type FilterOperator = "Equal" | "NotEqual" | "Contains" | "GreaterThan" | "GreaterThanOrEqual" | "LessThan" | "LessThanOrEqual"
@@ -17,7 +16,7 @@ export interface FieldAdapter<TValue = any> {
 }
 
 // ─── Field Types available in filter forms ────────────────────────────────────
-export type FilterFieldType = keyof FieldConfigMap
+export type FilterFieldType = keyof GlobalFieldRegistry | string
 
 // ─── Single field definition ──────────────────────────────────────────────────
 export interface FilterFieldDef {

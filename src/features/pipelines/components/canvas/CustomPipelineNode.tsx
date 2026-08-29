@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { Handle, Position, useReactFlow } from "@xyflow/react";
 import type { NodeProps } from "@xyflow/react";
 import type { PinDefinition, PinPrimitiveType } from "@/gen/model";
@@ -91,6 +91,15 @@ export function getPinVisual(type?: PinPrimitiveType | number | string): PinType
       textClass: "text-pink-600 dark:text-pink-400",
     };
   }
+  // Variable: 6 in C# enum
+  if (type === 6 || type === "6" || type === "Variable" || type === "variable") {
+    return {
+      label: "Variable",
+      hex: "#06b6d4", // cyan-500
+      bgClass: "bg-cyan-500",
+      textClass: "text-cyan-600 dark:text-cyan-400",
+    };
+  }
 
   // Fallback
   return {
@@ -119,6 +128,29 @@ export function isEntityRefPin(type?: PinPrimitiveType | number | string) {
 export function isAssetPin(type?: PinPrimitiveType | number | string) {
   return type === 5 || type === "5" || type === "Asset" || type === "asset" || type === "file";
 }
+export function isVariablePin(type?: PinPrimitiveType | number | string, pinId?: string) {
+  return (
+    type === 6 ||
+    type === "6" ||
+    type === "Variable" ||
+    type === "variable" ||
+    pinId?.toLowerCase() === "variablename" ||
+    pinId?.toLowerCase() === "targetvariable"
+  );
+}
+export function formatPinTypeLabel(type?: PinPrimitiveType | number | string, cardinality?: any): string {
+  const visual = getPinVisual(type);
+  const isArray = cardinality === 1 || cardinality === "1" || cardinality === "Array" || cardinality === "array";
+  const isMap = cardinality === 2 || cardinality === "2" || cardinality === "Map" || cardinality === "map";
+
+  if (isMap) {
+    return `Map<${visual.label}>`;
+  }
+  if (isArray) {
+    return `${visual.label}[]`;
+  }
+  return visual.label;
+}
 
 export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
   const { setNodes } = useReactFlow();
@@ -131,6 +163,8 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
   const isBreakStruct = rawRefId === "breakstruct";
   const isAppend = rawRefId === "appendstring" || rawRefId === "append";
   const isMakeArray = rawRefId === "makearray";
+  const isMakeMap = rawRefId === "makemap";
+  const isFormatString = rawRefId === "formatstring";
   const structType = nodeData.configValues?.["StructType"] || "Resource";
 
   const inputs = nodeData.inputs || [];
@@ -140,25 +174,73 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
   // Data pins (exclude exec pins)
   const isExecPin = (p: PinDefinition) => {
     const kind = (p as any).kind;
-    return kind === 1 || kind === "Exec" || p.id === "exec_in" || p.id === "exec_out";
+    return (
+      kind === 1 ||
+      kind === "Exec" ||
+      p.id === "exec_in" ||
+      p.id === "exec_out" ||
+      p.id === "loop_body" ||
+      p.id === "completed"
+    );
   };
 
-  const hasExecInPin = inputs.some((p) => p.id === "exec_in" || (p as any).kind === 1 || (p as any).kind === "Exec");
-  const hasExecOutPin = outputs.some((p) => p.id === "exec_out" || (p as any).kind === 1 || (p as any).kind === "Exec");
+  // Auto-sync dynamic pins from Template string for FormatString node (like Unreal Engine Format Text)
+  useEffect(() => {
+    if (!isFormatString) return;
+    const templateStr = String(
+      nodeData.configValues?.["Template"] ||
+      nodeData.configValues?.["template"] ||
+      "{folder}/{name}"
+    );
 
-  const isPureNode = isBreakStruct ||
-                     isAppend ||
-                     isMakeArray ||
-                     rawRefId === "gettagvaluefrominspection" ||
-                     rawRefId === "combinepath" ||
-                     rawRefId === "getresourceinspection" ||
-                     rawRefId === "getinspection" ||
-                     (nodeData as any).isPure === true ||
-                     (!isStart && isTool && !hasExecInPin && !hasExecOutPin);
+    const matches = Array.from(templateStr.matchAll(/\{([\w\-]+)\}/g)).map((m) => m[1]);
+    const requiredSlots = Array.from(new Set(matches)).filter((s) => s.toLowerCase() !== "template");
 
-  // Pure nodes don't have exec pins in inputs/outputs
-  const showExecIn = !isStart && !isPureNode && (hasExecInPin || !isTool);
-  const showExecOut = !isPureNode && (isStart || hasExecOutPin || !isTool);
+    const currentInputs: PinDefinition[] = nodeData.inputs || [];
+    const nonSlotPins = currentInputs.filter((p) => p.id === "Template" || isExecPin(p));
+    const newSlotPins: PinDefinition[] = [];
+    let hasChange = false;
+
+    for (const slot of requiredSlots) {
+      const normSlot = slot.toLowerCase().replace(/[-_]/g, "");
+      const existing = currentInputs.find((p) => (p.id || "").toLowerCase().replace(/[-_]/g, "") === normSlot);
+      if (existing) {
+        newSlotPins.push(existing);
+      } else {
+        hasChange = true;
+        newSlotPins.push({
+          id: slot,
+          label: slot,
+          primitiveType: 0 as any, // String
+          cardinality: 0 as any,
+          isRequired: false,
+        });
+      }
+    }
+
+    const currentSlotPins = currentInputs.filter((p) => p.id !== "Template" && !isExecPin(p));
+    if (currentSlotPins.length !== newSlotPins.length) {
+      hasChange = true;
+    }
+
+    if (hasChange) {
+      const updatedInputs = [...nonSlotPins, ...newSlotPins];
+      const dynamicPinIds = updatedInputs.map((p) => p.id || "").filter(Boolean);
+      const currentConfig = nodeData.configValues || {};
+      const updatedConfig = { ...currentConfig, DynamicPins: dynamicPinIds };
+
+      setNodes((nds) =>
+        nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, inputs: updatedInputs, configValues: updatedConfig } } : n))
+      );
+    }
+  }, [id, isFormatString, nodeData.configValues?.["Template"], nodeData.configValues?.["template"], setNodes]);
+
+  const execInputs = inputs.filter((p) => isExecPin(p));
+  const execOutputs = outputs.filter((p) => isExecPin(p));
+
+  // Exec flow visibility strictly follows whether exec pins exist in definition
+  const showExecIn = !isStart && execInputs.length > 0;
+  const showExecOut = execOutputs.length > 0;
   const hasExecFlow = showExecIn || showExecOut;
 
   const dataInputs = isStart ? [] : inputs.filter((p: PinDefinition) => !isExecPin(p));
@@ -198,6 +280,24 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
               isRequired: false,
             };
             updatedInputs = [...currentInputs, newPin];
+          } else if (isMakeMap) {
+            const keyPinsCount = currentInputs.filter((p) => (p.id || "").startsWith("Key_")).length;
+            const nextIdx = keyPinsCount;
+            const newKeyPin: PinDefinition = {
+              id: `Key_${nextIdx}`,
+              label: `Key ${nextIdx}`,
+              primitiveType: 0 as any,
+              cardinality: 0 as any,
+              isRequired: false,
+            };
+            const newValPin: PinDefinition = {
+              id: `Value_${nextIdx}`,
+              label: `Value ${nextIdx}`,
+              primitiveType: 0 as any,
+              cardinality: 0 as any,
+              isRequired: false,
+            };
+            updatedInputs = [...currentInputs, newKeyPin, newValPin];
           }
 
           const dynamicPinIds = updatedInputs.filter((p) => !isExecPin(p)).map((p) => p.id);
@@ -221,7 +321,7 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
         })
       );
     },
-    [id, isAppend, isMakeArray, setNodes]
+    [id, isAppend, isMakeArray, isMakeMap, setNodes]
   );
 
   const handleRemoveDynamicPin = useCallback(
@@ -231,7 +331,18 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
         nds.map((n) => {
           if (n.id !== id) return n;
           const currentInputs: PinDefinition[] = (n.data as any).inputs || [];
-          const updatedInputs = currentInputs.filter((p) => p.id !== pinId);
+          let updatedInputs = currentInputs;
+
+          if (isMakeMap && pinId.startsWith("Key_")) {
+            const suffix = pinId.replace("Key_", "");
+            updatedInputs = currentInputs.filter((p) => p.id !== pinId && p.id !== `Value_${suffix}`);
+          } else if (isMakeMap && pinId.startsWith("Value_")) {
+            const suffix = pinId.replace("Value_", "");
+            updatedInputs = currentInputs.filter((p) => p.id !== pinId && p.id !== `Key_${suffix}`);
+          } else {
+            updatedInputs = currentInputs.filter((p) => p.id !== pinId);
+          }
+
           const dynamicPinIds = updatedInputs.filter((p) => !isExecPin(p)).map((p) => p.id);
           const currentConfig = (n.data as any).configValues || {};
           const updatedConfig = { ...currentConfig, DynamicPins: dynamicPinIds };
@@ -253,8 +364,11 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
         })
       );
     },
-    [id, setNodes]
+    [id, isMakeMap, setNodes]
   );
+
+  const isFlowControl = nodeData.kind === "FlowControl" || nodeData.category === "Flow Control";
+  const isVariable = nodeData.kind === "Variable" || nodeData.category === "Variables";
 
   return (
     <div
@@ -262,6 +376,8 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
         "group relative min-w-[300px] max-w-[380px] rounded-xl border bg-card shadow-md transition-[border-color,box-shadow] duration-150",
         selected ? "border-primary ring-2 ring-primary/40 shadow-primary/15" : "border-border/80 hover:border-primary/50",
         isStart && "border-emerald-500/40 bg-gradient-to-b from-emerald-500/5 to-transparent",
+        isFlowControl && "border-sky-500/40 shadow-sky-500/5",
+        isVariable && "border-teal-500/40 shadow-teal-500/5",
         status === "running" && "border-amber-500 ring-2 ring-amber-500/40 animate-pulse",
         status === "succeeded" && "border-emerald-500/90 ring-1 ring-emerald-500/20",
         status === "failed" && "border-destructive ring-2 ring-destructive/40"
@@ -273,6 +389,10 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
           "flex items-center justify-between gap-2 border-b px-3.5 py-2.5 rounded-t-xl",
           isStart
             ? "border-emerald-500/20 bg-emerald-500/10"
+            : isFlowControl
+            ? "border-sky-500/20 bg-sky-500/10"
+            : isVariable
+            ? "border-teal-500/20 bg-teal-500/10"
             : "border-border/70 bg-muted/50"
         )}
       >
@@ -282,6 +402,10 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
               "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg shadow-inner",
               isStart
                 ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                : isFlowControl
+                ? "bg-sky-500/20 text-sky-500"
+                : isVariable
+                ? "bg-teal-500/20 text-teal-500"
                 : isTool
                 ? "bg-blue-500/15 text-blue-500"
                 : "bg-purple-500/15 text-purple-500"
@@ -309,6 +433,14 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
           {isStart ? (
             <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
               Entry
+            </Badge>
+          ) : isFlowControl ? (
+            <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono border-sky-500/40 text-sky-600 dark:text-sky-400 bg-sky-500/10 font-semibold">
+              Flow Control
+            </Badge>
+          ) : isVariable ? (
+            <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono border-teal-500/40 text-teal-600 dark:text-teal-400 bg-teal-500/10 font-semibold">
+              Variable
             </Badge>
           ) : isBreakStruct ? (
             <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-mono border-sky-500/40 text-sky-600 dark:text-sky-400 bg-sky-500/10 font-semibold">
@@ -360,31 +492,34 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
           </div>
 
           {/* Exec Out (Right) */}
-          <div className="flex items-center gap-1.5 justify-end min-w-[70px]">
+          <div className="flex flex-col gap-1.5 justify-end items-end min-w-[70px]">
             {showExecOut ? (
-              <div className="flex items-center justify-end gap-1">
-                <span className="flex items-center gap-1 text-[11px] text-foreground font-bold tracking-wide pr-1">
-                  Exec <span className="text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.8)]">▶</span>
-                </span>
-                <Handle
-                  type="source"
-                  position={Position.Right}
-                  id="exec_out"
-                  style={{
-                    backgroundColor: "#ffffff",
-                    borderColor: isStart ? "#10b981" : "#3b82f6",
-                    borderWidth: 2,
-                    width: 14,
-                    height: 14,
-                    borderRadius: 3,
-                    transform: "translateY(-50%) rotate(45deg)",
-                    right: -7,
-                    top: "50%",
-                    zIndex: 50,
-                  }}
-                  className="!cursor-crosshair !pointer-events-auto shadow-md transition-all hover:scale-125 hover:shadow-[0_0_10px_rgba(255,255,255,0.9)]"
-                />
-              </div>
+              execOutputs.map((execOutPin) => (
+                <div key={execOutPin.id} className="relative flex items-center justify-end gap-1">
+                  <span className="flex items-center gap-1 text-[11px] text-foreground font-bold tracking-wide pr-1">
+                    {execOutPin.label || execOutPin.id}{" "}
+                    <span className="text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.8)]">▶</span>
+                  </span>
+                  <Handle
+                    type="source"
+                    position={Position.Right}
+                    id={execOutPin.id}
+                    style={{
+                      backgroundColor: "#ffffff",
+                      borderColor: isStart ? "#10b981" : "#3b82f6",
+                      borderWidth: 2,
+                      width: 14,
+                      height: 14,
+                      borderRadius: 3,
+                      transform: "translateY(-50%) rotate(45deg)",
+                      right: -7,
+                      top: "50%",
+                      zIndex: 50,
+                    }}
+                    className="!cursor-crosshair !pointer-events-auto shadow-md transition-all hover:scale-125 hover:shadow-[0_0_10px_rgba(255,255,255,0.9)]"
+                  />
+                </div>
+              ))
             ) : (
               <span />
             )}
@@ -401,7 +536,7 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
               {dataInputs.map((pin, idx) => {
                 const pinId = pin.id || `in_${idx}`;
                 const visual = getPinVisual(pin.primitiveType);
-                const isArray = pin.cardinality === 1 || (pin.cardinality as any) === "Array";
+                const typeBadge = formatPinTypeLabel(pin.primitiveType, pin.cardinality);
                 const hasConfig = nodeData.configValues?.[pinId] !== undefined;
 
                 return (
@@ -424,20 +559,22 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
                     <div className="min-w-0 flex items-center gap-1.5 flex-wrap">
                       <span
                         className="font-medium text-[11px] text-foreground/90 truncate"
-                        title={`${pin.label || pinId} (${visual.label}${isArray ? "[]" : ""})`}
+                        title={`${pin.label || pinId} (${typeBadge})`}
                       >
                         {pin.label || pinId}
                         {pin.isRequired && <span className="text-destructive ml-0.5">*</span>}
                       </span>
                       <span className={cn("text-[9px] font-mono font-semibold px-1 py-0.2 rounded bg-muted/60", visual.textClass)}>
-                        {visual.label}{isArray ? "[]" : ""}
+                        {typeBadge}
                       </span>
                       {hasConfig && (
                         <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Configured statically" />
                       )}
 
                       {/* Remove Dynamic Pin Button */}
-                      {(isAppend && pinId !== "A" && pinId !== "B" && pinId !== "Separator") || (isMakeArray && dataInputs.length > 1) ? (
+                      {(isAppend && pinId !== "A" && pinId !== "B" && pinId !== "Separator") ||
+                      (isMakeArray && dataInputs.length > 1) ||
+                      (isMakeMap && dataInputs.length > 2) ? (
                         <button
                           type="button"
                           onClick={(e) => handleRemoveDynamicPin(e, pinId)}
@@ -453,15 +590,15 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
               })}
 
               {/* Dynamic Add Pin Button */}
-              {(isAppend || isMakeArray) && (
+              {(isAppend || isMakeArray || isMakeMap) && (
                 <button
                   type="button"
                   onClick={handleAddDynamicPin}
                   className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded transition-colors mt-1"
-                  title="Add Pin"
+                  title={isMakeMap ? "Add Pair" : "Add Pin"}
                 >
                   <Plus className="h-3 w-3" />
-                  <span>Add Pin</span>
+                  <span>{isMakeMap ? "Add Pair" : "Add Pin"}</span>
                 </button>
               )}
             </div>
@@ -471,17 +608,17 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
               {dataOutputs.map((pin, idx) => {
                 const pinId = pin.id || `out_${idx}`;
                 const visual = getPinVisual(pin.primitiveType);
-                const isArray = pin.cardinality === 1 || (pin.cardinality as any) === "Array";
+                const typeBadge = formatPinTypeLabel(pin.primitiveType, pin.cardinality);
 
                 return (
                   <div key={pinId} className="relative flex items-center justify-end gap-2 group/pin py-0.5">
                     <div className="min-w-0 flex items-center justify-end gap-1.5 flex-wrap">
                       <span className={cn("text-[9px] font-mono font-semibold px-1 py-0.2 rounded bg-muted/60", visual.textClass)}>
-                        {visual.label}{isArray ? "[]" : ""}
+                        {typeBadge}
                       </span>
                       <span
                         className="font-medium text-[11px] text-foreground/90 truncate"
-                        title={`${pin.label || pinId} (${visual.label}${isArray ? "[]" : ""})`}
+                        title={`${pin.label || pinId} (${typeBadge})`}
                       >
                         {pin.label || pinId}
                       </span>

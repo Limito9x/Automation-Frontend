@@ -1,10 +1,9 @@
-import { registerField, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
 import { z } from "zod";
 import { Checkbox } from "../ui/checkbox";
 import type { BaseFormControlProps } from "./type";
 import type { FieldValues } from "react-hook-form";
 import { BaseFormField } from "./BaseFormField";
-import { cn } from "@/lib/utils";
 
 export interface FormCheckboxProps<T extends FieldValues>
     extends BaseFormControlProps<T> {

@@ -1,7 +1,6 @@
 import { useWorkspaceDetail } from "../hooks/useWorkspaces";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, Loader2, Layers, RefreshCw } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { useDialogStore } from "@/stores/dialogStore";
 import { WorkspaceStatsBar } from "../components/WorkspaceStatsBar";
 import { WorkspaceResourcesTab } from "../components/tabs/WorkspaceResourcesTab";

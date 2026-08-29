@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createMutationHook } from "@/lib/query-utils";
 import { customInstance } from "@/lib/api-client";
 import * as PipelinesApi from "@/gen/endpoints/pipelines/pipelines";
@@ -21,6 +21,17 @@ import type {
   EdgeKind,
   ExecutionStatus,
 } from "@/gen/model";
+
+export interface PipelineVariableDto {
+  name: string;
+  type: number | string;
+  cardinality?: number | string;
+  description?: string | null;
+}
+
+export type ExtendedPipelineGraphDto = PipelineGraphDto & {
+  variables?: PipelineVariableDto[];
+};
 
 export type {
   PipelineGraphDto,
@@ -265,3 +276,20 @@ export const useDeletePipelineInput = (pipelineId?: string) => {
       mutation.mutateAsync({ pipelineId: pipelineId!, inputId }, options),
   };
 };
+
+export const useUpdatePipelineVariables = (pipelineId?: string) => {
+  const queryClient = useQueryClient();
+  const queryKey = pipelineId ? PipelinesApi.getGetPipelineGraphQueryKey(pipelineId) : ["pipelines"];
+  return useMutation({
+    mutationFn: (variables: PipelineVariableDto[]) =>
+      customInstance<PipelineVariableDto[]>({
+        url: `/api/pipelines/${pipelineId}/variables`,
+        method: "PUT",
+        data: { pipelineId, variables },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+};
+

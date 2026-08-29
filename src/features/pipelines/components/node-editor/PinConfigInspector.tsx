@@ -120,23 +120,27 @@ export function PinConfigInspector({
           </Select>
         </div>
 
-        {/* Cardinality (Single vs Array) */}
-        <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/20">
-          <div className="space-y-0.5">
-            <Label className="text-xs font-semibold">Array / List Collection</Label>
-            <p className="text-[11px] text-muted-foreground">
-              Accepts multiple values as a list.
-            </p>
-          </div>
-          <Switch
-            isSelected={pin.cardinality === 1}
-            onChange={(checked: boolean) =>
+        {/* Cardinality (Single vs Array vs Map) */}
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold">Cardinality (Data Structure)</Label>
+          <Select
+            selectedKey={String(pin.cardinality ?? 0)}
+            onSelectionChange={(key) =>
               onUpdatePin({
                 ...pin,
-                cardinality: checked ? PinCardinality.NUMBER_1 : PinCardinality.NUMBER_0,
+                cardinality: parseInt(String(key), 10) as PinCardinality,
               })
             }
-          />
+          >
+            <SelectTrigger className="text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem id="0">Single Value</SelectItem>
+              <SelectItem id="1">Array / List ([])</SelectItem>
+              <SelectItem id="2">Map / Dictionary (Key-Value)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Input specific fields */}

@@ -178,9 +178,6 @@ export function useWorkspaceResourceTable({
         meta: { label: "Name", icon: FileCode },
         cell: ({ row }) => {
           const item = row.original;
-          const detailUrl = projectId
-            ? `/projects/${projectId}/resources/${item.id}?workspaceId=${workspaceId}`
-            : "#";
 
           return (
             <div className="flex items-center gap-2.5 py-1 min-w-[200px]">

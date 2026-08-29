@@ -14,6 +14,7 @@ export function AssignUserRolesDialog({ open, onOpenChange, data }: DialogProps<
     const id = data?.id as string;
     
     const { data: user } = useGetUserById(id);
+    const { data: roleOptions, isLoading: isRolesLoading } = useRoleOptions();
     const assignUserRoles = useAssignUserRoles();
     const schema = useAssignUserRolesSchema();
 
@@ -62,8 +63,8 @@ export function AssignUserRolesDialog({ open, onOpenChange, data }: DialogProps<
                     control={form.control}
                     name="roles"
                     label={t("fields.roles", { defaultValue: "Roles" })}
-                    useOptions={useRoleOptions}
-                    getItemValue={(item) => item.value} 
+                    options={roleOptions}
+                    isLoading={isRolesLoading}
                     placeholder={t("placeholders.selectRoles", { defaultValue: "Select roles..." })}
                     multiple={true}
                 />

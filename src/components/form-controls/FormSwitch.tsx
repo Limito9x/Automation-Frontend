@@ -1,4 +1,4 @@
-import { registerField, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
 import { z } from "zod";
 import { Switch } from "../ui/switch";
 import type { BaseFormControlProps } from "./type";
@@ -53,7 +53,7 @@ declare module "@/lib/field-registry" {
 registerField({
     type: "switch",
     component: FormSwitch,
-    buildSchema: (p: FormSwitchProperties, field?: any) => {
+    buildSchema: (p: FormSwitchProperties) => {
         let s = z.boolean();
         if (!p.required) return s.optional().nullable();
         return s;

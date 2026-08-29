@@ -1,4 +1,4 @@
-import { registerField, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 import type { BaseFormControlProps, OmitFormProps } from "./type";

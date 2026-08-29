@@ -1,5 +1,5 @@
 import { BaseFormField } from "./BaseFormField";
-import { registerField, type BaseFieldRules } from "@/lib/field-registry";
+import { registerField } from "@/lib/field-registry";
 import { z } from "zod";
 import type { BaseFormControlProps, OmitFormProps } from "./type";
 import type { FieldValues } from "react-hook-form";

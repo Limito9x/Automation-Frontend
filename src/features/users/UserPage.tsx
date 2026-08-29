@@ -1,5 +1,4 @@
 import { UserTable } from "./components/UserTable";
-import { useDialogStore } from "@/stores/dialogStore";
 import { useResourceQuery, type ResourcePageProps } from "@/lib/useResourceQuery";
 import { ResourcePageShell } from "@/components/layout/shells/ResourcePageShell";
 import { userFilterConfig } from "./components/userFilter";
@@ -9,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { DataTableViewOptions } from "@/components/table/DataTableViewOptions";
 
 export function UserPage({ useSearch, useNavigate }: ResourcePageProps) {
-    const openDialog = useDialogStore((state) => state.openDialog);
     const { t } = useTranslation("users");
     // ── Route infrastructure
     const search = useSearch();

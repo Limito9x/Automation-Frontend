@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Node, Edge } from "@xyflow/react";
 import type { CustomPipelineNodeData } from "./CustomPipelineNode";
-import { isBooleanPin, isNumberPin, isEntityRefPin, isAssetPin, getPinVisual } from "./CustomPipelineNode";
+import { isBooleanPin, isNumberPin, isEntityRefPin, isAssetPin, isVariablePin, getPinVisual, formatPinTypeLabel } from "./CustomPipelineNode";
 import { EntityPinSelect } from "./EntityPinSelect";
 import { AssetPinUpload } from "./AssetPinUpload";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PipelineVariableDto } from "../../hooks/usePipelineGraph";
 import {
   usePipelineInputSchema,
   useAddPipelineInput,
@@ -39,28 +40,28 @@ function DebouncedInput({
   value: string | number;
   onChange: (value: any) => void;
   debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-  const [value, setValue] = useState(initialValue);
+  [key: string]: any;
+}) {
+  const [val, setVal] = useState(initialValue);
 
   useEffect(() => {
-    setValue(initialValue);
+    setVal(initialValue);
   }, [initialValue]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (value !== initialValue) {
-        onChange(value);
+    const timer = setTimeout(() => {
+      if (val !== initialValue) {
+        onChange(val);
       }
     }, debounce);
-
-    return () => clearTimeout(timeout);
-  }, [value, debounce, onChange, initialValue]);
+    return () => clearTimeout(timer);
+  }, [val, debounce, initialValue, onChange]);
 
   return (
     <Input
+      value={val ?? ""}
+      onChange={(e) => setVal(e.target.value)}
       {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
     />
   );
 }
@@ -68,40 +69,41 @@ function DebouncedInput({
 function DebouncedTextarea({
   value: initialValue,
   onChange,
-  debounce = 400,
+  debounce = 350,
   ...props
 }: {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: any) => void;
   debounce?: number;
-} & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange">) {
-  const [value, setValue] = useState(initialValue);
+  [key: string]: any;
+}) {
+  const [val, setVal] = useState(initialValue);
 
   useEffect(() => {
-    setValue(initialValue);
+    setVal(initialValue);
   }, [initialValue]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (value !== initialValue) {
-        onChange(value);
+    const timer = setTimeout(() => {
+      if (val !== initialValue) {
+        onChange(val);
       }
     }, debounce);
-
-    return () => clearTimeout(timeout);
-  }, [value, debounce, onChange, initialValue]);
+    return () => clearTimeout(timer);
+  }, [val, debounce, initialValue, onChange]);
 
   return (
     <Textarea
+      value={val ?? ""}
+      onChange={(e) => setVal(e.target.value)}
       {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
     />
   );
 }
 
 interface NodeConfigInspectorProps {
   pipelineId?: string;
+  variables?: PipelineVariableDto[];
   node: Node | null;
   edges: Edge[];
   nodes: Node[];
@@ -118,6 +120,12 @@ const PIN_PRIMITIVE_TYPES = [
   { value: "Path", label: "Path" },
   { value: "EntityRef", label: "Entity Reference (Resource/Workspace/Tag/...)" },
   { value: "Asset", label: "Asset / File (Upload preset, script, cloud file)" },
+];
+
+const CARDINALITY_OPTIONS = [
+  { value: "Single", label: "Single" },
+  { value: "Array", label: "Array []" },
+  { value: "Map", label: "Map (Dictionary)" },
 ];
 
 const ENTITY_TARGETS = [
@@ -161,6 +169,7 @@ function resolveEntityTypeFromPin(pin: any, configValues: Record<string, any>): 
 
 export function NodeConfigInspector({
   pipelineId = "",
+  variables = [],
   node,
   edges,
   nodes,
@@ -176,11 +185,33 @@ export function NodeConfigInspector({
   const [isAddingInput, setIsAddingInput] = useState(false);
   const [newKey, setNewKey] = useState("");
   const [newLabel, setNewLabel] = useState("");
+  const [isKeyManuallyEdited, setIsKeyManuallyEdited] = useState(false);
   const [newType, setNewType] = useState("String");
+  const [newCardinality, setNewCardinality] = useState("Single");
   const [newEntityTarget, setNewEntityTarget] = useState("Resource");
   const [newIsRequired, setNewIsRequired] = useState(true);
   const [newDefaultValue, setNewDefaultValue] = useState("");
   const [isSubmittingInput, setIsSubmittingInput] = useState(false);
+
+  const toIdentifierKey = (text: string): string => {
+    if (!text) return "";
+    const words = text.replace(/[^a-zA-Z0-9\s_]/g, "").trim().split(/[\s_]+/);
+    if (words.length === 0 || !words[0]) return "";
+    const pascal = words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join("");
+    return /^[0-9]/.test(pascal) ? `Param${pascal}` : pascal;
+  };
+
+  const handleLabelChange = (val: string) => {
+    setNewLabel(val);
+    if (!isKeyManuallyEdited) {
+      setNewKey(toIdentifierKey(val));
+    }
+  };
+
+  const handleKeyChange = (val: string) => {
+    setNewKey(val);
+    setIsKeyManuallyEdited(true);
+  };
 
   if (!node) return null;
 
@@ -208,8 +239,11 @@ export function NodeConfigInspector({
   );
 
   const handleCreateInput = async () => {
-    if (!newKey.trim()) {
-      toast.error("Key is required");
+    const finalLabel = newLabel.trim() || newKey.trim();
+    const finalKey = newKey.trim() || toIdentifierKey(finalLabel) || `Param_${Date.now()}`;
+
+    if (!finalKey && !finalLabel) {
+      toast.error("Parameter label or key is required");
       return;
     }
 
@@ -217,19 +251,21 @@ export function NodeConfigInspector({
     try {
       const defaultValue = newType === "EntityRef" ? newEntityTarget : (newDefaultValue.trim() || null);
       await addInputMutation.mutateAsync({
-        key: newKey.trim(),
-        label: newLabel.trim() || newKey.trim(),
+        key: finalKey,
+        label: finalLabel || finalKey,
         type: newType,
-        cardinality: "Single",
+        cardinality: newCardinality,
         isRequired: newIsRequired,
         defaultValue,
       });
 
-      toast.success(`Parameter '${newKey.trim()}' added`);
+      toast.success(`Parameter '${finalLabel}' added`);
       setIsAddingInput(false);
       setNewKey("");
       setNewLabel("");
+      setIsKeyManuallyEdited(false);
       setNewType("String");
+      setNewCardinality("Single");
       setNewEntityTarget("Resource");
       setNewIsRequired(true);
       setNewDefaultValue("");
@@ -347,38 +383,59 @@ export function NodeConfigInspector({
 
                 <div className="space-y-2">
                   <div>
-                    <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Key (ID)</label>
+                    <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Name / Label</label>
+                    <Input
+                      value={newLabel}
+                      onChange={(e) => handleLabelChange(e.target.value)}
+                      placeholder="e.g. Target Resource, Model Path"
+                      className="h-7 text-xs"
+                      autoFocus
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <label className="text-[10px] font-medium text-muted-foreground">Key (Identifier)</label>
+                      <span className="text-[9px] text-muted-foreground/70 italic">Auto-generated</span>
+                    </div>
                     <Input
                       value={newKey}
-                      onChange={(e) => setNewKey(e.target.value)}
-                      placeholder="e.g. ModelPath"
+                      onChange={(e) => handleKeyChange(e.target.value)}
+                      placeholder="e.g. TargetResource"
                       className="h-7 text-xs font-mono"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Label (Display Name)</label>
-                    <Input
-                      value={newLabel}
-                      onChange={(e) => setNewLabel(e.target.value)}
-                      placeholder="e.g. 3D Model Path"
-                      className="h-7 text-xs"
-                    />
-                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Type</label>
+                      <select
+                        value={newType}
+                        onChange={(e) => setNewType(e.target.value)}
+                        className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      >
+                        {PIN_PRIMITIVE_TYPES.map((pt) => (
+                          <option key={pt.value} value={pt.value}>
+                            {pt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div>
-                    <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Type</label>
-                    <select
-                      value={newType}
-                      onChange={(e) => setNewType(e.target.value)}
-                      className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                    >
-                      {PIN_PRIMITIVE_TYPES.map((pt) => (
-                        <option key={pt.value} value={pt.value}>
-                          {pt.label}
-                        </option>
-                      ))}
-                    </select>
+                    <div>
+                      <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Structure / Format</label>
+                      <select
+                        value={newCardinality}
+                        onChange={(e) => setNewCardinality(e.target.value)}
+                        className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      >
+                        {CARDINALITY_OPTIONS.map((co) => (
+                          <option key={co.value} value={co.value}>
+                            {co.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   {newType === "EntityRef" ? (
@@ -423,7 +480,7 @@ export function NodeConfigInspector({
                 <Button
                   size="sm"
                   className="w-full h-7 text-xs mt-1"
-                  isDisabled={isSubmittingInput || !newKey.trim()}
+                  isDisabled={isSubmittingInput || (!newLabel.trim() && !newKey.trim())}
                   onPress={handleCreateInput}
                 >
                   {isSubmittingInput ? (
@@ -469,7 +526,7 @@ export function NodeConfigInspector({
                         </div>
                         <div className="flex items-center gap-1">
                           <Badge variant="outline" className={cn("text-[9px] font-mono px-1.5 h-4", visual.textClass)}>
-                            {visual.label}
+                            {formatPinTypeLabel(input.type, input.cardinality)}
                           </Badge>
                           <button
                             type="button"
@@ -598,6 +655,26 @@ export function NodeConfigInspector({
                             onChange={(val) => onUpdateConfig(node.id, pinId, val)}
                             placeholder="Upload asset file (Preset / Script)..."
                           />
+                        ) : isVariablePin(pin.primitiveType, pinId) ? (
+                          <div className="space-y-1.5">
+                            <select
+                              value={currentVal || ""}
+                              onChange={(e) => onUpdateConfig(node.id, pinId, e.target.value)}
+                              className="w-full h-8 rounded-lg border border-cyan-500/40 bg-cyan-500/5 px-2.5 text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                            >
+                              <option value="">-- Select Variable --</option>
+                              {(variables || []).map((v) => (
+                                <option key={v.name} value={v.name}>
+                                  {v.name} ({formatPinTypeLabel(v.type, v.cardinality)})
+                                </option>
+                              ))}
+                            </select>
+                            {(!variables || variables.length === 0) && (
+                              <p className="text-[10px] text-muted-foreground italic">
+                                No variables declared yet. Use the Variables panel on the left to declare variables.
+                              </p>
+                            )}
+                          </div>
                         ) : entityType ? (
                           <EntityPinSelect
                             entityType={entityType}

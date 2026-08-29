@@ -29,9 +29,10 @@ export function PinCardItem({
   };
 
   const primitive = typeof pin.primitiveType === "number" ? pin.primitiveType : 0;
-  const isArray = pin.cardinality === 1;
+  const isArray = (pin.cardinality as any) === 1 || (pin.cardinality as any) === "Array";
+  const isMap = (pin.cardinality as any) === 2 || (pin.cardinality as any) === "Map";
   const typeInfo = typeMap[primitive] || { name: "Any", color: "bg-muted text-muted-foreground" };
-  const displayType = `${typeInfo.name}${isArray ? "[]" : ""}`;
+  const displayType = isMap ? `Map<${typeInfo.name}>` : `${typeInfo.name}${isArray ? "[]" : ""}`;
 
   return (
     <div
