@@ -35,22 +35,25 @@ export async function uploadAssetFlow(file: File): Promise<string> {
   // 1. Calculate file hash
   const hashSha256 = await calculateFileHash(file);
 
-  // 2. Extract extension without dot (e.g., "png")
+  // 2. Extract extension (fallback to .json if no extension)
   const fileNameParts = file.name.split(".");
-  const extension = fileNameParts.length > 1 ? fileNameParts.pop()! : "";
+  const rawExtension = fileNameParts.length > 1 ? fileNameParts.pop()! : "";
+  const extension = rawExtension ? `.${rawExtension.toLowerCase()}` : ".json";
 
-  if (!extension) {
-    throw new Error("File must have an extension");
-  }
-
-  const detectedType = file.type || (extension.toLowerCase() === "py" ? "text/x-python" : "application/octet-stream");
+  const detectedType =
+    file.type ||
+    (extension === ".py"
+      ? "text/x-python"
+      : extension === ".json"
+      ? "application/json"
+      : "application/octet-stream");
 
   // 3. Request upload
   const requestPayload = {
     items: [
       {
         hashSha256,
-        extension: `.${extension.toLowerCase()}`,
+        extension,
         sizeBytes: file.size,
         contentType: detectedType,
       },
@@ -115,18 +118,16 @@ export async function uploadMultipleAssetsFlow(
     items.map(async (item) => {
       const hashSha256 = await calculateFileHash(item.file);
       const fileNameParts = item.file.name.split(".");
-      const extension = fileNameParts.length > 1 ? fileNameParts.pop()! : "";
-      if (!extension) {
-        throw new Error(`File "${item.file.name}" must have an extension`);
-      }
+      const rawExtension = fileNameParts.length > 1 ? fileNameParts.pop()! : "";
+      const extension = rawExtension ? `.${rawExtension.toLowerCase()}` : ".json";
       return {
         key: item.key,
         file: item.file,
         requestItem: {
           hashSha256,
-          extension: `.${extension.toLowerCase()}`,
+          extension,
           sizeBytes: item.file.size,
-          contentType: item.file.type,
+          contentType: item.file.type || (extension === ".json" ? "application/json" : "application/octet-stream"),
         },
       };
     })

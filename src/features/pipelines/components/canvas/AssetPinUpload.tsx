@@ -15,7 +15,7 @@ interface AssetPinUploadProps {
 export function AssetPinUpload({
   value,
   onChange,
-  accept = ".py,.json,.txt,*",
+  accept,
   placeholder = "Upload file (Preset / Script)",
   disabled = false,
 }: AssetPinUploadProps) {
@@ -59,7 +59,7 @@ export function AssetPinUpload({
       <input
         ref={fileInputRef}
         type="file"
-        accept={accept}
+        accept={accept || undefined}
         onChange={handleFileChange}
         disabled={disabled || isUploading}
         className="hidden"
