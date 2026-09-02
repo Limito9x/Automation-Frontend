@@ -31,6 +31,7 @@ import {
   useDeletePipelineEdge,
   useValidatePipeline,
 } from "../../hooks/usePipelineGraph";
+import { usePipelineSignalR } from "../../hooks/usePipelineSignalR";
 import type { ExtendedPipelineGraphDto } from "../../hooks/usePipelineGraph";
 import type { NodePaletteItemDto } from "@/gen/model";
 import { toast } from "sonner";
@@ -51,6 +52,7 @@ const defaultEdgeOptions = {
 
 export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
   const { screenToFlowPosition } = useReactFlow();
+  usePipelineSignalR(graph.id);
 
   // Convert graph DTO to React Flow nodes
   const initialNodes: Node[] = useMemo(() => {
@@ -571,6 +573,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
       <CanvasToolbar
         projectId={projectId}
         pipelineName={graph.name}
+        triggerType={graph.triggerType}
         isSaving={isMutating}
         onOpenRunModal={() => setIsRunModalOpen(true)}
         onOpenHistory={() => {
@@ -677,6 +680,8 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             edges={edges}
             nodes={nodes}
             projectId={projectId}
+            triggerType={graph.triggerType}
+            triggerWorkspaceId={graph.triggerWorkspaceId}
             onClose={() => setSelectedNodeId(null)}
             onUpdateConfig={handleUpdateConfig}
             onDeleteNode={handleDeleteNode}

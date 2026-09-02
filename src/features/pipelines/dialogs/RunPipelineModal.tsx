@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { getPinVisual, isBooleanPin, isNumberPin, isEntityRefPin, isAssetPin } from "../components/canvas/CustomPipelineNode";
 import { EntityPinSelect } from "../components/canvas/EntityPinSelect";
 import { AssetPinUpload } from "../components/canvas/AssetPinUpload";
+import { toast } from "sonner";
 
 export interface MissingRuntimeInput {
   nodeId: string;
@@ -56,6 +57,14 @@ export function RunPipelineModal({
   const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   const [runtimeValues, setRuntimeValues] = useState<Record<string, any>>({});
   const runMutation = useRunPipeline(pipelineId);
+
+  // Auto-select active or first agent
+  useEffect(() => {
+    if (agents && agents.length > 0 && !selectedAgentId) {
+      const active = agents.find((a: any) => a.isOnline || a.status === "Active" || a.status === 1);
+      setSelectedAgentId(active?.id || agents[0].id);
+    }
+  }, [agents, selectedAgentId]);
 
   // Initialize runtime values with default values from schema inputs
   useEffect(() => {
@@ -117,20 +126,25 @@ export function RunPipelineModal({
   };
 
   const handleRun = async () => {
-    if (!selectedAgentId) return;
+    const finalAgentId =
+      selectedAgentId ||
+      (agents.length > 0 ? agents[0].id : "00000000-0000-0000-0000-000000000001");
 
     try {
       const execution = await runMutation.mutateAsync({
-        agentId: selectedAgentId,
+        agentId: finalAgentId,
         runtimeInputs: runtimeValues,
       });
 
+      toast.success("Pipeline execution started!");
       onClose();
       if (execution?.id && onExecutionStarted) {
         onExecutionStarted(execution.id);
       }
-    } catch {
-      // Toast handled by API client
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message || err?.message || "Failed to start pipeline execution";
+      toast.error(msg);
     }
   };
 

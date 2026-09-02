@@ -30,6 +30,8 @@ export interface PipelineVariableDto {
 }
 
 export type ExtendedPipelineGraphDto = PipelineGraphDto & {
+  triggerType?: number | string;
+  triggerWorkspaceId?: string | null;
   variables?: PipelineVariableDto[];
 };
 
@@ -292,4 +294,28 @@ export const useUpdatePipelineVariables = (pipelineId?: string) => {
     },
   });
 };
+
+export const useUpdatePipelineTrigger = (pipelineId?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { triggerType: number; triggerWorkspaceId?: string | null }) =>
+      customInstance<any>({
+        url: `/api/pipelines/${pipelineId}/trigger`,
+        method: "PUT",
+        data,
+      }),
+    onSuccess: () => {
+      if (pipelineId) {
+        queryClient.invalidateQueries({
+          queryKey: PipelinesApi.getGetPipelineGraphQueryKey(pipelineId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: PipelinesApi.getGetPipelineInputSchemaQueryKey(pipelineId),
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["pipelines"] });
+    },
+  });
+};
+
 

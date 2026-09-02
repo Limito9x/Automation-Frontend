@@ -10,16 +10,18 @@ import {
   ShieldCheck,
   Loader2,
   History,
+  Zap,
+  RefreshCw,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useReactFlow } from "@xyflow/react";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/custom-ui/theme/ThemeToggle";
 
 interface CanvasToolbarProps {
   projectId: string;
   pipelineId?: string;
   pipelineName: string;
+  triggerType?: number | string;
   isSaving: boolean;
   onOpenRunModal: () => void;
   onOpenHistory?: () => void;
@@ -30,6 +32,7 @@ interface CanvasToolbarProps {
 export function CanvasToolbar({
   projectId,
   pipelineName,
+  triggerType,
   isSaving,
   onOpenRunModal,
   onOpenHistory,
@@ -37,6 +40,31 @@ export function CanvasToolbar({
   isValidating,
 }: CanvasToolbarProps) {
   const { fitView, zoomIn, zoomOut } = useReactFlow();
+
+  const renderTriggerBadge = () => {
+    if (triggerType === 1 || triggerType === "OnResourceCreated") {
+      return (
+        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1 text-[10px] font-medium">
+          <Zap className="h-3 w-3 fill-primary/20" />
+          <span>On Resource Created</span>
+        </Badge>
+      );
+    }
+    if (triggerType === 2 || triggerType === "OnResourceVersionUpdated") {
+      return (
+        <Badge variant="outline" className="bg-sky-500/10 text-sky-500 border-sky-500/20 gap-1 text-[10px] font-medium">
+          <RefreshCw className="h-3 w-3" />
+          <span>On Version Updated</span>
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary" className="gap-1 text-[10px] font-medium text-muted-foreground">
+        <Play className="h-3 w-3" />
+        <span>Manual Run</span>
+      </Badge>
+    );
+  };
 
   return (
     <div className="flex h-14 w-full items-center justify-between border-b border-border/80 bg-background px-4 shadow-sm z-30">
@@ -54,9 +82,7 @@ export function CanvasToolbar({
           <h1 className="text-sm font-semibold text-foreground truncate max-w-xs md:max-w-md">
             {pipelineName}
           </h1>
-          <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono text-muted-foreground">
-            Pipeline Editor
-          </Badge>
+          {renderTriggerBadge()}
         </div>
 
         {/* Live Auto-save Cloud Indicator */}
@@ -89,9 +115,6 @@ export function CanvasToolbar({
             <Maximize2 className="h-3.5 w-3.5" />
           </Button>
         </div>
-
-        {/* Theme Toggle */}
-        <ThemeToggle className="h-8 w-8" />
 
         {/* History / Executions Drawer Trigger */}
         {onOpenHistory && (
