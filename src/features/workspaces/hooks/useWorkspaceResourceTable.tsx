@@ -18,7 +18,6 @@ import {
   Sparkles,
   Check,
   Minus,
-  ShieldCheck,
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -293,8 +292,8 @@ export function useWorkspaceResourceTable({
       },
       {
         id: "actions",
-        header: "Inspection",
-        meta: { label: "Inspection", icon: ShieldCheck },
+        header: "Detail & Metadata",
+        meta: { label: "Detail", icon: Eye },
         cell: ({ row }) => {
           const item = row.original;
 
@@ -306,7 +305,7 @@ export function useWorkspaceResourceTable({
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground transition-all"
             >
               <Eye className="size-3.5" />
-              <span>Detail & Inspect</span>
+              <span>Detail & Metadata</span>
             </Link>
           );
         },

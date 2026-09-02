@@ -4,6 +4,7 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { IReadOnlyDictionaryOfStringAndIReadOnlyListOfTagLinkDetailDto } from "./iReadOnlyDictionaryOfStringAndIReadOnlyListOfTagLinkDetailDto";
 
 export interface ResourceVersionDto {
   id: string;
@@ -13,4 +14,7 @@ export interface ResourceVersionDto {
   /** @nullable */
   notes: string | null;
   createdAt: string;
+  metadata?: unknown;
+  /** @nullable */
+  tagsByPath?: IReadOnlyDictionaryOfStringAndIReadOnlyListOfTagLinkDetailDto | null;
 }
