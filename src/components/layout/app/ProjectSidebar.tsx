@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Settings, Logs, Folder, ChevronRight, Layers, Workflow, Cpu, Zap } from "lucide-react";
+import { LayoutDashboard, Settings, Logs, Folder, ChevronRight, Layers, Workflow, Cpu } from "lucide-react";
 import { NavUser } from "./NavUser";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useGetProjectById } from "@/features/projects/hooks/useProjects";
@@ -44,11 +44,6 @@ export function ProjectSidebar() {
       title: "Pipelines",
       url: `/projects/${currentProjectId}/pipeline`,
       icon: Workflow
-    },
-    {
-      title: "Workflows",
-      url: `/projects/${currentProjectId}/workflows`,
-      icon: Zap
     },
     {
       title: "Content Types",

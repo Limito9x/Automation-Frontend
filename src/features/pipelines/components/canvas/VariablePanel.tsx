@@ -12,6 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { PipelineVariableDto } from "../../hooks/usePipelineGraph";
 import { useUpdatePipelineVariables } from "../../hooks/usePipelineGraph";
@@ -193,34 +200,44 @@ export function VariablePanel({
                     <label className="text-[10px] font-medium text-muted-foreground block">
                       Type
                     </label>
-                    <select
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                      className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    <Select
+                      selectedKey={type}
+                      onSelectionChange={(key) => setType(String(key))}
+                      className="w-full"
                     >
-                      {TYPE_OPTIONS.map((t) => (
-                        <option key={t.value} value={t.value}>
-                          {t.label}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="h-7 w-full text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TYPE_OPTIONS.map((t) => (
+                          <SelectItem key={t.value} id={t.value}>
+                            {t.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-[10px] font-medium text-muted-foreground block">
                       Structure
                     </label>
-                    <select
-                      value={cardinality}
-                      onChange={(e) => setCardinality(e.target.value)}
-                      className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    <Select
+                      selectedKey={cardinality}
+                      onSelectionChange={(key) => setCardinality(String(key))}
+                      className="w-full"
                     >
-                      {CARDINALITY_OPTIONS.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="h-7 w-full text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CARDINALITY_OPTIONS.map((c) => (
+                          <SelectItem key={c.value} id={c.value}>
+                            {c.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 

@@ -8,6 +8,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogHeader,
@@ -27,8 +28,11 @@ import {
   MoreVertical,
   Trash2,
   ExternalLink,
+  Zap,
+  Play,
+  RefreshCw,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Menu,
   MenuItem,
@@ -60,7 +64,7 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
       const created = await createMutation.mutateAsync({
         projectId,
         name: pipelineName.trim(),
-      });
+      } as any);
 
       setIsCreateOpen(false);
       setPipelineName("");
@@ -75,6 +79,31 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
     } catch {
       // Handled by toast
     }
+  };
+
+  const getTriggerBadge = (type?: number | string) => {
+    if (type === 1 || type === "OnResourceCreated") {
+      return (
+        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1 text-[10px] font-medium px-2 py-0.5">
+          <Zap className="h-3 w-3 fill-primary/20" />
+          <span>On Resource Created</span>
+        </Badge>
+      );
+    }
+    if (type === 2 || type === "OnResourceVersionUpdated") {
+      return (
+        <Badge variant="outline" className="bg-sky-500/10 text-sky-500 border-sky-500/20 gap-1 text-[10px] font-medium px-2 py-0.5">
+          <RefreshCw className="h-3 w-3" />
+          <span>On Version Updated</span>
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary" className="gap-1 text-[10px] font-medium text-muted-foreground px-2 py-0.5">
+        <Play className="h-3 w-3" />
+        <span>Manual Run</span>
+      </Badge>
+    );
   };
 
   const handleDelete = async () => {
@@ -140,34 +169,39 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {pipelines.map((p) => (
               <Card
                 key={p.id}
-                className="group relative flex flex-col justify-between border-border/80 bg-card/80 backdrop-blur-sm transition-all duration-200 hover:border-primary/50 hover:shadow-md overflow-hidden"
+                className="group relative flex flex-col justify-between overflow-hidden border-border/80 bg-card/60 backdrop-blur-sm transition-all duration-200 hover:border-primary/50 hover:shadow-md"
               >
-                <CardHeader className="p-4 pb-3">
+                <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <Workflow className="h-4 w-4" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-200 group-hover:scale-105 shadow-inner">
+                        <Workflow className="h-5 w-5" />
                       </div>
-                      <div className="min-w-0">
-                        <CardTitle className="text-sm font-semibold truncate group-hover:text-primary transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-sm font-semibold truncate leading-tight group-hover:text-primary transition-colors">
                           {p.name}
                         </CardTitle>
-                        <CardDescription className="text-[11px] font-mono text-muted-foreground truncate">
-                          {p.id}
-                        </CardDescription>
+                        <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                          {getTriggerBadge((p as any).triggerType)}
+                        </div>
                       </div>
                     </div>
 
+                    {/* Actions dropdown */}
                     <MenuTrigger>
-                      <Button variant="ghost" size="icon" className="size-7 text-muted-foreground hover:text-foreground">
-                        <MoreVertical className="size-4" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <MoreVertical className="h-4 w-4" />
                       </Button>
-                      <Popover className="min-w-[140px] rounded-md border bg-popover p-1 shadow-md text-popover-foreground">
-                        <Menu className="outline-none">
+                      <Popover className="min-w-[150px] rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-lg">
+                        <Menu className="outline-none space-y-0.5 text-xs">
                           <MenuItem
                             onAction={() =>
                               navigate({
@@ -175,17 +209,17 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                                 params: { projectId, pipelineId: p.id },
                               })
                             }
-                            className="flex items-center gap-2 px-2 py-1.5 text-xs rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground outline-none"
+                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer"
                           >
-                            <ExternalLink className="size-3.5" />
+                            <ExternalLink className="h-3.5 w-3.5" />
                             <span>Open Canvas</span>
                           </MenuItem>
                           <MenuItem
                             onAction={() => setPipelineToDelete(p)}
-                            className="flex items-center gap-2 px-2 py-1.5 text-xs rounded-sm cursor-pointer text-destructive hover:bg-destructive/10 outline-none"
+                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-destructive outline-none hover:bg-destructive/10 cursor-pointer"
                           >
-                            <Trash2 className="size-3.5" />
-                            <span>Delete</span>
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Delete Pipeline</span>
                           </MenuItem>
                         </Menu>
                       </Popover>
@@ -193,10 +227,10 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-4 pt-0 space-y-4">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground bg-muted/30 px-3 py-2 rounded-lg border border-border/40">
+                <CardContent className="space-y-4 pt-1">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <Boxes className="h-3.5 w-3.5 text-primary" />
+                      <Boxes className="h-3.5 w-3.5 text-muted-foreground" />
                       <span>{p.nodeCount} nodes</span>
                     </div>
                     <span>•</span>
@@ -206,7 +240,7 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center justify-between pt-1 border-t border-border/40">
                     <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {new Date(p.createdAt).toLocaleDateString()}
@@ -217,7 +251,7 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                       params={{ projectId, pipelineId: p.id }}
                       className={cn(
                         buttonVariants({ variant: "ghost", size: "sm" }),
-                        "h-7 text-xs gap-1 group-hover:text-primary"
+                        "h-7 text-xs gap-1 group-hover:text-primary font-medium"
                       )}
                     >
                       <span>Open Canvas</span>
@@ -231,7 +265,7 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
         )}
       </div>
 
-      {/* Quick Create Pipeline Dialog */}
+      {/* Create Pipeline Dialog */}
       <Dialog isOpen={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <form onSubmit={handleCreate} className="space-y-4">
           <DialogHeader>
@@ -239,6 +273,9 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
               <Workflow className="h-4 w-4 text-primary" />
               <span>Create New Pipeline</span>
             </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Enter a unique name for your pipeline to open the visual DAG editor.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="py-2 space-y-3">
@@ -248,7 +285,7 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                 id="pname"
                 value={pipelineName}
                 onChange={(e) => setPipelineName(e.target.value)}
-                placeholder="e.g. Asset Ingestion & Inspection Flow"
+                placeholder="e.g. Ingest FBX & Auto Inspect"
                 autoFocus
                 required
                 className="h-9 text-xs"
@@ -266,6 +303,8 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
           </DialogFooter>
         </form>
       </Dialog>
+
+
 
       {/* Delete Pipeline Confirmation Dialog */}
       <Dialog

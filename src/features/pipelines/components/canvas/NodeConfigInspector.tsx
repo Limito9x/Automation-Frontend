@@ -11,6 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
   Trash2,
   X,
   Link,
@@ -21,6 +28,8 @@ import {
   Sparkles,
   Plus,
   Loader2,
+  Zap,
+  FolderTree,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PipelineVariableDto } from "../../hooks/usePipelineGraph";
@@ -28,7 +37,9 @@ import {
   usePipelineInputSchema,
   useAddPipelineInput,
   useDeletePipelineInput,
+  useUpdatePipelineTrigger,
 } from "../../hooks/usePipelineGraph";
+import { useWorkspaces } from "@/features/workspaces/hooks/useWorkspaces";
 import { toast } from "sonner";
 
 function DebouncedInput({
@@ -108,6 +119,8 @@ interface NodeConfigInspectorProps {
   edges: Edge[];
   nodes: Node[];
   projectId?: string;
+  triggerType?: number | string;
+  triggerWorkspaceId?: string | null;
   onClose: () => void;
   onUpdateConfig: (nodeId: string, pinId: string, value: any) => void;
   onDeleteNode: (nodeId: string) => void;
@@ -174,13 +187,23 @@ export function NodeConfigInspector({
   edges,
   nodes,
   projectId = "",
+  triggerType = 0,
+  triggerWorkspaceId = null,
   onClose,
   onUpdateConfig,
   onDeleteNode,
 }: NodeConfigInspectorProps) {
   const { data: schemaInputs = [], refetch: refetchSchema } = usePipelineInputSchema(pipelineId);
+  const { data: workspaces = [] } = useWorkspaces(projectId);
   const addInputMutation = useAddPipelineInput(pipelineId);
   const deleteInputMutation = useDeletePipelineInput(pipelineId);
+  const updateTriggerMutation = useUpdatePipelineTrigger(pipelineId);
+
+  const isEventTrigger =
+    triggerType === 1 ||
+    triggerType === 2 ||
+    triggerType === "OnResourceCreated" ||
+    triggerType === "OnResourceVersionUpdated";
 
   const [isAddingInput, setIsAddingInput] = useState(false);
   const [newKey, setNewKey] = useState("");
@@ -347,25 +370,151 @@ export function NodeConfigInspector({
       <ScrollArea className="flex-1 p-4">
         {isStart ? (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider">
-                <Sparkles className="h-3.5 w-3.5 text-primary" />
-                <span>Pipeline Inputs</span>
+            {/* Trigger Mode Selector */}
+            <div className="rounded-xl border border-border/80 bg-muted/20 p-3 space-y-3 shadow-sm">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground uppercase tracking-wider">
+                <Zap className="h-3.5 w-3.5 text-primary" />
+                <span>Execution Trigger Mode</span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-6 px-2 text-[11px] gap-1 border-primary/40 text-primary hover:bg-primary/10"
-                onPress={() => setIsAddingInput(true)}
-              >
-                <Plus className="h-3 w-3" />
-                <span>Add Input</span>
-              </Button>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-medium text-muted-foreground block">
+                  How is this pipeline started?
+                </label>
+                <Select
+                  selectedKey={
+                    triggerType === 1 || triggerType === "OnResourceCreated"
+                      ? "1"
+                      : triggerType === 2 || triggerType === "OnResourceVersionUpdated"
+                      ? "2"
+                      : "0"
+                  }
+                  onSelectionChange={async (key) => {
+                    const newType = parseInt(String(key), 10);
+                    try {
+                      await updateTriggerMutation.mutateAsync({
+                        triggerType: newType,
+                        triggerWorkspaceId: triggerWorkspaceId || null,
+                      });
+                      toast.success("Trigger mode updated");
+                    } catch {
+                      toast.error("Failed to update trigger mode");
+                    }
+                  }}
+                  className="w-full"
+                >
+                  <SelectTrigger className="h-8 w-full text-xs font-medium">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem id="0">🟢 Manual Run (On-demand / Custom Inputs)</SelectItem>
+                    <SelectItem id="1">⚡ Event: On Resource Created</SelectItem>
+                    <SelectItem id="2">🔄 Event: On Resource Version Updated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Target Workspace Filter if Event Triggered */}
+              {isEventTrigger && (
+                <div className="space-y-1.5 pt-2 border-t border-border/50">
+                  <label className="text-[10px] font-medium text-muted-foreground flex items-center gap-1">
+                    <FolderTree className="h-3 w-3 text-primary" />
+                    <span>Listen on Workspace</span>
+                  </label>
+                  <Select
+                    selectedKey={triggerWorkspaceId || "all"}
+                    onSelectionChange={async (key) => {
+                      const newWs = key === "all" ? null : String(key);
+                      const currentTypeNum =
+                        triggerType === 1 || triggerType === "OnResourceCreated"
+                          ? 1
+                          : triggerType === 2 || triggerType === "OnResourceVersionUpdated"
+                          ? 2
+                          : 0;
+                      try {
+                        await updateTriggerMutation.mutateAsync({
+                          triggerType: currentTypeNum,
+                          triggerWorkspaceId: newWs,
+                        });
+                        toast.success("Target workspace updated");
+                      } catch {
+                        toast.error("Failed to update target workspace");
+                      }
+                    }}
+                    className="w-full"
+                  >
+                    <SelectTrigger className="h-8 w-full text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem id="all">All Workspaces in this Project</SelectItem>
+                      {workspaces.map((ws: any) => (
+                        <SelectItem key={ws.id} id={ws.id}>
+                          {ws.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
 
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Define input parameters for this pipeline. Each parameter becomes an output pin on the Start Node:
-            </p>
+            {/* If Event Triggered: Show automatic event output pins */}
+            {isEventTrigger ? (
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 space-y-2.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                  <Zap className="h-3.5 w-3.5" />
+                  <span>Automatic Event Outputs</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  When a resource event occurs, this node automatically outputs:
+                </p>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-background/80 border border-border/60 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-foreground">Resource</span>
+                      <span className="text-[10px] text-muted-foreground">(The newly created/updated file)</span>
+                    </div>
+                    <Badge variant="outline" className="text-[9px] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+                      EntityRef: Resource
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-background/80 border border-border/60 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-foreground">Workspace</span>
+                      <span className="text-[10px] text-muted-foreground">(Target Workspace entity)</span>
+                    </div>
+                    <Badge variant="outline" className="text-[9px] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+                      EntityRef: Workspace
+                    </Badge>
+                  </div>
+                </div>
+                <div className="p-2 rounded-md bg-sky-500/10 border border-sky-500/20 text-[11px] text-sky-600 dark:text-sky-400">
+                  💡 <strong>Tip:</strong> Connect the <strong>Resource</strong> output pin directly to a <strong>Break Resource</strong> node to decompose its 13 properties (Filename, Extension, Path, Metadata...).
+                </div>
+              </div>
+            ) : (
+              /* If Manual Run: Show Custom Input Parameters */
+              <>
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span>Custom Input Parameters</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-[11px] gap-1 border-primary/40 text-primary hover:bg-primary/10"
+                    onPress={() => setIsAddingInput(true)}
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Add Input</span>
+                  </Button>
+                </div>
+
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Define custom parameters requested when running manually or via API:
+                </p>
 
             {/* Add Parameter Inline Card */}
             {isAddingInput && (
@@ -409,49 +558,64 @@ export function NodeConfigInspector({
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Type</label>
-                      <select
-                        value={newType}
-                        onChange={(e) => setNewType(e.target.value)}
-                        className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      <Select
+                        selectedKey={newType}
+                        onSelectionChange={(key) => setNewType(String(key))}
+                        className="w-full"
                       >
-                        {PIN_PRIMITIVE_TYPES.map((pt) => (
-                          <option key={pt.value} value={pt.value}>
-                            {pt.label}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="h-7 w-full text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PIN_PRIMITIVE_TYPES.map((pt) => (
+                            <SelectItem key={pt.value} id={pt.value}>
+                              {pt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div>
                       <label className="text-[10px] font-medium text-muted-foreground block mb-0.5">Structure / Format</label>
-                      <select
-                        value={newCardinality}
-                        onChange={(e) => setNewCardinality(e.target.value)}
-                        className="w-full h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      <Select
+                        selectedKey={newCardinality}
+                        onSelectionChange={(key) => setNewCardinality(String(key))}
+                        className="w-full"
                       >
-                        {CARDINALITY_OPTIONS.map((co) => (
-                          <option key={co.value} value={co.value}>
-                            {co.label}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="h-7 w-full text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CARDINALITY_OPTIONS.map((co) => (
+                            <SelectItem key={co.value} id={co.value}>
+                              {co.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
                   {newType === "EntityRef" ? (
                     <div>
                       <label className="text-[10px] font-medium text-primary block mb-0.5 font-semibold">Entity Target (Combobox Source)</label>
-                      <select
-                        value={newEntityTarget}
-                        onChange={(e) => setNewEntityTarget(e.target.value)}
-                        className="w-full h-7 rounded-md border border-primary/40 bg-primary/5 px-2 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+                      <Select
+                        selectedKey={newEntityTarget}
+                        onSelectionChange={(key) => setNewEntityTarget(String(key))}
+                        className="w-full"
                       >
-                        {ENTITY_TARGETS.map((et) => (
-                          <option key={et.value} value={et.value}>
-                            {et.label}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="h-7 w-full text-xs border-primary/40 bg-primary/5 font-medium">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ENTITY_TARGETS.map((et) => (
+                            <SelectItem key={et.value} id={et.value}>
+                              {et.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <span className="text-[10px] text-muted-foreground mt-0.5 block leading-tight">
                         When running, a {newEntityTarget} selection combobox will be presented.
                       </span>
@@ -552,6 +716,8 @@ export function NodeConfigInspector({
                 })}
               </div>
             )}
+            </>
+          )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -561,15 +727,20 @@ export function NodeConfigInspector({
                   <Box className="h-3.5 w-3.5" />
                   <span>Struct Type</span>
                 </div>
-                <select
-                  value={configValues["StructType"] || "Resource"}
-                  onChange={(e) => onUpdateConfig(node.id, "StructType", e.target.value)}
-                  className="w-full h-8 rounded-lg border border-sky-500/40 bg-background px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-sky-500"
+                <Select
+                  selectedKey={configValues["StructType"] || "Resource"}
+                  onSelectionChange={(key) => onUpdateConfig(node.id, "StructType", String(key))}
+                  className="w-full"
                 >
-                  <option value="Resource">Resource (File, BaseName, FullPath, Workspace)</option>
-                  <option value="Workspace">Workspace (RootPath, WorkspaceId)</option>
-                  <option value="Inspection">Resource Metadata (MainObjects, SkeletonBones)</option>
-                </select>
+                  <SelectTrigger className="h-8 w-full text-xs font-medium border-sky-500/40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem id="Resource">Resource (File, BaseName, FullPath, Workspace)</SelectItem>
+                    <SelectItem id="Workspace">Workspace (RootPath, WorkspaceId)</SelectItem>
+                    <SelectItem id="Inspection">Resource Metadata (MainObjects, SkeletonBones)</SelectItem>
+                  </SelectContent>
+                </Select>
                 <p className="text-[10px] text-muted-foreground leading-tight">
                   Selecting a struct type dynamically updates output pins to match the entity schema.
                 </p>
@@ -657,18 +828,25 @@ export function NodeConfigInspector({
                           />
                         ) : isVariablePin(pin.primitiveType, pinId) ? (
                           <div className="space-y-1.5">
-                            <select
-                              value={currentVal || ""}
-                              onChange={(e) => onUpdateConfig(node.id, pinId, e.target.value)}
-                              className="w-full h-8 rounded-lg border border-cyan-500/40 bg-cyan-500/5 px-2.5 text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                            <Select
+                              selectedKey={currentVal || "none"}
+                              onSelectionChange={(key) =>
+                                onUpdateConfig(node.id, pinId, key === "none" ? "" : String(key))
+                              }
+                              className="w-full"
                             >
-                              <option value="">-- Select Variable --</option>
-                              {(variables || []).map((v) => (
-                                <option key={v.name} value={v.name}>
-                                  {v.name} ({formatPinTypeLabel(v.type, v.cardinality)})
-                                </option>
-                              ))}
-                            </select>
+                              <SelectTrigger className="h-8 w-full text-xs font-mono border-cyan-500/40 bg-cyan-500/5">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem id="none">-- Select Variable --</SelectItem>
+                                {(variables || []).map((v) => (
+                                  <SelectItem key={v.name} id={v.name}>
+                                    {v.name} ({formatPinTypeLabel(v.type, v.cardinality)})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             {(!variables || variables.length === 0) && (
                               <p className="text-[10px] text-muted-foreground italic">
                                 No variables declared yet. Use the Variables panel on the left to declare variables.
