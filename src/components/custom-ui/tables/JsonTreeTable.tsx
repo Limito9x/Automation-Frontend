@@ -6,6 +6,7 @@ import { ChevronRight, Search, Braces, Table2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TagDroppableCell } from "@/features/tags/components/TagDroppableCell";
 import type { TagLinkDetailDto } from "@/features/tags/types";
+import { cn } from "@/lib/utils";
 
 interface JsonTreeTableProps {
     data: any;
@@ -85,7 +86,7 @@ function renderNode(
     // Build next path
     const nodePath = currentPath ? (key ? `${currentPath}.${key}` : currentPath) : key;
 
-    // 1. Nếu là Array of Objects -> Render Sub-Table
+    // 1. Nếu là Array of Objects -> Render Sub-Table với phân rã cấp bậc
     if (isArrayOfObjects(value)) {
         return (
             <ArrayOfObjectsTable
@@ -106,7 +107,7 @@ function renderNode(
         return (
             <div
                 key={nodePath || "array-item"}
-                className="p-2.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                className="p-2.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-muted/10 transition-colors"
             >
                 <span className="font-mono font-medium text-foreground">{key}:</span>
                 <div className="flex flex-wrap gap-1.5 items-center">
@@ -170,7 +171,7 @@ function renderNode(
         return (
             <Collapsible key={nodePath || "root-obj"} defaultExpanded className="w-full">
                 <div className="flex items-center p-2.5 bg-muted/20 hover:bg-muted/40 transition-colors">
-                    <CollapsibleTrigger className="p-1 rounded hover:bg-muted mr-1.5 flex items-center justify-center [&[aria-expanded=true]_.chevron]:rotate-90 [&[data-expanded=true]_.chevron]:rotate-90">
+                    <CollapsibleTrigger className="p-1 rounded hover:bg-muted mr-1.5 flex items-center justify-center [&[aria-expanded=true]_.chevron]:rotate-90 [&[data-expanded=true]_.chevron]:rotate-90 cursor-pointer">
                         <ChevronRight className="h-3.5 w-3.5 chevron transition-transform duration-200 text-muted-foreground" />
                     </CollapsibleTrigger>
                     <div className="flex items-center gap-2 flex-1 font-semibold text-xs">
@@ -183,7 +184,7 @@ function renderNode(
                 </div>
 
                 <CollapsibleContent>
-                    <div className="pl-6 pr-3 pb-2 pt-1 border-t divide-y divide-border/60">
+                    <div className="pl-5 pr-2 pb-2 pt-1 border-t divide-y divide-border/60">
                         {filteredEntries.map(([childKey, childVal]) =>
                             renderNode(childKey, childVal, search, nodePath, ctx)
                         )}
@@ -208,7 +209,7 @@ function renderNode(
     return (
         <div
             key={nodePath}
-            className="p-2 text-xs flex items-center justify-between gap-4 hover:bg-muted/10"
+            className="p-2 text-xs flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors"
         >
             <span className="font-mono text-muted-foreground font-medium">{key}</span>
             <TagDroppableCell
@@ -224,7 +225,6 @@ function renderNode(
 }
 
 function renderValueBadge(value: any) {
-    // Boolean render trung tính (generic)
     if (typeof value === "boolean") {
         return (
             <Badge
@@ -245,6 +245,95 @@ function renderValueBadge(value: any) {
     return <span className="font-mono text-foreground">{String(value)}</span>;
 }
 
+function renderCellContent(
+    cellVal: any,
+    cellPath: string,
+    existingTags: TagLinkDetailDto[],
+    ctx: RenderContext
+): React.ReactNode {
+    // 1. Null / undefined
+    if (cellVal === null || cellVal === undefined) {
+        return <span className="text-muted-foreground/50 italic text-[11px]">null</span>;
+    }
+
+    // 2. Mảng các primitives
+    if (Array.isArray(cellVal)) {
+        if (cellVal.length === 0) {
+            return <span className="text-muted-foreground/50 italic text-[11px]">[]</span>;
+        }
+        return (
+            <div className="flex flex-wrap gap-1 items-center">
+                {cellVal.map((item: any, idx: number) => {
+                    const itemPath = `${cellPath}[${idx}]`;
+                    const itemTags = ctx.tagsByPath[itemPath] || [];
+                    return (
+                        <TagDroppableCell
+                            key={itemPath}
+                            path={itemPath}
+                            value={item}
+                            entityId={ctx.entityId}
+                            entityType={ctx.entityType}
+                            existingTags={itemTags}
+                            renderValueContent={(v) => (
+                                <Badge variant="secondary" className="font-mono text-[10px]">
+                                    {String(v)}
+                                </Badge>
+                            )}
+                        />
+                    );
+                })}
+            </div>
+        );
+    }
+
+    // 3. Object nhỏ (như { width: 1920, height: 1080 } hoặc { min: 0, max: 1 })
+    if (typeof cellVal === "object") {
+        const entries = Object.entries(cellVal).filter(([_, v]) => v !== null && v !== undefined);
+        if (entries.length === 0) {
+            return <span className="text-muted-foreground/50 italic text-[11px]">{"{}"}</span>;
+        }
+        return (
+            <div className="flex flex-wrap gap-1.5 items-center">
+                {entries.map(([subK, subV]) => {
+                    const subPath = `${cellPath}.${subK}`;
+                    const subTags = ctx.tagsByPath[subPath] || [];
+                    return (
+                        <TagDroppableCell
+                            key={subPath}
+                            path={subPath}
+                            value={subV}
+                            entityId={ctx.entityId}
+                            entityType={ctx.entityType}
+                            existingTags={subTags}
+                            renderValueContent={(v) => (
+                                <Badge
+                                    variant="outline"
+                                    className="font-mono text-[10px] gap-1 px-1.5 py-0 bg-background/50 border-border"
+                                >
+                                    <span className="text-muted-foreground">{subK}:</span>
+                                    <span className="font-semibold text-foreground">{String(v)}</span>
+                                </Badge>
+                            )}
+                        />
+                    );
+                })}
+            </div>
+        );
+    }
+
+    // 4. Primitive thông thường
+    return (
+        <TagDroppableCell
+            path={cellPath}
+            value={cellVal}
+            entityId={ctx.entityId}
+            entityType={ctx.entityType}
+            existingTags={existingTags}
+            renderValueContent={(val) => renderValueBadge(val)}
+        />
+    );
+}
+
 function ArrayOfObjectsTable({
     tableKey,
     basePath,
@@ -258,15 +347,33 @@ function ArrayOfObjectsTable({
     search: string;
     ctx: RenderContext;
 }) {
-    const columns = useMemo(() => {
-        const keysSet = new Set<string>();
+    // Phân loại cột: scalarCols (hiển thị trên các cột bảng) vs nestedCols (hiển thị trong dòng chi tiết mở rộng)
+    const { scalarCols, nestedCols } = useMemo(() => {
+        const scalarSet = new Set<string>();
+        const nestedSet = new Set<string>();
+
         items.forEach((item) => {
             if (typeof item === "object" && item !== null) {
-                Object.keys(item).forEach((k) => keysSet.add(k));
+                Object.entries(item).forEach(([k, v]) => {
+                    if (
+                        isArrayOfObjects(v) ||
+                        (typeof v === "object" && v !== null && !Array.isArray(v) && Object.keys(v).length > 3)
+                    ) {
+                        nestedSet.add(k);
+                    } else {
+                        scalarSet.add(k);
+                    }
+                });
             }
         });
-        return Array.from(keysSet);
+
+        return {
+            scalarCols: Array.from(scalarSet),
+            nestedCols: Array.from(nestedSet),
+        };
     }, [items]);
+
+    const hasNested = nestedCols.length > 0;
 
     const filteredItems = useMemo(() => {
         if (!search) return items;
@@ -281,7 +388,7 @@ function ArrayOfObjectsTable({
         <Collapsible defaultExpanded className="w-full">
             <div className="flex items-center justify-between p-2.5 bg-muted/30 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-2 font-semibold text-xs text-foreground">
-                    <CollapsibleTrigger className="p-1 rounded hover:bg-muted mr-1 flex items-center justify-center [&[aria-expanded=true]_.chevron]:rotate-90 [&[data-expanded=true]_.chevron]:rotate-90">
+                    <CollapsibleTrigger className="p-1 rounded hover:bg-muted mr-1 flex items-center justify-center [&[aria-expanded=true]_.chevron]:rotate-90 [&[data-expanded=true]_.chevron]:rotate-90 cursor-pointer">
                         <ChevronRight className="h-3.5 w-3.5 chevron transition-transform duration-200 text-muted-foreground" />
                     </CollapsibleTrigger>
                     <Table2 className="w-3.5 h-3.5 text-primary" />
@@ -297,7 +404,8 @@ function ArrayOfObjectsTable({
                     <table className="w-full text-left text-xs border-collapse">
                         <thead>
                             <tr className="border-b bg-muted/40 text-muted-foreground font-mono text-[11px]">
-                                {columns.map((col) => (
+                                {hasNested && <th className="p-2 w-8" />}
+                                {scalarCols.map((col) => (
                                     <th key={col} className="p-2 font-semibold uppercase tracking-wider">
                                         {col}
                                     </th>
@@ -305,35 +413,110 @@ function ArrayOfObjectsTable({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border/40 font-mono">
-                            {filteredItems.map((row, rowIdx) => {
-                                const rowPath = `${basePath}[${rowIdx}]`;
-                                return (
-                                    <tr key={rowPath} className="hover:bg-muted/15 transition-colors">
-                                        {columns.map((col) => {
-                                            const cellVal = row[col];
-                                            const cellPath = `${rowPath}.${col}`;
-                                            const existingTags = ctx.tagsByPath[cellPath] || [];
-
-                                            return (
-                                                <td key={col} className="p-2 align-middle">
-                                                    <TagDroppableCell
-                                                        path={cellPath}
-                                                        value={cellVal}
-                                                        entityId={ctx.entityId}
-                                                        entityType={ctx.entityType}
-                                                        existingTags={existingTags}
-                                                        renderValueContent={(val) => renderValueBadge(val)}
-                                                    />
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                );
-                            })}
+                            {filteredItems.map((row, rowIdx) => (
+                                <ArrayOfObjectsTableRow
+                                    key={`${basePath}[${rowIdx}]`}
+                                    row={row}
+                                    rowIdx={rowIdx}
+                                    basePath={basePath}
+                                    scalarCols={scalarCols}
+                                    nestedCols={nestedCols}
+                                    search={search}
+                                    ctx={ctx}
+                                />
+                            ))}
                         </tbody>
                     </table>
                 </div>
             </CollapsibleContent>
         </Collapsible>
+    );
+}
+
+function ArrayOfObjectsTableRow({
+    row,
+    rowIdx,
+    basePath,
+    scalarCols,
+    nestedCols,
+    search,
+    ctx,
+}: {
+    row: any;
+    rowIdx: number;
+    basePath: string;
+    scalarCols: string[];
+    nestedCols: string[];
+    search: string;
+    ctx: RenderContext;
+}) {
+    const [isExpanded, setIsExpanded] = useState(true);
+    const rowPath = `${basePath}[${rowIdx}]`;
+    const hasNested = nestedCols.length > 0;
+    const hasActiveNestedData = nestedCols.some((k) => {
+        const v = row[k];
+        return v && (Array.isArray(v) ? v.length > 0 : typeof v === "object");
+    });
+
+    return (
+        <>
+            <tr
+                className={cn(
+                    "hover:bg-muted/15 transition-colors",
+                    hasActiveNestedData && "cursor-pointer"
+                )}
+                onClick={() => hasActiveNestedData && setIsExpanded((prev) => !prev)}
+            >
+                {hasNested && (
+                    <td className="p-2 w-8 text-center" onClick={(e) => e.stopPropagation()}>
+                        {hasActiveNestedData && (
+                            <button
+                                type="button"
+                                onClick={() => setIsExpanded((prev) => !prev)}
+                                className="p-1 rounded hover:bg-muted/60 transition-transform cursor-pointer text-muted-foreground hover:text-foreground"
+                            >
+                                <ChevronRight
+                                    className={cn(
+                                        "h-3.5 w-3.5 transition-transform duration-200",
+                                        isExpanded && "rotate-90"
+                                    )}
+                                />
+                            </button>
+                        )}
+                    </td>
+                )}
+                {scalarCols.map((col) => {
+                    const cellVal = row[col];
+                    const cellPath = `${rowPath}.${col}`;
+                    const existingTags = ctx.tagsByPath[cellPath] || [];
+
+                    return (
+                        <td
+                            key={col}
+                            className="p-2 align-middle"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {renderCellContent(cellVal, cellPath, existingTags, ctx)}
+                        </td>
+                    );
+                })}
+            </tr>
+
+            {hasActiveNestedData && isExpanded && (
+                <tr className="bg-muted/5 border-b">
+                    <td colSpan={(hasNested ? 1 : 0) + scalarCols.length} className="p-2 pl-6">
+                        <div className="space-y-2 border-l-2 border-primary/30 pl-3">
+                            {nestedCols.map((nestedKey) => {
+                                const nestedVal = row[nestedKey];
+                                if (!nestedVal || (Array.isArray(nestedVal) && nestedVal.length === 0))
+                                    return null;
+
+                                return renderNode(nestedKey, nestedVal, search, rowPath, ctx);
+                            })}
+                        </div>
+                    </td>
+                </tr>
+            )}
+        </>
     );
 }

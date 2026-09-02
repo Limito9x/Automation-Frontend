@@ -4,7 +4,6 @@ import { useWorkspaces } from "@/features/workspaces/hooks/useWorkspaces";
 import { useWorkspaceResources } from "@/features/workspaces/hooks/useWorkspaceResources";
 import { useAgents } from "@/features/agents/hooks/useAgents";
 import { useTags } from "@/features/tags/hooks/useTags";
-import { useInspectors } from "@/features/inspectors/hooks/useInspectors";
 
 interface EntityPinSelectProps {
   entityType: string;
@@ -47,11 +46,6 @@ export function EntityPinSelect({
   const { data: tagsData, isLoading: isTagsLoading } = useTags(
     undefined,
     { enabled: normType === "tag" }
-  );
-
-  // 5. Inspectors
-  const { data: inspectorsData, isLoading: isInspectorsLoading } = useInspectors(
-    normType === "inspector" ? projectId : ""
   );
 
   // Map workspace options
@@ -99,19 +93,10 @@ export function EntityPinSelect({
           value: t.id,
         }));
       }
-      case "inspector": {
-        const list = Array.isArray(inspectorsData)
-          ? inspectorsData
-          : (inspectorsData as any)?.items || [];
-        return list.map((i: any) => ({
-          label: i.name || i.id,
-          value: i.id,
-        }));
-      }
       default:
         return [];
     }
-  }, [normType, workspaceOptions, agentsData, tagsData, inspectorsData]);
+  }, [normType, workspaceOptions, agentsData, tagsData]);
 
   // Resource Selector: Workspace -> Resource -> Latest Version
   if (isResourceRef) {
@@ -149,8 +134,7 @@ export function EntityPinSelect({
   const isLoading =
     (normType === "workspace" && isWorkspacesLoading) ||
     (normType === "agent" && isAgentsLoading) ||
-    (normType === "tag" && isTagsLoading) ||
-    (normType === "inspector" && isInspectorsLoading);
+    (normType === "tag" && isTagsLoading);
 
   return (
     <BaseCombobox

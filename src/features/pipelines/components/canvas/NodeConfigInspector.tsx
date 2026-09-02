@@ -568,7 +568,7 @@ export function NodeConfigInspector({
                 >
                   <option value="Resource">Resource (File, BaseName, FullPath, Workspace)</option>
                   <option value="Workspace">Workspace (RootPath, WorkspaceId)</option>
-                  <option value="Inspection">Inspection (MainObjects, Status, SkeletonBones)</option>
+                  <option value="Inspection">Resource Metadata (MainObjects, SkeletonBones)</option>
                 </select>
                 <p className="text-[10px] text-muted-foreground leading-tight">
                   Selecting a struct type dynamically updates output pins to match the entity schema.

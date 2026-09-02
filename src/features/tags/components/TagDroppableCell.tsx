@@ -18,7 +18,7 @@ export function TagDroppableCell({
     path,
     value,
     entityId,
-    entityType = "Inspection",
+    entityType = "ResourceVersion",
     existingTags = [],
     renderValueContent,
 }: TagDroppableCellProps) {

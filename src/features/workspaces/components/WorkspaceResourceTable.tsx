@@ -14,9 +14,8 @@ import type { WorkspaceResourceDto } from "../types/workspace-resources";
 import type { useResourceQuery, BaseSearchParams } from "@/lib/useResourceQuery";
 import { useWorkspaceResourceTable } from "../hooks/useWorkspaceResourceTable";
 import { AssignContentSidePanel } from "./drawers/AssignContentSidePanel";
-import { BatchTriggerInspectionDialog } from "@/features/inspections/dialogs/BatchTriggerInspectionDialog";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Search, Layers, Unlink, FileCode, Play } from "lucide-react";
+import { Search, Layers, Unlink, FileCode } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -39,7 +38,6 @@ export function WorkspaceResourceTable({
   projectId,
 }: WorkspaceResourceTableProps) {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [batchInspectOpen, setBatchInspectOpen] = useState(false);
   const [activeDragItem, setActiveDragItem] = useState<{
     id: string;
     resourceIds: string[];
@@ -184,16 +182,6 @@ export function WorkspaceResourceTable({
                       <span className="text-[10px] opacity-70">✕</span>
                     </button>
 
-                    {/* Batch Run Inspection Button */}
-                    <Button
-                      size="sm"
-                      onClick={() => setBatchInspectOpen(true)}
-                      className="h-8 text-xs gap-1.5 px-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
-                    >
-                      <Play className="size-3.5 fill-current" />
-                      Run Inspection ({selectedRowIds.length})
-                    </Button>
-
                     <Button
                       size="sm"
                       variant="destructive"
@@ -259,18 +247,6 @@ export function WorkspaceResourceTable({
             </div>
           ) : null}
         </DragOverlay>
-
-        {/* Batch Trigger Inspection Dialog */}
-        <BatchTriggerInspectionDialog
-          open={batchInspectOpen}
-          onOpenChange={setBatchInspectOpen}
-          projectId={projectId}
-          workspaceId={workspaceId}
-          selectedResourceIds={selectedRowIds}
-          onSuccess={() => {
-            setRowSelection({});
-          }}
-        />
       </>
     </DndContext>
   );

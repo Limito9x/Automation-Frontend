@@ -7,6 +7,7 @@
 import type { IReadOnlyListOfPipelineEdgeGraphDto } from "./iReadOnlyListOfPipelineEdgeGraphDto";
 import type { IReadOnlyListOfPipelineInputDto } from "./iReadOnlyListOfPipelineInputDto";
 import type { IReadOnlyListOfPipelineNodeGraphDto } from "./iReadOnlyListOfPipelineNodeGraphDto";
+import type { IReadOnlyListOfPipelineVariableDto } from "./iReadOnlyListOfPipelineVariableDto";
 
 export interface PipelineGraphDto {
   id: string;
@@ -15,4 +16,5 @@ export interface PipelineGraphDto {
   nodes: IReadOnlyListOfPipelineNodeGraphDto;
   edges: IReadOnlyListOfPipelineEdgeGraphDto;
   inputs: IReadOnlyListOfPipelineInputDto;
+  variables: IReadOnlyListOfPipelineVariableDto;
 }

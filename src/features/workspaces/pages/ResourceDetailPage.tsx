@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import type { ResourceVersionDto } from "@/gen/model";
 import { useResourceById } from "../hooks/useResourceDetail";
-import { useResourceInspections } from "@/features/inspectors/hooks/useInspections";
-import { ResourceInspectionsTab } from "@/features/inspections/components/ResourceInspectionsTab";
+import { ResourceMetadataTab } from "../components/tabs/ResourceMetadataTab";
 import { ResourceVersionsTab } from "../components/tabs/ResourceVersionsTab";
-import { BatchTriggerInspectionDialog } from "@/features/inspections/dialogs/BatchTriggerInspectionDialog";
+import { TagTool } from "@/features/tags/components/TagTool";
 import { Button } from "@/components/ui/button";
 import {
     ArrowLeft,
-    ShieldCheck,
+    Boxes,
     History,
     HardDrive,
     GitBranch,
-    Play,
 } from "lucide-react";
 
 interface ResourceDetailPageProps {
@@ -27,22 +26,19 @@ export function ResourceDetailPage({
     resourceId,
 }: ResourceDetailPageProps) {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<"inspections" | "versions">("inspections");
-    const [triggerDialogOpen, setTriggerDialogOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<"metadata" | "versions">("metadata");
 
-    // 1. Single source of truth: Get Resource Detail (includes all versions)
+    // 1. Single source of truth: Get Resource Detail (includes all versions and metadata)
     const { data: resource, isLoading: isResourceLoading } = useResourceById(resourceId);
 
-    const versions = resource?.versions || [];
+    const versions: ResourceVersionDto[] = useMemo(() => {
+        return ((resource?.versions || []) as ResourceVersionDto[]).slice().sort((a, b) => b.versionNo - a.versionNo);
+    }, [resource?.versions]);
     const latestVersion = versions[0];
 
-    // 2. Default to the latest version on initial load
+    // 2. Selected version state
     const [selectedVersionId, setSelectedVersionId] = useState<string | undefined>(undefined);
     const currentActiveVersionId = selectedVersionId || latestVersion?.id || "";
-
-    // 3. Inspections for the selected version
-    const { data: inspectionsData, refetch: refetchInspections } = useResourceInspections(currentActiveVersionId);
-    const inspections = Array.isArray(inspectionsData) ? inspectionsData : [];
 
     const formatBytes = (bytes?: number) => {
         if (!bytes) return "0 B";
@@ -68,6 +64,9 @@ export function ResourceDetailPage({
 
     return (
         <div className="p-6 space-y-6 w-full min-w-0">
+            {/* Tagging Tool on the right dock */}
+            <TagTool projectId={projectId} contextTitle={resource?.name || "Resource Detail"} />
+
             {/* Header matching WorkspaceDetailPage style */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
@@ -97,21 +96,21 @@ export function ResourceDetailPage({
                     </div>
                 </div>
 
-                {/* Tab Navigation & Action Buttons in Header */}
+                {/* Tab Navigation in Header */}
                 <div className="flex flex-wrap items-center gap-3 shrink-0">
                     <div className="flex items-center p-1 rounded-xl bg-muted/60 border">
-                        {/* Tab 1: Inspections */}
+                        {/* Tab 1: Metadata & Tagging */}
                         <button
                             type="button"
-                            onClick={() => setActiveTab("inspections")}
+                            onClick={() => setActiveTab("metadata")}
                             className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                                activeTab === "inspections"
+                                activeTab === "metadata"
                                     ? "bg-primary text-primary-foreground shadow-xs"
                                     : "text-muted-foreground hover:text-foreground"
                             }`}
                         >
-                            <ShieldCheck className="size-3.5" />
-                            <span>Overview & Inspections</span>
+                            <Boxes className="size-3.5" />
+                            <span>Metadata & Tagging</span>
                         </button>
 
                         {/* Tab 2: Versions */}
@@ -128,33 +127,25 @@ export function ResourceDetailPage({
                             <span>Version History</span>
                         </button>
                     </div>
-
-                    <Button
-                        onPress={() => setTriggerDialogOpen(true)}
-                        isDisabled={!currentActiveVersionId || !workspaceId}
-                        className="gap-2 text-xs h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
-                    >
-                        <Play className="size-3.5 fill-current" /> Run Inspection
-                    </Button>
                 </div>
             </div>
 
-            {/* 3 Stats KPI Cards (Same style as WorkspaceStatsBar) */}
+            {/* 3 KPI Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Stat 1: Total Inspections */}
+                {/* Stat 1: Total Versions */}
                 <div className="p-4 rounded-xl border bg-card shadow-xs flex items-center gap-3.5">
-                    <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-500 shrink-0">
-                        <ShieldCheck className="size-5" />
+                    <div className="p-2.5 rounded-lg bg-blue-500/10 text-blue-500 shrink-0">
+                        <History className="size-5" />
                     </div>
                     <div>
-                        <p className="text-xs font-medium text-muted-foreground">Inspections Executed</p>
-                        <h3 className="text-2xl font-bold tracking-tight text-foreground">{inspections.length}</h3>
+                        <p className="text-xs font-medium text-muted-foreground">Recorded Versions</p>
+                        <h3 className="text-2xl font-bold tracking-tight text-foreground">{versions.length}</h3>
                     </div>
                 </div>
 
                 {/* Stat 2: Active Version */}
                 <div className="p-4 rounded-xl border bg-card shadow-xs flex items-center gap-3.5">
-                    <div className="p-2.5 rounded-lg bg-blue-500/10 text-blue-500 shrink-0">
+                    <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-500 shrink-0">
                         <GitBranch className="size-5" />
                     </div>
                     <div>
@@ -189,15 +180,14 @@ export function ResourceDetailPage({
                     </div>
                 ) : (
                     <>
-                        {activeTab === "inspections" && (
-                            <ResourceInspectionsTab
-                                resourceVersionId={currentActiveVersionId}
-                                projectId={projectId}
-                                workspaceId={workspaceId}
-                                resourceId={resourceId}
+                        {activeTab === "metadata" && (
+                            <ResourceMetadataTab
                                 versions={versions}
                                 selectedVersionId={currentActiveVersionId}
                                 onSelectVersionId={(verId) => setSelectedVersionId(verId)}
+                                projectId={projectId}
+                                workspaceId={workspaceId}
+                                resourceId={resourceId}
                             />
                         )}
 
@@ -211,16 +201,6 @@ export function ResourceDetailPage({
                     </>
                 )}
             </div>
-
-            {/* Run Inspection Modal with Available Agents */}
-            <BatchTriggerInspectionDialog
-                open={triggerDialogOpen}
-                onOpenChange={setTriggerDialogOpen}
-                projectId={projectId}
-                workspaceId={workspaceId || ""}
-                selectedResourceIds={[resourceId]}
-                onSuccess={() => refetchInspections()}
-            />
         </div>
     );
 }

@@ -149,7 +149,18 @@ export const SCompareWorkspaceResourceResponse = /*#__PURE__*/ zod.object({
   "sizeBytes": /*#__PURE__*/ zod.int(),
   "fileHash": /*#__PURE__*/ zod.string(),
   "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "tagsByPath": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "tagLinkId": /*#__PURE__*/ zod.uuid(),
+  "tagId": /*#__PURE__*/ zod.uuid(),
+  "tagName": /*#__PURE__*/ zod.string(),
+  "tagColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "tagGroupId": /*#__PURE__*/ zod.uuid(),
+  "tagGroupScope": /*#__PURE__*/ zod.string(),
+  "tagGroupName": /*#__PURE__*/ zod.string(),
+  "metadataJson": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+}))))
 }))
 })),
   "modified": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
@@ -164,7 +175,18 @@ export const SCompareWorkspaceResourceResponse = /*#__PURE__*/ zod.object({
   "sizeBytes": /*#__PURE__*/ zod.int(),
   "fileHash": /*#__PURE__*/ zod.string(),
   "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "tagsByPath": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "tagLinkId": /*#__PURE__*/ zod.uuid(),
+  "tagId": /*#__PURE__*/ zod.uuid(),
+  "tagName": /*#__PURE__*/ zod.string(),
+  "tagColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "tagGroupId": /*#__PURE__*/ zod.uuid(),
+  "tagGroupScope": /*#__PURE__*/ zod.string(),
+  "tagGroupName": /*#__PURE__*/ zod.string(),
+  "metadataJson": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+}))))
 }))
 })),
   "deleted": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
@@ -179,7 +201,18 @@ export const SCompareWorkspaceResourceResponse = /*#__PURE__*/ zod.object({
   "sizeBytes": /*#__PURE__*/ zod.int(),
   "fileHash": /*#__PURE__*/ zod.string(),
   "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "tagsByPath": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "tagLinkId": /*#__PURE__*/ zod.uuid(),
+  "tagId": /*#__PURE__*/ zod.uuid(),
+  "tagName": /*#__PURE__*/ zod.string(),
+  "tagColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "tagGroupId": /*#__PURE__*/ zod.uuid(),
+  "tagGroupScope": /*#__PURE__*/ zod.string(),
+  "tagGroupName": /*#__PURE__*/ zod.string(),
+  "metadataJson": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+}))))
 }))
 })),
   "missing": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
@@ -194,7 +227,18 @@ export const SCompareWorkspaceResourceResponse = /*#__PURE__*/ zod.object({
   "sizeBytes": /*#__PURE__*/ zod.int(),
   "fileHash": /*#__PURE__*/ zod.string(),
   "notes": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
-  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
+  "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true}),
+  "metadata": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
+  "tagsByPath": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
+  "tagLinkId": /*#__PURE__*/ zod.uuid(),
+  "tagId": /*#__PURE__*/ zod.uuid(),
+  "tagName": /*#__PURE__*/ zod.string(),
+  "tagColor": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
+  "tagGroupId": /*#__PURE__*/ zod.uuid(),
+  "tagGroupScope": /*#__PURE__*/ zod.string(),
+  "tagGroupName": /*#__PURE__*/ zod.string(),
+  "metadataJson": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string())
+}))))
 }))
 }))
 })
