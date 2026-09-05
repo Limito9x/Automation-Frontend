@@ -9,14 +9,19 @@ import type { IReadOnlyListOfPipelineInputDto } from "./iReadOnlyListOfPipelineI
 import type { IReadOnlyListOfPipelineNodeGraphDto } from "./iReadOnlyListOfPipelineNodeGraphDto";
 import type { IReadOnlyListOfPipelineOutputDto } from "./iReadOnlyListOfPipelineOutputDto";
 import type { IReadOnlyListOfPipelineVariableDto } from "./iReadOnlyListOfPipelineVariableDto";
+import type { PipelineTriggerType } from "./pipelineTriggerType";
 
 export interface PipelineGraphDto {
   id: string;
   projectId: string;
   name: string;
+  triggerType: PipelineTriggerType;
+  /** @nullable */
+  triggerWorkspaceId: string | null;
   nodes: IReadOnlyListOfPipelineNodeGraphDto;
   edges: IReadOnlyListOfPipelineEdgeGraphDto;
   inputs: IReadOnlyListOfPipelineInputDto;
   outputs: IReadOnlyListOfPipelineOutputDto;
   variables: IReadOnlyListOfPipelineVariableDto;
+  triggerConfig?: unknown;
 }

@@ -4,6 +4,8 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { DictionaryOfStringAndGuid } from "./dictionaryOfStringAndGuid";
+import type { ListOfGuid } from "./listOfGuid";
 
 export interface SyncLocalChangesResult {
   workspaceId: string;
@@ -11,4 +13,6 @@ export interface SyncLocalChangesResult {
   addedCount: number;
   modifiedCount: number;
   locationRemove: number;
+  resourceVersionIds: ListOfGuid;
+  syncedResources: DictionaryOfStringAndGuid;
 }

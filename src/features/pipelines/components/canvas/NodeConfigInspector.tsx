@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Node, Edge } from "@xyflow/react";
 import type { CustomPipelineNodeData } from "./CustomPipelineNode";
 import { isBooleanPin, isNumberPin, isEntityRefPin, isAssetPin, isVariablePin, getPinVisual, formatPinTypeLabel } from "./CustomPipelineNode";
@@ -121,6 +121,7 @@ interface NodeConfigInspectorProps {
   projectId?: string;
   triggerType?: number | string;
   triggerWorkspaceId?: string | null;
+  triggerConfig?: any;
   onClose: () => void;
   onUpdateConfig: (nodeId: string, pinId: string, value: any) => void;
   onDeleteNode: (nodeId: string) => void;
@@ -145,8 +146,6 @@ const ENTITY_TARGETS = [
   { value: "Resource", label: "Resource File (3D Asset / File in Workspace)" },
   { value: "Workspace", label: "Workspace" },
   { value: "Tag", label: "Tag" },
-  { value: "Inspector", label: "Inspector" },
-  { value: "Inspection", label: "Inspection" },
   { value: "Agent", label: "Agent Worker" },
 ];
 
@@ -155,7 +154,7 @@ function resolveEntityTypeFromPin(pin: any, configValues: Record<string, any>): 
   const labelLower = (pin.label || "").toLowerCase();
 
   if (idLower === "entityid" || idLower === "entity" || labelLower === "entity") {
-    return configValues["EntityType"] || configValues["entityType"] || "Inspection";
+    return configValues["EntityType"] || configValues["entityType"] || "Resource";
   }
 
   if (pin.metadata) {
@@ -168,13 +167,21 @@ function resolveEntityTypeFromPin(pin: any, configValues: Record<string, any>): 
     } catch {}
   }
 
+  if (
+    idLower === "contenttype" ||
+    idLower === "content_type" ||
+    labelLower === "content type" ||
+    idLower.includes("contenttype")
+  ) {
+    return "ContentType";
+  }
+
   if (isEntityRefPin(pin.primitiveType)) {
     if (idLower.includes("workspace") || labelLower.includes("workspace")) return "Workspace";
     if (idLower.includes("agent") || labelLower.includes("agent")) return "Agent";
+    if (idLower.includes("taggroup") || labelLower.includes("tag group") || idLower.includes("tag_group")) return "TagGroup";
     if (idLower.includes("tag") || labelLower.includes("tag")) return "Tag";
-    if (idLower.includes("inspector") || labelLower.includes("inspector")) return "Inspector";
     if (idLower.includes("resource") || labelLower.includes("resource")) return "Resource";
-    if (idLower.includes("inspection") || labelLower.includes("inspection")) return "Inspection";
   }
 
   return null;
@@ -189,6 +196,7 @@ export function NodeConfigInspector({
   projectId = "",
   triggerType = 0,
   triggerWorkspaceId = null,
+  triggerConfig = null,
   onClose,
   onUpdateConfig,
   onDeleteNode,
@@ -204,6 +212,50 @@ export function NodeConfigInspector({
     triggerType === 2 ||
     triggerType === "OnResourceCreated" ||
     triggerType === "OnResourceVersionUpdated";
+
+  const initialExtensions = useMemo(() => {
+    if (!triggerConfig) return "";
+    if (typeof triggerConfig === "object") {
+      const cfg = triggerConfig as Record<string, any>;
+      if (Array.isArray(cfg.extensions)) return cfg.extensions.join(", ");
+      if (typeof cfg.extensions === "string") return cfg.extensions;
+      if (typeof cfg.extension === "string") return cfg.extension;
+    }
+    return "";
+  }, [triggerConfig]);
+
+  const [extFilter, setExtFilter] = useState(initialExtensions);
+  useEffect(() => {
+    setExtFilter(initialExtensions);
+  }, [initialExtensions]);
+
+  const handleSaveExtensions = async (val: string) => {
+    const exts = val
+      .split(",")
+      .map((s) => s.trim().replace(/^\./, "").toLowerCase())
+      .filter(Boolean);
+    const existingObj = triggerConfig && typeof triggerConfig === "object" ? (triggerConfig as Record<string, any>) : {};
+    const updatedConfig = {
+      ...existingObj,
+      extensions: exts,
+    };
+    const currentTypeNum =
+      triggerType === 1 || triggerType === "OnResourceCreated"
+        ? 1
+        : triggerType === 2 || triggerType === "OnResourceVersionUpdated"
+        ? 2
+        : 0;
+    try {
+      await updateTriggerMutation.mutateAsync({
+        triggerType: currentTypeNum,
+        triggerWorkspaceId: triggerWorkspaceId || null,
+        triggerConfig: updatedConfig,
+      });
+      toast.success("Trigger extension filter updated");
+    } catch {
+      toast.error("Failed to update trigger config");
+    }
+  };
 
   const [isAddingInput, setIsAddingInput] = useState(false);
   const [newKey, setNewKey] = useState("");
@@ -395,6 +447,7 @@ export function NodeConfigInspector({
                       await updateTriggerMutation.mutateAsync({
                         triggerType: newType,
                         triggerWorkspaceId: triggerWorkspaceId || null,
+                        triggerConfig: triggerConfig || null,
                       });
                       toast.success("Trigger mode updated");
                     } catch {
@@ -416,46 +469,75 @@ export function NodeConfigInspector({
 
               {/* Target Workspace Filter if Event Triggered */}
               {isEventTrigger && (
-                <div className="space-y-1.5 pt-2 border-t border-border/50">
-                  <label className="text-[10px] font-medium text-muted-foreground flex items-center gap-1">
-                    <FolderTree className="h-3 w-3 text-primary" />
-                    <span>Listen on Workspace</span>
-                  </label>
-                  <Select
-                    selectedKey={triggerWorkspaceId || "all"}
-                    onSelectionChange={async (key) => {
-                      const newWs = key === "all" ? null : String(key);
-                      const currentTypeNum =
-                        triggerType === 1 || triggerType === "OnResourceCreated"
-                          ? 1
-                          : triggerType === 2 || triggerType === "OnResourceVersionUpdated"
-                          ? 2
-                          : 0;
-                      try {
-                        await updateTriggerMutation.mutateAsync({
-                          triggerType: currentTypeNum,
-                          triggerWorkspaceId: newWs,
-                        });
-                        toast.success("Target workspace updated");
-                      } catch {
-                        toast.error("Failed to update target workspace");
-                      }
-                    }}
-                    className="w-full"
-                  >
-                    <SelectTrigger className="h-8 w-full text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem id="all">All Workspaces in this Project</SelectItem>
-                      {workspaces.map((ws: any) => (
-                        <SelectItem key={ws.id} id={ws.id}>
-                          {ws.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <>
+                  <div className="space-y-1.5 pt-2 border-t border-border/50">
+                    <label className="text-[10px] font-medium text-muted-foreground flex items-center gap-1">
+                      <FolderTree className="h-3 w-3 text-primary" />
+                      <span>Listen on Workspace</span>
+                    </label>
+                    <Select
+                      selectedKey={triggerWorkspaceId || "all"}
+                      onSelectionChange={async (key) => {
+                        const newWs = key === "all" ? null : String(key);
+                        const currentTypeNum =
+                          triggerType === 1 || triggerType === "OnResourceCreated"
+                            ? 1
+                            : triggerType === 2 || triggerType === "OnResourceVersionUpdated"
+                            ? 2
+                            : 0;
+                        try {
+                          await updateTriggerMutation.mutateAsync({
+                            triggerType: currentTypeNum,
+                            triggerWorkspaceId: newWs,
+                            triggerConfig: triggerConfig || null,
+                          });
+                          toast.success("Target workspace updated");
+                        } catch {
+                          toast.error("Failed to update target workspace");
+                        }
+                      }}
+                      className="w-full"
+                    >
+                      <SelectTrigger className="h-8 w-full text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem id="all">All Workspaces in this Project</SelectItem>
+                        {workspaces.map((ws: any) => (
+                          <SelectItem key={ws.id} id={ws.id}>
+                            {ws.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filter by Extensions */}
+                  <div className="space-y-1.5 pt-2 border-t border-border/50">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-medium text-muted-foreground flex items-center gap-1">
+                        <FileCode className="h-3 w-3 text-primary" />
+                        <span>Filter by Extensions</span>
+                      </label>
+                      <span className="text-[9px] text-muted-foreground font-mono">e.g. blend, fbx</span>
+                    </div>
+                    <Input
+                      className="h-8 text-xs font-mono"
+                      placeholder="All extensions (or e.g. blend, duf)"
+                      value={extFilter}
+                      onChange={(e) => setExtFilter(e.target.value)}
+                      onBlur={(e) => handleSaveExtensions(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSaveExtensions(extFilter);
+                        }
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground">
+                      Comma separated. If empty, triggers for all extensions.
+                    </p>
+                  </div>
+                </>
               )}
             </div>
 

@@ -6,16 +6,9 @@
  */
 import type { PipelineTriggerType } from "./pipelineTriggerType";
 
-export interface CreatePipelineCommand {
-  /** @minLength 1 */
-  projectId: string;
-  /**
-   * @minLength 0
-   * @maxLength 255
-   */
-  name: string;
-  triggerType?: PipelineTriggerType;
+export interface UpdatePipelineTriggerRequest {
+  triggerType: PipelineTriggerType;
   /** @nullable */
-  triggerWorkspaceId?: string | null;
+  triggerWorkspaceId: string | null;
   triggerConfig?: unknown;
 }

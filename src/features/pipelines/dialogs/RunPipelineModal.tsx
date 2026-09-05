@@ -229,19 +229,21 @@ export function RunPipelineModal({
                             onChange={(val) => handleUpdateRuntimeInput(key, val)}
                             placeholder={`Upload ${input.label || input.key} file...`}
                           />
-                        ) : isEntityRefPin(input.type) ? (
+                        ) : isEntityRefPin(input.type) || input.key?.toLowerCase().includes("contenttype") ? (
                           <EntityPinSelect
                             entityType={
-                              input.defaultValue ||
-                              (input.key?.toLowerCase().includes("workspace")
-                                ? "Workspace"
-                                : input.key?.toLowerCase().includes("tag")
-                                ? "Tag"
-                                : input.key?.toLowerCase().includes("inspector")
-                                ? "Inspector"
-                                : input.key?.toLowerCase().includes("agent")
-                                ? "Agent"
-                                : "Resource")
+                              input.key?.toLowerCase().includes("contenttype")
+                                ? "ContentType"
+                                : input.defaultValue ||
+                                  (input.key?.toLowerCase().includes("workspace")
+                                    ? "Workspace"
+                                    : input.key?.toLowerCase().includes("taggroup") || input.key?.toLowerCase().includes("tag_group")
+                                    ? "TagGroup"
+                                    : input.key?.toLowerCase().includes("tag")
+                                    ? "Tag"
+                                    : input.key?.toLowerCase().includes("agent")
+                                    ? "Agent"
+                                    : "Resource")
                             }
                             projectId={projectId}
                             value={currentVal}

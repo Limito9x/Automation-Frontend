@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,10 +13,12 @@ import {
   History,
   Zap,
   RefreshCw,
+  Pencil,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useReactFlow } from "@xyflow/react";
 import { cn } from "@/lib/utils";
+import { useUpdatePipelineMutation } from "../../hooks/usePipelines";
 
 interface CanvasToolbarProps {
   projectId: string;
@@ -31,6 +34,7 @@ interface CanvasToolbarProps {
 
 export function CanvasToolbar({
   projectId,
+  pipelineId,
   pipelineName,
   triggerType,
   isSaving,
@@ -40,6 +44,39 @@ export function CanvasToolbar({
   isValidating,
 }: CanvasToolbarProps) {
   const { fitView, zoomIn, zoomOut } = useReactFlow();
+  const updateMutation = useUpdatePipelineMutation(projectId, pipelineId);
+
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState(pipelineName);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setTempName(pipelineName);
+  }, [pipelineName]);
+
+  useEffect(() => {
+    if (isEditingName) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditingName]);
+
+  const handleSaveName = () => {
+    const trimmed = tempName.trim();
+    if (!trimmed || trimmed === pipelineName || !pipelineId) {
+      setIsEditingName(false);
+      setTempName(pipelineName);
+      return;
+    }
+    updateMutation.mutate(
+      { id: pipelineId, data: { name: trimmed } },
+      {
+        onSettled: () => {
+          setIsEditingName(false);
+        },
+      }
+    );
+  };
 
   const renderTriggerBadge = () => {
     if (triggerType === 1 || triggerType === "OnResourceCreated") {
@@ -79,9 +116,40 @@ export function CanvasToolbar({
         </Link>
 
         <div className="flex items-center gap-2 min-w-0">
-          <h1 className="text-sm font-semibold text-foreground truncate max-w-xs md:max-w-md">
-            {pipelineName}
-          </h1>
+          {isEditingName ? (
+            <div className="flex items-center gap-1.5">
+              <input
+                ref={inputRef}
+                type="text"
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveName();
+                  if (e.key === "Escape") {
+                    setIsEditingName(false);
+                    setTempName(pipelineName);
+                  }
+                }}
+                onBlur={handleSaveName}
+                disabled={updateMutation.isPending}
+                className="h-7 rounded-md border border-primary/50 bg-background px-2 text-sm font-semibold text-foreground shadow-sm outline-none focus:ring-1 focus:ring-primary w-44 md:w-64"
+              />
+              {updateMutation.isPending && (
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary shrink-0" />
+              )}
+            </div>
+          ) : (
+            <div
+              className="group/title flex items-center gap-1.5 cursor-pointer rounded-md px-1.5 py-0.5 hover:bg-muted/60 transition-colors"
+              onClick={() => setIsEditingName(true)}
+              title="Click to rename pipeline"
+            >
+              <h1 className="text-sm font-semibold text-foreground truncate max-w-xs md:max-w-md">
+                {pipelineName}
+              </h1>
+              <Pencil className="h-3 w-3 text-muted-foreground opacity-0 group-hover/title:opacity-100 transition-opacity shrink-0" />
+            </div>
+          )}
           {renderTriggerBadge()}
         </div>
 

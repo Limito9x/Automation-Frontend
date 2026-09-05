@@ -16,6 +16,7 @@ import type {
   ValidatePipelineQuery,
   ValidatePipelineResponse,
   PipelineExecutionDto,
+  NodeExecutionDto,
   PipelineSummaryDto,
   CreatePipelineCommand,
   EdgeKind,
@@ -49,6 +50,7 @@ export type {
   ValidatePipelineQuery,
   ValidatePipelineResponse,
   PipelineExecutionDto,
+  NodeExecutionDto,
   PipelineSummaryDto,
   CreatePipelineCommand,
   EdgeKind,
@@ -105,7 +107,6 @@ export const usePipelineExecutions = (pipelineId?: string) => {
       }),
     enabled: !!pipelineId,
     placeholderData: keepPreviousData,
-    refetchInterval: 5000,
   });
 };
 
@@ -113,19 +114,22 @@ export const usePipelineExecution = (executionId?: string) => {
   return PipelinesApi.useGetPipelineExecution(executionId || "", {
     query: {
       enabled: !!executionId,
+    },
+  });
+};
+
+export const useNodeExecutions = (executionId?: string) => {
+  return PipelinesApi.useGetNodeExecutions(executionId || "", {
+    query: {
+      enabled: !!executionId,
       refetchInterval: (query) => {
-        const status = query.state.data?.status;
-        if (
-          status === 1 ||
-          status === 2 ||
-          status === 3 ||
-          (status as any) === "Running" ||
-          (status as any) === "WaitingForAgent" ||
-          (status as any) === "Pending"
-        ) {
-          return 2500;
-        }
-        return false;
+        // Auto-poll every 3s while execution is active
+        const data = query.state.data;
+        if (!data || data.length === 0) return 3000;
+        const allDone = data.every(
+          (n) => n.status === 4 || n.status === 5 || (n.status as any) === "Succeeded" || (n.status as any) === "Failed"
+        );
+        return allDone ? false : 3000;
       },
     },
   });
@@ -298,7 +302,7 @@ export const useUpdatePipelineVariables = (pipelineId?: string) => {
 export const useUpdatePipelineTrigger = (pipelineId?: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { triggerType: number; triggerWorkspaceId?: string | null }) =>
+    mutationFn: (data: { triggerType: number; triggerWorkspaceId?: string | null; triggerConfig?: unknown }) =>
       customInstance<any>({
         url: `/api/pipelines/${pipelineId}/trigger`,
         method: "PUT",

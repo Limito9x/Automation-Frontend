@@ -63,7 +63,7 @@ export function BuilderBlock({
     // nhưng theo kế hoạch mới thì để chung Advanced Config là ok.
 
     return (
-        <div className="border border-border/50 dark:border-blue-900/30 rounded-xl bg-card p-4 shadow-sm relative group transition-all hover:border-blue-300 dark:hover:border-blue-700/50 mb-4">
+        <div className="border border-border/50 dark:border-blue-900/30 rounded-xl bg-card p-4 shadow-sm relative group transition-all hover:border-blue-300 dark:hover:border-blue-700/50">
             {/* Header Hành Động */}
             <div className="absolute right-2 top-2 flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm rounded-md p-1 shadow-sm border">
                 <button type="button" onClick={onRemove} className="p-1.5 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors" title="Delete field">
@@ -102,7 +102,7 @@ export function BuilderBlock({
                         control={control}
                         name={`${namePrefix}.${index}.description`}
                         label="Description (Optional)"
-                        placeholder="Mô tả trường này làm gì..."
+                        placeholder="Describe what this field is for..."
                         className="min-h-[40px] resize-none"
                     />
                     <div className="flex flex-col gap-4">

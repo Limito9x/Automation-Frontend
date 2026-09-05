@@ -3,7 +3,8 @@ import { BaseCombobox } from "@/components/custom-ui/inputs/combobox/BaseCombobo
 import { useWorkspaces } from "@/features/workspaces/hooks/useWorkspaces";
 import { useWorkspaceResources } from "@/features/workspaces/hooks/useWorkspaceResources";
 import { useAgents } from "@/features/agents/hooks/useAgents";
-import { useTags } from "@/features/tags/hooks/useTags";
+import { useTagGroups, useTags } from "@/features/tags/hooks/useTags";
+import { useContentTypes } from "@/features/contentTypes/hooks/useContentTypes";
 
 interface EntityPinSelectProps {
   entityType: string;
@@ -24,6 +25,8 @@ export function EntityPinSelect({
 }: EntityPinSelectProps) {
   const normType = entityType.toLowerCase().replace(/[\s_-]+/g, "");
   const isResourceRef = normType.includes("resource");
+  const isTagGroupRef = normType === "taggroup" || normType.includes("taggroup");
+  const isContentTypeRef = normType === "contenttype" || normType.includes("contenttype");
 
   // 1. Workspaces
   const { data: workspacesData, isLoading: isWorkspacesLoading } = useWorkspaces(
@@ -46,6 +49,19 @@ export function EntityPinSelect({
   const { data: tagsData, isLoading: isTagsLoading } = useTags(
     undefined,
     { enabled: normType === "tag" }
+  );
+
+  // 5. Tag Groups
+  const { data: tagGroupsData, isLoading: isTagGroupsLoading } = useTagGroups(
+    { projectId },
+    { enabled: isTagGroupRef && Boolean(projectId) }
+  );
+
+  // 6. Content Types
+  const { data: contentTypesData, isLoading: isContentTypesLoading } = useContentTypes(
+    { PageSize: 100 } as any,
+    projectId,
+    { enabled: isContentTypeRef && Boolean(projectId) }
   );
 
   // Map workspace options
@@ -93,10 +109,28 @@ export function EntityPinSelect({
           value: t.id,
         }));
       }
+      case "taggroup": {
+        const list = Array.isArray(tagGroupsData)
+          ? tagGroupsData
+          : (tagGroupsData as any)?.items || [];
+        return list.map((g: any) => ({
+          label: g.name || g.id,
+          value: g.id,
+        }));
+      }
+      case "contenttype": {
+        const list = Array.isArray(contentTypesData)
+          ? contentTypesData
+          : (contentTypesData as any)?.items || [];
+        return list.map((ct: any) => ({
+          label: ct.displayName ? `${ct.displayName} (${ct.name || ct.key})` : ct.name || ct.key || ct.id,
+          value: ct.name || ct.key || ct.id,
+        }));
+      }
       default:
         return [];
     }
-  }, [normType, workspaceOptions, agentsData, tagsData]);
+  }, [normType, workspaceOptions, agentsData, tagsData, tagGroupsData, contentTypesData]);
 
   // Resource Selector: Workspace -> Resource -> Latest Version
   if (isResourceRef) {
@@ -134,7 +168,9 @@ export function EntityPinSelect({
   const isLoading =
     (normType === "workspace" && isWorkspacesLoading) ||
     (normType === "agent" && isAgentsLoading) ||
-    (normType === "tag" && isTagsLoading);
+    (normType === "tag" && isTagsLoading) ||
+    (isTagGroupRef && isTagGroupsLoading) ||
+    (isContentTypeRef && isContentTypesLoading);
 
   return (
     <BaseCombobox

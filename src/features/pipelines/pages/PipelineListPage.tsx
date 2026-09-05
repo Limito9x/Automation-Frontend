@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import {
   usePipelines,
   useCreatePipelineMutation,
+  useUpdatePipelineMutation,
   useDeletePipelineMutation,
 } from "../hooks/usePipelines";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -31,6 +32,7 @@ import {
   Zap,
   Play,
   RefreshCw,
+  Pencil,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -50,11 +52,33 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
   const navigate = useNavigate();
   const { data: pipelines = [], isLoading } = usePipelines(projectId);
   const createMutation = useCreatePipelineMutation(projectId);
+  const updateMutation = useUpdatePipelineMutation(projectId);
   const deleteMutation = useDeletePipelineMutation(projectId);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [pipelineName, setPipelineName] = useState("");
   const [pipelineToDelete, setPipelineToDelete] = useState<PipelineSummaryDto | null>(null);
+  const [pipelineToRename, setPipelineToRename] = useState<PipelineSummaryDto | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+
+  const handleOpenRename = (p: PipelineSummaryDto) => {
+    setPipelineToRename(p);
+    setRenameValue(p.name);
+  };
+
+  const handleRename = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pipelineToRename || !renameValue.trim()) return;
+    try {
+      await updateMutation.mutateAsync({
+        id: pipelineToRename.id,
+        data: { name: renameValue.trim() },
+      });
+      setPipelineToRename(null);
+    } catch {
+      // Handled by toast
+    }
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,6 +239,13 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
                             <span>Open Canvas</span>
                           </MenuItem>
                           <MenuItem
+                            onAction={() => handleOpenRename(p)}
+                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            <span>Rename Pipeline</span>
+                          </MenuItem>
+                          <MenuItem
                             onAction={() => setPipelineToDelete(p)}
                             className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-destructive outline-none hover:bg-destructive/10 cursor-pointer"
                           >
@@ -345,6 +376,57 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
             </Button>
           </DialogFooter>
         </div>
+      </Dialog>
+
+      {/* Rename Pipeline Dialog */}
+      <Dialog
+        isOpen={!!pipelineToRename}
+        onOpenChange={(open) => !open && setPipelineToRename(null)}
+      >
+        <form onSubmit={handleRename} className="space-y-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+              <Pencil className="h-4 w-4 text-primary" />
+              <span>Rename Pipeline</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground pt-1">
+              Enter a new unique name for pipeline{" "}
+              <strong className="text-foreground font-medium">"{pipelineToRename?.name}"</strong>.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Label htmlFor="rename-pipeline-name" className="text-xs font-medium">
+              Pipeline Name
+            </Label>
+            <Input
+              id="rename-pipeline-name"
+              placeholder="e.g., Export FBX Production"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              autoFocus
+            />
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onPress={() => setPipelineToRename(null)}
+              isDisabled={updateMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              isDisabled={!renameValue.trim() || renameValue.trim() === pipelineToRename?.name || updateMutation.isPending}
+            >
+              {updateMutation.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </form>
       </Dialog>
     </div>
   );

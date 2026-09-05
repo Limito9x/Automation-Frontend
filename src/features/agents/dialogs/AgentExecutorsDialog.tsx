@@ -11,6 +11,7 @@ import {
     CheckCircle2,
     Cpu,
     Terminal,
+    Gamepad2,
     Server,
     Layers,
     PlusCircle,
@@ -101,6 +102,7 @@ export function AgentExecutorsDialog({ open, onOpenChange, agent }: AgentExecuto
         const k = key.toLowerCase();
         if (k.includes("blender")) return <Cpu className="w-4 h-4 text-orange-500" />;
         if (k.includes("python")) return <Terminal className="w-4 h-4 text-blue-500" />;
+        if (k.includes("unreal")) return <Gamepad2 className="w-4 h-4 text-purple-500" />;
         return <Layers className="w-4 h-4 text-primary" />;
     };
 
@@ -110,7 +112,7 @@ export function AgentExecutorsDialog({ open, onOpenChange, agent }: AgentExecuto
             onOpenChange={onOpenChange}
             title={t("agents.executorsDialogTitle", { defaultValue: `Runtime & Executors — ${agent.name}` })}
             description={t("agents.executorsDialogDesc", {
-                defaultValue: "Manage active runtime software (Blender, Python) and scan installations on this workstation.",
+                defaultValue: "Manage active runtime software (Blender, Python, Unreal Engine) and scan installations on this workstation.",
             })}
             size="2xl"
         >
@@ -331,7 +333,7 @@ export function AgentExecutorsDialog({ open, onOpenChange, agent }: AgentExecuto
                                         value={customKey}
                                         onChange={(e) => setCustomKey(e.target.value)}
                                         className="h-8 text-xs font-mono mt-1"
-                                        placeholder="blender / python"
+                                        placeholder="blender / python / unreal"
                                     />
                                 </div>
                                 <div className="sm:col-span-2">
@@ -343,7 +345,7 @@ export function AgentExecutorsDialog({ open, onOpenChange, agent }: AgentExecuto
                                         value={customVersion}
                                         onChange={(e) => setCustomVersion(e.target.value)}
                                         className="h-8 text-xs font-mono mt-1"
-                                        placeholder="e.g. 5.1.0"
+                                        placeholder="e.g. 5.8.0"
                                     />
                                 </div>
                             </div>
@@ -357,7 +359,7 @@ export function AgentExecutorsDialog({ open, onOpenChange, agent }: AgentExecuto
                                     value={customPath}
                                     onChange={(e) => setCustomPath(e.target.value)}
                                     className="h-8 text-xs font-mono mt-1"
-                                    placeholder="e.g. D:/Software/Blender/blender.exe"
+                                    placeholder="e.g. C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
                                 />
                             </div>
 

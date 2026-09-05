@@ -29,7 +29,7 @@ export function CreateCustomNodePage({ projectId }: CreateCustomNodePageProps) {
 
   const [name, setName] = useState("");
   const [label, setLabel] = useState("");
-  const [executor, setExecutor] = useState<"blender" | "python">("blender");
+  const [executor, setExecutor] = useState<"blender" | "python" | "unreal">("blender");
   const [scriptContent, setScriptContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedAssetId, setUploadedAssetId] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export function CreateCustomNodePage({ projectId }: CreateCustomNodePageProps) {
     if (existingNode) {
       setName(existingNode.name || "");
       setLabel(existingNode.label || existingNode.name || "");
-      if (existingNode.executor === "blender" || existingNode.executor === "python") {
+      if (existingNode.executor === "blender" || existingNode.executor === "python" || existingNode.executor === "unreal") {
         setExecutor(existingNode.executor);
       }
       if (existingNode.inputs) setInputs(existingNode.inputs);
@@ -81,7 +81,7 @@ export function CreateCustomNodePage({ projectId }: CreateCustomNodePageProps) {
       if (res) {
         if (!name && res.suggestedName) setName(res.suggestedName);
         if (!label && res.suggestedLabel) setLabel(res.suggestedLabel);
-        if (res.executor === "blender" || res.executor === "python") {
+        if (res.executor === "blender" || res.executor === "python" || res.executor === "unreal") {
           setExecutor(res.executor);
         }
         if (res.inputs) setInputs(res.inputs);

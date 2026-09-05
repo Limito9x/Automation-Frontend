@@ -5,10 +5,15 @@ import { z } from "zod";
 
 type contentTypeQuery = z.infer<typeof GetContentTypesQueryParams>;
 
-export const useContentTypes = (params: contentTypeQuery, projectId: string) => {
-    return ContentTypesApi.useGetContentTypes(projectId, params, {
+export const useContentTypes = (
+    params: contentTypeQuery,
+    projectId?: string,
+    options?: { enabled?: boolean }
+) => {
+    return ContentTypesApi.useGetContentTypes(projectId || "", params, {
         query: {
             placeholderData: keepPreviousData,
+            enabled: Boolean(projectId) && (options?.enabled ?? true),
         }
     });
 };
@@ -17,7 +22,7 @@ export const useContentTypes = (params: contentTypeQuery, projectId: string) => 
 export const useGetContentType = (projectId: string, key: string) => {
     return ContentTypesApi.useGetContentType(projectId, key, {
         query: {
-            enabled: !!key,
+            enabled: Boolean(key) && Boolean(projectId),
         }
     });
 };

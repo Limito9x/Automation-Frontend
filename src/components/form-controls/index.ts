@@ -15,3 +15,4 @@ export * from "./FormIconPicker";
 export * from './FormTagsInput';
 export * from './FormImageUpload';
 export * from './FormFileUpload';
+export * from './FormKeyValue';

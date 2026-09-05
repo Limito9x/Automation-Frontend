@@ -9,8 +9,8 @@ interface NodeMetaFormProps {
   onChangeName: (val: string) => void;
   label: string;
   onChangeLabel: (val: string) => void;
-  executor: "blender" | "python";
-  onChangeExecutor: (val: "blender" | "python") => void;
+  executor: "blender" | "python" | "unreal";
+  onChangeExecutor: (val: "blender" | "python" | "unreal") => void;
 }
 
 export function NodeMetaForm({
@@ -60,13 +60,14 @@ export function NodeMetaForm({
             </Label>
             <Select
               selectedKey={executor}
-              onSelectionChange={(key) => onChangeExecutor(String(key) as "blender" | "python")}
+              onSelectionChange={(key) => onChangeExecutor(String(key) as "blender" | "python" | "unreal")}
             >
               <SelectTrigger className="h-9 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem id="blender">Blender Worker (bpy)</SelectItem>
+                <SelectItem id="unreal">Unreal Engine Worker (unreal)</SelectItem>
                 <SelectItem id="python">Native Python 3 Worker</SelectItem>
               </SelectContent>
             </Select>

@@ -65,9 +65,9 @@ export function ContentTypeSchemaBuilderPage({ projectId, contentTypeId }: { pro
     }
 
     return (
-        <div className="flex flex-col h-full gap-4">
-            <div className="flex flex-col gap-1 p-4 md:p-6 lg:p-8 pb-0">
-                <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+        <div className="flex flex-col h-full gap-2">
+            <div className="flex flex-col gap-1 px-4 md:px-6 lg:px-8 pt-4 pb-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Link to={'/projects/$projectId/content-types'} params={{ projectId }} className="hover:underline">
                         &larr; {t("common:back", { defaultValue: "Back to Content Types" })}
                     </Link>
@@ -75,16 +75,16 @@ export function ContentTypeSchemaBuilderPage({ projectId, contentTypeId }: { pro
                 <h1 className="text-2xl font-bold tracking-tight">
                     {t("page.schemaBuilderTitle", { defaultValue: `Schema Builder: ${contentType.displayName || contentType.name}` })}
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                     {t("page.schemaBuilderDescription", { defaultValue: "Configure fields for this content type" })}
                 </p>
             </div>
 
-            <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pt-0">
+            <div className="flex-1 overflow-auto px-4 md:px-6 lg:px-8 py-2">
                 <Form form={form} formId="schema-builder-form" onSubmit={onSubmit}>
                     <FormBuilder builderContext={{ projectId }} />
 
-                    <div className="flex justify-end mt-6">
+                    <div className="flex justify-end mt-4 mb-6">
                         <Button type="button" variant="outline" className="mr-2" onClick={() => navigate({ to: "/projects/$projectId/content-types", params: { projectId } })}>
                             {t("common:cancel", { defaultValue: "Cancel" })}
                         </Button>

@@ -15,7 +15,21 @@ import type {
   ParseScriptCommand,
   NodePaletteItemDto,
   ParseScriptResponseDto,
+  CreatePipelineCommand,
+  UpdatePipelineRequest,
+  PipelineSummaryDto,
 } from "@/gen/model";
+
+export type {
+  CreateCustomNodeCommand,
+  UpdateCustomNodeRequest,
+  ParseScriptCommand,
+  NodePaletteItemDto,
+  ParseScriptResponseDto,
+  CreatePipelineCommand,
+  UpdatePipelineRequest,
+  PipelineSummaryDto,
+};
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -23,20 +37,15 @@ import {
   getPipelines,
   getGetPipelinesQueryKey,
   createPipeline,
+  updatePipeline,
   deletePipeline,
+  getGetPipelineGraphQueryKey,
 } from "@/gen/endpoints/pipelines/pipelines";
-import type {
-  CreatePipelineCommand,
-  PipelineSummaryDto,
-} from "@/gen/model";
 
 export function usePipelines(projectId?: string) {
   return useQuery({
     queryKey: getGetPipelinesQueryKey(projectId ? { projectId } : undefined),
-    queryFn: () =>
-      getPipelines(projectId ? { projectId } : undefined) as unknown as Promise<
-        PipelineSummaryDto[]
-      >,
+    queryFn: ({ signal }) => getPipelines(projectId ? { projectId } : undefined, signal),
     enabled: !!projectId,
   });
 }
@@ -46,8 +55,7 @@ export function useCreatePipelineMutation(projectId?: string) {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: (data: CreatePipelineCommand) =>
-      createPipeline(data) as unknown as Promise<PipelineSummaryDto>,
+    mutationFn: (data: CreatePipelineCommand) => createPipeline(data),
     onSuccess: () => {
       toast.success(
         t("pipelines.createSuccess", { defaultValue: "Pipeline created successfully" })
@@ -62,6 +70,37 @@ export function useCreatePipelineMutation(projectId?: string) {
       const errorMsg =
         err?.response?.data?.message || err?.message || "Failed to create pipeline";
       toast.error(t("pipelines.createFailed", { defaultValue: errorMsg }));
+    },
+  });
+}
+
+export function useUpdatePipelineMutation(projectId?: string, pipelineId?: string) {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdatePipelineRequest }) =>
+      updatePipeline(id, data),
+    onSuccess: (updated) => {
+      toast.success(
+        t("pipelines.updateSuccess", { defaultValue: "Pipeline renamed successfully" })
+      );
+      if (projectId) {
+        queryClient.invalidateQueries({
+          queryKey: getGetPipelinesQueryKey({ projectId }),
+        });
+      }
+      const targetId = pipelineId || updated?.id;
+      if (targetId) {
+        queryClient.invalidateQueries({
+          queryKey: getGetPipelineGraphQueryKey(targetId),
+        });
+      }
+    },
+    onError: (err: any) => {
+      const errorMsg =
+        err?.response?.data?.message || err?.message || "Failed to rename pipeline";
+      toast.error(t("pipelines.updateFailed", { defaultValue: errorMsg }));
     },
   });
 }
@@ -93,10 +132,7 @@ export function useDeletePipelineMutation(projectId?: string) {
 export function useNodePalette(projectId?: string) {
   return useQuery({
     queryKey: getGetNodePaletteQueryKey(projectId ? { projectId } : undefined),
-    queryFn: () =>
-      getNodePalette(projectId ? { projectId } : undefined) as unknown as Promise<
-        NodePaletteItemDto[]
-      >,
+    queryFn: ({ signal }) => getNodePalette(projectId ? { projectId } : undefined, signal),
     enabled: !!projectId,
   });
 }
@@ -106,8 +142,7 @@ export function usePipelineNodeMutations(projectId?: string) {
   const { t } = useTranslation();
 
   const parseScriptMutation = useMutation({
-    mutationFn: (data: ParseScriptCommand) =>
-      parseScriptSchema(data) as unknown as Promise<ParseScriptResponseDto>,
+    mutationFn: (data: ParseScriptCommand) => parseScriptSchema(data),
     onError: (err: any) => {
       const errorMsg =
         err?.response?.data?.message || err?.message || "Failed to parse script schema";

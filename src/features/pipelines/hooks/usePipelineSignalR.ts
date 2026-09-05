@@ -3,7 +3,14 @@ import * as signalR from "@microsoft/signalr";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetPipelineExecutionsQueryKey, getGetPipelineExecutionQueryKey } from "@/gen/endpoints/pipelines/pipelines";
 
-export function usePipelineSignalR(pipelineId?: string) {
+export function usePipelineSignalR(
+  pipelineId?: string,
+  callbacks?: {
+    onExecutionStarted?: (executionId: string) => void;
+    onNodeExecutionUpdated?: (executionId: string, nodeId: string, status?: string) => void;
+    onExecutionFinished?: (executionId: string) => void;
+  }
+) {
   const queryClient = useQueryClient();
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
@@ -31,13 +38,18 @@ export function usePipelineSignalR(pipelineId?: string) {
       queryClient.invalidateQueries({
         queryKey: getGetPipelineExecutionQueryKey(data.executionId),
       });
+      callbacks?.onExecutionStarted?.(data.executionId);
     });
 
-    connection.on("PipelineNodeExecutionUpdated", (data: { executionId: string; pipelineId: string; nodeId: string }) => {
-      queryClient.invalidateQueries({
-        queryKey: getGetPipelineExecutionQueryKey(data.executionId),
-      });
-    });
+    connection.on(
+      "PipelineNodeExecutionUpdated",
+      (data: { executionId: string; pipelineId: string; nodeId: string; status?: string }) => {
+        queryClient.invalidateQueries({
+          queryKey: getGetPipelineExecutionQueryKey(data.executionId),
+        });
+        callbacks?.onNodeExecutionUpdated?.(data.executionId, data.nodeId, data.status);
+      }
+    );
 
     connection.on("PipelineExecutionFinished", (data: { executionId: string; pipelineId: string; status: number }) => {
       queryClient.invalidateQueries({
@@ -46,6 +58,7 @@ export function usePipelineSignalR(pipelineId?: string) {
       queryClient.invalidateQueries({
         queryKey: getGetPipelineExecutionQueryKey(data.executionId),
       });
+      callbacks?.onExecutionFinished?.(data.executionId);
     });
 
     async function startConnection() {

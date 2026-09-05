@@ -4,12 +4,17 @@
  * Automation.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { PipelineTriggerType } from "./pipelineTriggerType";
 
 export interface PipelineSummaryDto {
   id: string;
   projectId: string;
   name: string;
+  triggerType: PipelineTriggerType;
+  /** @nullable */
+  triggerWorkspaceId: string | null;
   nodeCount: number;
   edgeCount: number;
   createdAt: string;
+  triggerConfig?: unknown;
 }

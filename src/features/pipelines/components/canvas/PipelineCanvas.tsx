@@ -30,6 +30,8 @@ import {
   useAddPipelineEdge,
   useDeletePipelineEdge,
   useValidatePipeline,
+  usePipelineExecution,
+  usePipelineExecutions,
 } from "../../hooks/usePipelineGraph";
 import { usePipelineSignalR } from "../../hooks/usePipelineSignalR";
 import type { ExtendedPipelineGraphDto } from "../../hooks/usePipelineGraph";
@@ -52,7 +54,6 @@ const defaultEdgeOptions = {
 
 export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
   const { screenToFlowPosition } = useReactFlow();
-  usePipelineSignalR(graph.id);
 
   // Convert graph DTO to React Flow nodes
   const initialNodes: Node[] = useMemo(() => {
@@ -145,7 +146,90 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
   const [isRunModalOpen, setIsRunModalOpen] = useState(false);
   const [activeExecutionId, setActiveExecutionId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [drawerDefaultTab, setDrawerDefaultTab] = useState<"history" | "inspect">("inspect");
+  const [drawerDefaultTab, setDrawerDefaultTab] = useState<"history" | "inspect" | "logs">("logs");
+
+  // Live Execution tracking & SignalR
+  const { data: executions } = usePipelineExecutions(graph.id);
+  const currentExecId = activeExecutionId || executions?.[0]?.id;
+  const { data: currentExecution } = usePipelineExecution(currentExecId || undefined);
+  const [liveNodeStatuses, setLiveNodeStatuses] = useState<Record<string, "idle" | "running" | "succeeded" | "failed">>({});
+
+  usePipelineSignalR(graph.id, {
+    onExecutionStarted: (execId) => {
+      setActiveExecutionId(execId);
+      setLiveNodeStatuses({});
+    },
+    onNodeExecutionUpdated: (_execId, nodeId, status) => {
+      if (status) {
+        const s = status.toLowerCase();
+        const mappedStatus = s === "running" ? "running" : s === "failed" ? "failed" : "succeeded";
+        setLiveNodeStatuses((prev) => ({
+          ...prev,
+          [nodeId]: mappedStatus,
+        }));
+      }
+    },
+    onExecutionFinished: () => {
+      // Finished
+    },
+  });
+
+  // Real-time synchronization of executionStatus into React Flow nodes
+  useEffect(() => {
+    if (!currentExecution) return;
+
+    let stateObj: any = null;
+    try {
+      if (typeof currentExecution.executionState === "string") {
+        stateObj = JSON.parse(currentExecution.executionState);
+      } else {
+        stateObj = currentExecution.executionState;
+      }
+    } catch {
+      stateObj = null;
+    }
+
+    const nodeOutputs = stateObj?.NodeOutputs || {};
+    const execStatus = Number(currentExecution.status);
+    const isFailed = execStatus === 5;
+
+    setNodes((currentNodes) => {
+      return currentNodes.map((node) => {
+        let newStatus: "idle" | "running" | "succeeded" | "failed" = "idle";
+        let newError: string | null = null;
+
+        if (nodeOutputs[node.id]) {
+          newStatus = "succeeded";
+        } else if (liveNodeStatuses[node.id]) {
+          newStatus = liveNodeStatuses[node.id];
+          if (newStatus === "failed") {
+            newError = currentExecution.errorMessage;
+          }
+        } else if (isFailed && prevExecutionStatus(node) === "running") {
+          newStatus = "failed";
+          newError = currentExecution.errorMessage;
+        }
+
+        const prevData = node.data as CustomPipelineNodeData;
+        if (prevData.executionStatus === newStatus && prevData.executionError === newError) {
+          return node;
+        }
+
+        return {
+          ...node,
+          data: {
+            ...prevData,
+            executionStatus: newStatus,
+            executionError: newError,
+          },
+        };
+      });
+    });
+  }, [currentExecution, liveNodeStatuses, setNodes]);
+
+  function prevExecutionStatus(node: Node): string | undefined {
+    return (node.data as CustomPipelineNodeData)?.executionStatus;
+  }
   const [isVariablesOpen, setIsVariablesOpen] = useState(true);
   const [varDropState, setVarDropState] = useState<{
     varName: string;
@@ -572,6 +656,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
       {/* Top Toolbar */}
       <CanvasToolbar
         projectId={projectId}
+        pipelineId={graph.id}
         pipelineName={graph.name}
         triggerType={graph.triggerType}
         isSaving={isMutating}
@@ -682,6 +767,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
             projectId={projectId}
             triggerType={graph.triggerType}
             triggerWorkspaceId={graph.triggerWorkspaceId}
+            triggerConfig={graph.triggerConfig}
             onClose={() => setSelectedNodeId(null)}
             onUpdateConfig={handleUpdateConfig}
             onDeleteNode={handleDeleteNode}
@@ -700,7 +786,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
         onClose={() => setIsRunModalOpen(false)}
         onExecutionStarted={(execId) => {
           setActiveExecutionId(execId);
-          setDrawerDefaultTab("inspect");
+          setDrawerDefaultTab("logs");
           setIsDrawerOpen(true);
         }}
       />

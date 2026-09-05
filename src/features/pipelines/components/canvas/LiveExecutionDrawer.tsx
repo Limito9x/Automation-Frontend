@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { usePipelineExecution, usePipelineExecutions } from "../../hooks/usePipelineGraph";
-import type { PipelineExecutionDto } from "../../hooks/usePipelineGraph";
+import { usePipelineExecution, usePipelineExecutions, useNodeExecutions } from "../../hooks/usePipelineGraph";
+import type { PipelineExecutionDto, NodeExecutionDto } from "../../hooks/usePipelineGraph";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,9 @@ import {
   RefreshCw,
   Layers,
   Code2,
+  FileText,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +31,7 @@ interface LiveExecutionDrawerProps {
   executionId: string | null;
   onSelectExecution?: (id: string) => void;
   onClose: () => void;
-  defaultTab?: "history" | "inspect";
+  defaultTab?: "history" | "inspect" | "logs";
 }
 
 export function LiveExecutionDrawer({
@@ -38,13 +41,15 @@ export function LiveExecutionDrawer({
   onClose,
   defaultTab = "inspect",
 }: LiveExecutionDrawerProps) {
-  const [activeTab, setActiveTab] = useState<"history" | "inspect">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"history" | "inspect" | "logs">(defaultTab);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(new Set());
 
   // Queries
   const { data: executions, isLoading: isHistoryLoading, refetch: refetchHistory } = usePipelineExecutions(pipelineId);
   const { data: execution, isLoading: isExecLoading } = usePipelineExecution(executionId || undefined);
+  const { data: nodeExecs, isLoading: isNodeExecsLoading } = useNodeExecutions(executionId || undefined);
 
   // Selected execution defaults to current executionId or first in history
   const activeExecution: PipelineExecutionDto | undefined = useMemo(() => {
@@ -107,11 +112,41 @@ export function LiveExecutionDrawer({
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const toggleNodeExpand = (nodeId: string) => {
+    setExpandedNodeIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) next.delete(nodeId);
+      else next.add(nodeId);
+      return next;
+    });
+  };
+
+  /** Parse log JsonDocument (string or object) into display string */
+  const parseLog = (log: any): string | null => {
+    if (!log) return null;
+    try {
+      if (typeof log === "string") return log;
+      const parsed = typeof log === "object" ? log : JSON.parse(log);
+      // Log is stored as JSON string value: {"Value": "...the actual log..."}
+      if (parsed?.Value) return parsed.Value;
+      if (typeof parsed === "string") return parsed;
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return String(log);
+    }
+  };
+
+  const tabs: { key: "history" | "inspect" | "logs"; label: string; icon: typeof Terminal }[] = [
+    { key: "inspect", label: "Inspect", icon: Terminal },
+    { key: "logs", label: "Step Logs", icon: FileText },
+    { key: "history", label: "History", icon: History },
+  ];
+
   return (
     <div
       className={cn(
         "absolute bottom-4 left-4 right-4 md:left-12 md:right-12 z-30 rounded-xl border border-border/80 bg-background/95 backdrop-blur-md shadow-2xl overflow-hidden transition-all duration-300 flex flex-col",
-        isExpanded ? "h-[540px]" : "h-[300px]"
+        isExpanded ? "h-[600px]" : "h-[340px]"
       )}
     >
       {/* Drawer Header & Tabs */}
@@ -119,39 +154,35 @@ export function LiveExecutionDrawer({
         <div className="flex items-center gap-3">
           {/* Navigation Tabs */}
           <div className="flex items-center bg-background/80 rounded-lg p-0.5 border border-border/60">
-            <button
-              onClick={() => setActiveTab("inspect")}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all",
-                activeTab === "inspect"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Terminal className="h-3.5 w-3.5" />
-              <span>Inspect Details</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("history")}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all",
-                activeTab === "history"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <History className="h-3.5 w-3.5" />
-              <span>History</span>
-              {executions && executions.length > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 text-[9px] rounded-full bg-primary/20 text-foreground font-mono">
-                  {executions.length}
-                </span>
-              )}
-            </button>
+            {tabs.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all",
+                  activeTab === key
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{label}</span>
+                {key === "history" && executions && executions.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.2 text-[9px] rounded-full bg-primary/20 text-foreground font-mono">
+                    {executions.length}
+                  </span>
+                )}
+                {key === "logs" && nodeExecs && nodeExecs.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.2 text-[9px] rounded-full bg-primary/20 text-foreground font-mono">
+                    {nodeExecs.length}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
 
           {/* Active Status Badge */}
-          {activeExecution && activeTab === "inspect" && getStatusBadge(activeExecution.status)}
+          {activeExecution && activeTab !== "history" && getStatusBadge(activeExecution.status)}
         </div>
 
         {/* Action Controls */}
@@ -196,7 +227,8 @@ export function LiveExecutionDrawer({
 
       {/* Drawer Content */}
       <div className="flex-1 min-h-0 overflow-y-auto p-3 text-xs">
-        {/* TAB 1: HISTORY LIST */}
+
+        {/* ===== TAB: HISTORY ===== */}
         {activeTab === "history" && (
           <div className="space-y-2">
             {isHistoryLoading ? (
@@ -219,7 +251,7 @@ export function LiveExecutionDrawer({
                       key={exec.id}
                       onClick={() => {
                         onSelectExecution?.(exec.id);
-                        setActiveTab("inspect");
+                        setActiveTab("logs");
                       }}
                       className={cn(
                         "group flex items-center justify-between p-2.5 rounded-lg border bg-card/60 hover:bg-muted/50 cursor-pointer transition-all duration-150",
@@ -251,7 +283,7 @@ export function LiveExecutionDrawer({
                       </div>
 
                       <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
-                        <span className="text-[10px] font-medium hidden sm:inline">Inspect</span>
+                        <span className="text-[10px] font-medium hidden sm:inline">Logs</span>
                         <ChevronRight className="h-4 w-4" />
                       </div>
                     </div>
@@ -262,7 +294,126 @@ export function LiveExecutionDrawer({
           </div>
         )}
 
-        {/* TAB 2: INSPECT DETAILS */}
+        {/* ===== TAB: STEP LOGS ===== */}
+        {activeTab === "logs" && (
+          <div className="space-y-2">
+            {/* Execution-level error */}
+            {activeExecution?.errorMessage && (
+              <div className="rounded-lg bg-destructive/10 border border-destructive/30 p-2.5 text-destructive text-xs space-y-0.5">
+                <strong className="flex items-center gap-1 font-semibold">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  Pipeline Execution Error:
+                </strong>
+                <p className="font-mono text-[11px] whitespace-pre-wrap">{activeExecution.errorMessage}</p>
+              </div>
+            )}
+
+            {!executionId ? (
+              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground space-y-1">
+                <FileText className="h-8 w-8 opacity-30" />
+                <p>No execution selected.</p>
+                <span className="text-[11px]">Select from History tab or run the pipeline.</span>
+              </div>
+            ) : isNodeExecsLoading ? (
+              <div className="flex items-center justify-center py-8 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Loading step logs...
+              </div>
+            ) : !nodeExecs || nodeExecs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground space-y-1">
+                <FileText className="h-8 w-8 opacity-30" />
+                <p>No step logs recorded yet.</p>
+                {activeExecution && (
+                  <span className="text-[11px]">Status: {String(activeExecution.status)}</span>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {nodeExecs.map((nodeExec: NodeExecutionDto, idx: number) => {
+                  const s = Number(nodeExec.status) || nodeExec.status;
+                  const isSucc = s === 4 || (s as any) === "Succeeded";
+                  const isFail = s === 5 || (s as any) === "Failed";
+                  const isExpd = expandedNodeIds.has(nodeExec.id);
+                  const logText = parseLog(nodeExec.log);
+                  const hasLog = !!logText;
+
+                  return (
+                    <div
+                      key={nodeExec.id}
+                      className={cn(
+                        "rounded-lg border bg-card/60 overflow-hidden",
+                        isFail ? "border-destructive/40" : isSucc ? "border-emerald-500/30" : "border-border/60"
+                      )}
+                    >
+                      {/* Node header row */}
+                      <div
+                        className={cn(
+                          "flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-muted/30 transition-colors",
+                          isFail && "bg-destructive/5",
+                          isSucc && "bg-emerald-500/5"
+                        )}
+                        onClick={() => (hasLog || nodeExec.errorMessage) && toggleNodeExpand(nodeExec.id)}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-[10px] font-mono text-muted-foreground shrink-0">#{idx + 1}</span>
+                          <code className="font-mono text-[11px] font-semibold truncate text-foreground">
+                            {nodeExec.pipelineNodeId.slice(0, 8)}...{nodeExec.pipelineNodeId.slice(-4)}
+                          </code>
+                          {getStatusBadge(nodeExec.status)}
+                          {nodeExec.startedAt && (
+                            <span className="text-[10px] text-muted-foreground font-mono hidden sm:inline">
+                              {new Date(nodeExec.startedAt).toLocaleTimeString()}
+                            </span>
+                          )}
+                        </div>
+                        {(hasLog || nodeExec.errorMessage) && (
+                          <button className="text-muted-foreground hover:text-foreground shrink-0">
+                            {isExpd ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Error message */}
+                      {nodeExec.errorMessage && (
+                        <div className="px-3 pb-2 pt-1 bg-destructive/5 border-t border-destructive/20">
+                          <p className="text-[11px] text-destructive font-mono whitespace-pre-wrap">{nodeExec.errorMessage}</p>
+                        </div>
+                      )}
+
+                      {/* Expanded log */}
+                      {isExpd && hasLog && (
+                        <div className="px-3 pb-3 pt-1 border-t border-border/40 bg-muted/20">
+                          <div className="flex items-center gap-1.5 mb-1.5 text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
+                            <FileText className="h-3 w-3" />
+                            Step Log
+                          </div>
+                          <pre className="font-mono text-[10.5px] text-foreground/90 whitespace-pre-wrap max-h-[200px] overflow-y-auto leading-relaxed bg-muted/30 p-2 rounded border border-border/40">
+                            {logText}
+                          </pre>
+                        </div>
+                      )}
+
+                      {/* Outputs preview */}
+                      {isSucc && nodeExec.output && (
+                        <div className="px-3 pb-2 pt-1 border-t border-border/30 bg-muted/10">
+                          <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mb-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Output
+                          </div>
+                          <pre className="font-mono text-[10px] text-foreground/80 whitespace-pre-wrap max-h-[80px] overflow-auto">
+                            {JSON.stringify(nodeExec.output, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ===== TAB: INSPECT ===== */}
         {activeTab === "inspect" && (
           <div className="space-y-3">
             {isExecLoading && !activeExecution ? (

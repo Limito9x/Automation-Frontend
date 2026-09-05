@@ -259,7 +259,9 @@ export const SyncLocalChangesResponse = /*#__PURE__*/ zod.object({
   "agentId": /*#__PURE__*/ zod.uuid(),
   "addedCount": /*#__PURE__*/ zod.int(),
   "modifiedCount": /*#__PURE__*/ zod.int(),
-  "locationRemove": /*#__PURE__*/ zod.int()
+  "locationRemove": /*#__PURE__*/ zod.int(),
+  "resourceVersionIds": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.uuid()),
+  "syncedResources": /*#__PURE__*/ zod.record(/*#__PURE__*/ zod.string(), /*#__PURE__*/ zod.uuid())
 })
 
 export const GetWorkspaceResourcesParams = /*#__PURE__*/ zod.object({
