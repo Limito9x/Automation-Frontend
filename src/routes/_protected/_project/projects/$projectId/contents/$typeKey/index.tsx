@@ -8,6 +8,9 @@ const contentItemsRouteSearch = buildPagedSearchSchema(CONTENT_ITEM_FILTERABLE_F
 });
 
 export const Route = createFileRoute('/_protected/_project/projects/$projectId/contents/$typeKey/')({
+    staticData: {
+        breadcrumb: (params: { typeKey?: string }) => params?.typeKey || 'Items',
+    },
     validateSearch: contentItemsRouteSearch,
     component: ContentItemsRoute,
 });

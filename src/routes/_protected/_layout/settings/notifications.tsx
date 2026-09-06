@@ -1,9 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { NotificationsSettings } from '@/features/settings/components/NotificationsSettings'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_protected/_layout/settings/notifications')({
-  staticData: {
-    breadcrumb: 'Notifications',
+  beforeLoad: () => {
+    throw redirect({ to: '/settings/profile' })
   },
-  component: NotificationsSettings,
 })

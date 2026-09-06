@@ -4,6 +4,9 @@ import { PipelineEditorPage } from "@/features/pipelines/pages/PipelineEditorPag
 export const Route = createFileRoute(
   "/_protected/_project/projects/$projectId/pipeline/$pipelineId"
 )({
+  staticData: {
+    breadcrumb: "Pipeline Editor",
+  },
   component: PipelineEditorRoute,
 });
 

@@ -1,15 +1,15 @@
 {
     "page": {
-        "title": "Quản lý ContentItem",
-        "description": "Quản lý tất cả contentItem trong hệ thống.",
-        "listCaption": "Danh sách ContentItem",
-        "searchPlaceholder": "Tìm kiếm contentItem..."
+        "title": "Quản lý Mục nội dung",
+        "description": "Quản lý tất cả mục nội dung trong hệ thống.",
+        "listCaption": "Danh sách Mục nội dung",
+        "searchPlaceholder": "Tìm kiếm mục nội dung..."
     },
     "actions": {
-        "create": "Tạo ContentItem",
-        "update": "Sửa ContentItem",
-        "delete": "Xóa ContentItem",
-        "deleteConfirm": "Bạn có chắc chắn muốn xóa contentItem này? Hành động này không thể hoàn tác."
+        "create": "Tạo Mục nội dung",
+        "update": "Sửa Mục nội dung",
+        "delete": "Xóa Mục nội dung",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa mục nội dung này? Hành động này không thể hoàn tác."
     },
     "fields": {
         "name": "Tên"

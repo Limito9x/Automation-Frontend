@@ -20,6 +20,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useGetProjectById } from "@/features/projects/hooks/useProjects";
 import { useContentTypes } from "@/features/contentTypes/hooks/useContentTypes";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { DynamicIcon } from "@/components/custom-ui/DynamicIcon";
 
 export function ProjectSidebar() {
   const navigate = useNavigate();
@@ -169,8 +170,9 @@ export function ProjectSidebar() {
                                     <SidebarMenuSubButton
                                       isActive={isActive}
                                     >
-                                      <Link to="/projects/$projectId/contents/$typeKey" params={{ projectId: currentProjectId, typeKey: ct.key }}>
-                                        <span>{ct.displayName || ct.name}</span>
+                                      <Link to="/projects/$projectId/contents/$typeKey" params={{ projectId: currentProjectId, typeKey: ct.key }} className="flex items-center gap-2 w-full">
+                                        <DynamicIcon name={ct.icon} className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                                        <span className="truncate">{ct.displayName || ct.name}</span>
                                       </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>

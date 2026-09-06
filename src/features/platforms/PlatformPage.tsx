@@ -31,7 +31,6 @@ export function PlatformPage({ useSearch, useNavigate }: PlatformPageProps) {
     return (
         <ResourcePageShell
             title={t("platforms.title", { defaultValue: "Platforms" })}
-            description={t("platforms.description", { defaultValue: "Manage target platforms for automation agents." })}
             onAdd={() => openDialog("create-platform")}
             addLabel={t("createPlatform", { defaultValue: "Add Platform" })}
             onRefresh={() => refetch()}

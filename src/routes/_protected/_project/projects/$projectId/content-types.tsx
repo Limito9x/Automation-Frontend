@@ -3,7 +3,7 @@ import { getAuthState } from '@/stores/authStore'
 
 export const Route = createFileRoute('/_protected/_project/projects/$projectId/content-types')({
   staticData: {
-    breadcrumb: 'ContentTypes',
+    breadcrumb: 'Content Types',
   },
   beforeLoad: () => {
     const permissions = getAuthState().permissions;

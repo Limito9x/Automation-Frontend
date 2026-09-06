@@ -23,7 +23,6 @@ export function SystemSettingsPage({ useSearch, useNavigate }: ResourcePageProps
     return (
         <ResourcePageShell
             title="System Settings"
-            description="Manage global configuration variables."
             resource={resourceQuery}
             filterConfig={systemSettingFilterConfig}
             searchPlaceholder="Search by Key..."

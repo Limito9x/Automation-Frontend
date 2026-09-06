@@ -45,10 +45,12 @@ import { Route as ProtectedLayoutSystemAuditLogsIdRouteImport } from './routes/_
 import { Route as ProtectedLayoutUsersIdIndexRouteImport } from './routes/_protected/_layout/users/$id/index'
 import { Route as ProtectedLayoutUsersIdEditRouteImport } from './routes/_protected/_layout/users/$id/edit'
 import { Route as ProtectedProjectProjectsProjectIdContentTypesRouteImport } from './routes/_protected/_project/projects/$projectId/content-types'
+import { Route as ProtectedProjectProjectsProjectIdContentsRouteImport } from './routes/_protected/_project/projects/$projectId/contents'
 import { Route as ProtectedProjectProjectsProjectIdExecutorSettingsRouteImport } from './routes/_protected/_project/projects/$projectId/executor-settings'
 import { Route as ProtectedProjectProjectsProjectIdOverviewRouteImport } from './routes/_protected/_project/projects/$projectId/overview'
 import { Route as ProtectedProjectProjectsProjectIdWorkspacesRouteImport } from './routes/_protected/_project/projects/$projectId/workspaces'
 import { Route as ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport } from './routes/_protected/_project/projects/$projectId/content-types/index'
+import { Route as ProtectedProjectProjectsProjectIdContentsIndexRouteImport } from './routes/_protected/_project/projects/$projectId/contents/index'
 import { Route as ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport } from './routes/_protected/_project/projects/$projectId/contents/$typeKey'
 import { Route as ProtectedProjectProjectsProjectIdPipelineIndexRouteImport } from './routes/_protected/_project/projects/$projectId/pipeline/index'
 import { Route as ProtectedProjectProjectsProjectIdPipelinePipelineIdRouteImport } from './routes/_protected/_project/projects/$projectId/pipeline/$pipelineId'
@@ -262,6 +264,12 @@ const ProtectedProjectProjectsProjectIdContentTypesRoute =
     path: '/content-types',
     getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
   } as any)
+const ProtectedProjectProjectsProjectIdContentsRoute =
+  ProtectedProjectProjectsProjectIdContentsRouteImport.update({
+    id: '/contents',
+    path: '/contents',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
+  } as any)
 const ProtectedProjectProjectsProjectIdExecutorSettingsRoute =
   ProtectedProjectProjectsProjectIdExecutorSettingsRouteImport.update({
     id: '/executor-settings',
@@ -286,11 +294,17 @@ const ProtectedProjectProjectsProjectIdContentTypesIndexRoute =
     path: '/',
     getParentRoute: () => ProtectedProjectProjectsProjectIdContentTypesRoute,
   } as any)
+const ProtectedProjectProjectsProjectIdContentsIndexRoute =
+  ProtectedProjectProjectsProjectIdContentsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdContentsRoute,
+  } as any)
 const ProtectedProjectProjectsProjectIdContentsTypeKeyRoute =
   ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport.update({
-    id: '/contents/$typeKey',
-    path: '/contents/$typeKey',
-    getParentRoute: () => ProtectedProjectProjectsProjectIdRouteRoute,
+    id: '/$typeKey',
+    path: '/$typeKey',
+    getParentRoute: () => ProtectedProjectProjectsProjectIdContentsRoute,
   } as any)
 const ProtectedProjectProjectsProjectIdPipelineIndexRoute =
   ProtectedProjectProjectsProjectIdPipelineIndexRouteImport.update({
@@ -404,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/system/audit-logs/$id': typeof ProtectedLayoutSystemAuditLogsIdRoute
   '/users/$id/edit': typeof ProtectedLayoutUsersIdEditRoute
   '/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren
+  '/projects/$projectId/contents': typeof ProtectedProjectProjectsProjectIdContentsRouteWithChildren
   '/projects/$projectId/executor-settings': typeof ProtectedProjectProjectsProjectIdExecutorSettingsRoute
   '/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
   '/projects/$projectId/workspaces': typeof ProtectedProjectProjectsProjectIdWorkspacesRouteWithChildren
@@ -414,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/projects/$projectId/resources/$resourceId': typeof ProtectedProjectProjectsProjectIdResourcesResourceIdRoute
   '/projects/$projectId/workspaces/$workspaceId': typeof ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute
   '/projects/$projectId/content-types/': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  '/projects/$projectId/contents/': typeof ProtectedProjectProjectsProjectIdContentsIndexRoute
   '/projects/$projectId/pipeline/': typeof ProtectedProjectProjectsProjectIdPipelineIndexRoute
   '/projects/$projectId/workspaces/': typeof ProtectedProjectProjectsProjectIdWorkspacesIndexRoute
   '/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
@@ -457,6 +473,7 @@ export interface FileRoutesByTo {
   '/projects/$projectId/resources/$resourceId': typeof ProtectedProjectProjectsProjectIdResourcesResourceIdRoute
   '/projects/$projectId/workspaces/$workspaceId': typeof ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute
   '/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  '/projects/$projectId/contents': typeof ProtectedProjectProjectsProjectIdContentsIndexRoute
   '/projects/$projectId/pipeline': typeof ProtectedProjectProjectsProjectIdPipelineIndexRoute
   '/projects/$projectId/workspaces': typeof ProtectedProjectProjectsProjectIdWorkspacesIndexRoute
   '/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
@@ -503,6 +520,7 @@ export interface FileRoutesById {
   '/_protected/_layout/system/audit-logs/$id': typeof ProtectedLayoutSystemAuditLogsIdRoute
   '/_protected/_layout/users/$id/edit': typeof ProtectedLayoutUsersIdEditRoute
   '/_protected/_project/projects/$projectId/content-types': typeof ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren
+  '/_protected/_project/projects/$projectId/contents': typeof ProtectedProjectProjectsProjectIdContentsRouteWithChildren
   '/_protected/_project/projects/$projectId/executor-settings': typeof ProtectedProjectProjectsProjectIdExecutorSettingsRoute
   '/_protected/_project/projects/$projectId/overview': typeof ProtectedProjectProjectsProjectIdOverviewRoute
   '/_protected/_project/projects/$projectId/workspaces': typeof ProtectedProjectProjectsProjectIdWorkspacesRouteWithChildren
@@ -513,6 +531,7 @@ export interface FileRoutesById {
   '/_protected/_project/projects/$projectId/resources/$resourceId': typeof ProtectedProjectProjectsProjectIdResourcesResourceIdRoute
   '/_protected/_project/projects/$projectId/workspaces/$workspaceId': typeof ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute
   '/_protected/_project/projects/$projectId/content-types/': typeof ProtectedProjectProjectsProjectIdContentTypesIndexRoute
+  '/_protected/_project/projects/$projectId/contents/': typeof ProtectedProjectProjectsProjectIdContentsIndexRoute
   '/_protected/_project/projects/$projectId/pipeline/': typeof ProtectedProjectProjectsProjectIdPipelineIndexRoute
   '/_protected/_project/projects/$projectId/workspaces/': typeof ProtectedProjectProjectsProjectIdWorkspacesIndexRoute
   '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder': typeof ProtectedProjectProjectsProjectIdContentTypesContentTypeIdBuilderRoute
@@ -557,6 +576,7 @@ export interface FileRouteTypes {
     | '/system/audit-logs/$id'
     | '/users/$id/edit'
     | '/projects/$projectId/content-types'
+    | '/projects/$projectId/contents'
     | '/projects/$projectId/executor-settings'
     | '/projects/$projectId/overview'
     | '/projects/$projectId/workspaces'
@@ -567,6 +587,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId/resources/$resourceId'
     | '/projects/$projectId/workspaces/$workspaceId'
     | '/projects/$projectId/content-types/'
+    | '/projects/$projectId/contents/'
     | '/projects/$projectId/pipeline/'
     | '/projects/$projectId/workspaces/'
     | '/projects/$projectId/content-types/$contentTypeId/builder'
@@ -610,6 +631,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId/resources/$resourceId'
     | '/projects/$projectId/workspaces/$workspaceId'
     | '/projects/$projectId/content-types'
+    | '/projects/$projectId/contents'
     | '/projects/$projectId/pipeline'
     | '/projects/$projectId/workspaces'
     | '/projects/$projectId/content-types/$contentTypeId/builder'
@@ -655,6 +677,7 @@ export interface FileRouteTypes {
     | '/_protected/_layout/system/audit-logs/$id'
     | '/_protected/_layout/users/$id/edit'
     | '/_protected/_project/projects/$projectId/content-types'
+    | '/_protected/_project/projects/$projectId/contents'
     | '/_protected/_project/projects/$projectId/executor-settings'
     | '/_protected/_project/projects/$projectId/overview'
     | '/_protected/_project/projects/$projectId/workspaces'
@@ -665,6 +688,7 @@ export interface FileRouteTypes {
     | '/_protected/_project/projects/$projectId/resources/$resourceId'
     | '/_protected/_project/projects/$projectId/workspaces/$workspaceId'
     | '/_protected/_project/projects/$projectId/content-types/'
+    | '/_protected/_project/projects/$projectId/contents/'
     | '/_protected/_project/projects/$projectId/pipeline/'
     | '/_protected/_project/projects/$projectId/workspaces/'
     | '/_protected/_project/projects/$projectId/content-types/$contentTypeId/builder'
@@ -935,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRouteImport
       parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
     }
+    '/_protected/_project/projects/$projectId/contents': {
+      id: '/_protected/_project/projects/$projectId/contents'
+      path: '/contents'
+      fullPath: '/projects/$projectId/contents'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
+    }
     '/_protected/_project/projects/$projectId/executor-settings': {
       id: '/_protected/_project/projects/$projectId/executor-settings'
       path: '/executor-settings'
@@ -963,12 +994,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentTypesIndexRouteImport
       parentRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRoute
     }
+    '/_protected/_project/projects/$projectId/contents/': {
+      id: '/_protected/_project/projects/$projectId/contents/'
+      path: '/'
+      fullPath: '/projects/$projectId/contents/'
+      preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsIndexRouteImport
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentsRoute
+    }
     '/_protected/_project/projects/$projectId/contents/$typeKey': {
       id: '/_protected/_project/projects/$projectId/contents/$typeKey'
-      path: '/contents/$typeKey'
+      path: '/$typeKey'
       fullPath: '/projects/$projectId/contents/$typeKey'
       preLoaderRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteImport
-      parentRoute: typeof ProtectedProjectProjectsProjectIdRouteRoute
+      parentRoute: typeof ProtectedProjectProjectsProjectIdContentsRoute
     }
     '/_protected/_project/projects/$projectId/pipeline/': {
       id: '/_protected/_project/projects/$projectId/pipeline/'
@@ -1218,24 +1256,6 @@ const ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren =
     ProtectedProjectProjectsProjectIdContentTypesRouteChildren,
   )
 
-interface ProtectedProjectProjectsProjectIdWorkspacesRouteChildren {
-  ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute: typeof ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute
-  ProtectedProjectProjectsProjectIdWorkspacesIndexRoute: typeof ProtectedProjectProjectsProjectIdWorkspacesIndexRoute
-}
-
-const ProtectedProjectProjectsProjectIdWorkspacesRouteChildren: ProtectedProjectProjectsProjectIdWorkspacesRouteChildren =
-  {
-    ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute:
-      ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute,
-    ProtectedProjectProjectsProjectIdWorkspacesIndexRoute:
-      ProtectedProjectProjectsProjectIdWorkspacesIndexRoute,
-  }
-
-const ProtectedProjectProjectsProjectIdWorkspacesRouteWithChildren =
-  ProtectedProjectProjectsProjectIdWorkspacesRoute._addFileChildren(
-    ProtectedProjectProjectsProjectIdWorkspacesRouteChildren,
-  )
-
 interface ProtectedProjectProjectsProjectIdContentsTypeKeyRouteChildren {
   ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyNewRoute
   ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyIndexRoute
@@ -1257,12 +1277,48 @@ const ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren =
     ProtectedProjectProjectsProjectIdContentsTypeKeyRouteChildren,
   )
 
+interface ProtectedProjectProjectsProjectIdContentsRouteChildren {
+  ProtectedProjectProjectsProjectIdContentsTypeKeyRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
+  ProtectedProjectProjectsProjectIdContentsIndexRoute: typeof ProtectedProjectProjectsProjectIdContentsIndexRoute
+}
+
+const ProtectedProjectProjectsProjectIdContentsRouteChildren: ProtectedProjectProjectsProjectIdContentsRouteChildren =
+  {
+    ProtectedProjectProjectsProjectIdContentsTypeKeyRoute:
+      ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren,
+    ProtectedProjectProjectsProjectIdContentsIndexRoute:
+      ProtectedProjectProjectsProjectIdContentsIndexRoute,
+  }
+
+const ProtectedProjectProjectsProjectIdContentsRouteWithChildren =
+  ProtectedProjectProjectsProjectIdContentsRoute._addFileChildren(
+    ProtectedProjectProjectsProjectIdContentsRouteChildren,
+  )
+
+interface ProtectedProjectProjectsProjectIdWorkspacesRouteChildren {
+  ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute: typeof ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute
+  ProtectedProjectProjectsProjectIdWorkspacesIndexRoute: typeof ProtectedProjectProjectsProjectIdWorkspacesIndexRoute
+}
+
+const ProtectedProjectProjectsProjectIdWorkspacesRouteChildren: ProtectedProjectProjectsProjectIdWorkspacesRouteChildren =
+  {
+    ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute:
+      ProtectedProjectProjectsProjectIdWorkspacesWorkspaceIdRoute,
+    ProtectedProjectProjectsProjectIdWorkspacesIndexRoute:
+      ProtectedProjectProjectsProjectIdWorkspacesIndexRoute,
+  }
+
+const ProtectedProjectProjectsProjectIdWorkspacesRouteWithChildren =
+  ProtectedProjectProjectsProjectIdWorkspacesRoute._addFileChildren(
+    ProtectedProjectProjectsProjectIdWorkspacesRouteChildren,
+  )
+
 interface ProtectedProjectProjectsProjectIdRouteRouteChildren {
   ProtectedProjectProjectsProjectIdContentTypesRoute: typeof ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren
+  ProtectedProjectProjectsProjectIdContentsRoute: typeof ProtectedProjectProjectsProjectIdContentsRouteWithChildren
   ProtectedProjectProjectsProjectIdExecutorSettingsRoute: typeof ProtectedProjectProjectsProjectIdExecutorSettingsRoute
   ProtectedProjectProjectsProjectIdOverviewRoute: typeof ProtectedProjectProjectsProjectIdOverviewRoute
   ProtectedProjectProjectsProjectIdWorkspacesRoute: typeof ProtectedProjectProjectsProjectIdWorkspacesRouteWithChildren
-  ProtectedProjectProjectsProjectIdContentsTypeKeyRoute: typeof ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren
   ProtectedProjectProjectsProjectIdPipelinePipelineIdRoute: typeof ProtectedProjectProjectsProjectIdPipelinePipelineIdRoute
   ProtectedProjectProjectsProjectIdResourcesResourceIdRoute: typeof ProtectedProjectProjectsProjectIdResourcesResourceIdRoute
   ProtectedProjectProjectsProjectIdPipelineIndexRoute: typeof ProtectedProjectProjectsProjectIdPipelineIndexRoute
@@ -1274,14 +1330,14 @@ const ProtectedProjectProjectsProjectIdRouteRouteChildren: ProtectedProjectProje
   {
     ProtectedProjectProjectsProjectIdContentTypesRoute:
       ProtectedProjectProjectsProjectIdContentTypesRouteWithChildren,
+    ProtectedProjectProjectsProjectIdContentsRoute:
+      ProtectedProjectProjectsProjectIdContentsRouteWithChildren,
     ProtectedProjectProjectsProjectIdExecutorSettingsRoute:
       ProtectedProjectProjectsProjectIdExecutorSettingsRoute,
     ProtectedProjectProjectsProjectIdOverviewRoute:
       ProtectedProjectProjectsProjectIdOverviewRoute,
     ProtectedProjectProjectsProjectIdWorkspacesRoute:
       ProtectedProjectProjectsProjectIdWorkspacesRouteWithChildren,
-    ProtectedProjectProjectsProjectIdContentsTypeKeyRoute:
-      ProtectedProjectProjectsProjectIdContentsTypeKeyRouteWithChildren,
     ProtectedProjectProjectsProjectIdPipelinePipelineIdRoute:
       ProtectedProjectProjectsProjectIdPipelinePipelineIdRoute,
     ProtectedProjectProjectsProjectIdResourcesResourceIdRoute:

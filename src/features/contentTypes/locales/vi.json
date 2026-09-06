@@ -1,15 +1,15 @@
 {
     "page": {
-        "title": "Quản lý ContentType",
-        "description": "Quản lý tất cả contentType trong hệ thống.",
-        "listCaption": "Danh sách ContentType",
-        "searchPlaceholder": "Tìm kiếm contentType..."
+        "title": "Quản lý Loại nội dung",
+        "description": "Quản lý tất cả loại nội dung trong hệ thống.",
+        "listCaption": "Danh sách Loại nội dung",
+        "searchPlaceholder": "Tìm kiếm loại nội dung..."
     },
     "actions": {
-        "create": "Tạo ContentType",
-        "update": "Sửa ContentType",
-        "delete": "Xóa ContentType",
-        "deleteConfirm": "Bạn có chắc chắn muốn xóa contentType này? Hành động này không thể hoàn tác."
+        "create": "Tạo Loại nội dung",
+        "update": "Sửa Loại nội dung",
+        "delete": "Xóa Loại nội dung",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa loại nội dung này? Hành động này không thể hoàn tác."
     },
     "fields": {
         "name": "Tên"

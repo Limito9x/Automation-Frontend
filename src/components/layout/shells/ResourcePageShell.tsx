@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 export interface ResourcePageShellProps {
     title: string;
     description?: string;
+    icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
 
     /** Action for the Add button */
     onAdd?: () => void;
@@ -34,6 +35,7 @@ export interface ResourcePageShellProps {
 export function ResourcePageShell({
     title,
     description,
+    icon: IconProp,
     onAdd,
     addLabel,
     onRefresh,
@@ -47,14 +49,26 @@ export function ResourcePageShell({
     const { t } = useTranslation("common");
     const resolvedAddLabel = addLabel ?? t("create");
 
+    const renderIcon = () => {
+        if (!IconProp) return null;
+        if (typeof IconProp === "function") {
+            const IconComp = IconProp as React.ComponentType<{ className?: string }>;
+            return <IconComp className="h-6 w-6 text-primary shrink-0" />;
+        }
+        return IconProp;
+    };
+
     return (
         <div className="p-6 mx-auto space-y-6 w-full min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-                    {description && (
+                    <div className="flex items-center gap-2.5">
+                        {renderIcon()}
+                        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+                    </div>
+                    {description ? (
                         <p className="text-sm text-muted-foreground">{description}</p>
-                    )}
+                    ) : null}
                 </div>
                 <div className="flex items-center gap-2">
                     {onRefresh && (

@@ -144,14 +144,11 @@ export function PipelineListPage({ projectId }: PipelineListPageProps) {
     <div className="p-6 mx-auto space-y-6 w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
-        <div className="space-y-1">
+        <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Workflow className="h-6 w-6 text-primary" />
             Pipelines
           </h1>
-          <p className="text-xs text-muted-foreground">
-            Design, execute and monitor automated DAG workflows and execution steps.
-          </p>
         </div>
 
         <div className="flex items-center gap-2">

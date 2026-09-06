@@ -33,7 +33,6 @@ export function ProjectPage({ useSearch, useNavigate }: ResourcePageProps) {
     return (
         <ResourcePageShell
             title={t("page.title", { defaultValue: "Project Management" })}
-            description={t("page.description", { defaultValue: "Manage all projects in the system." })}
             onAdd={canCreate ? () => openDialog("create-project") : undefined}
             addLabel={t("actions.create", { defaultValue: "Add Project" })}
             resource={resourceQuery}

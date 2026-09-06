@@ -26,7 +26,6 @@ export function AuditLogsPage({ useSearch, useNavigate }: ResourcePageProps) {
     return (
         <ResourcePageShell
             title="Audit Logs"
-            description="View system activity logs."
             resource={resource}
             filterConfig={auditLogFilterConfig}
             searchPlaceholder="Search audit logs..."

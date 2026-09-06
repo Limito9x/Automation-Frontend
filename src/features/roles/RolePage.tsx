@@ -33,7 +33,6 @@ export function RolePage({ useSearch, useNavigate }: RolePageProps) {
     return (
         <ResourcePageShell
             title={t("page.title", { defaultValue: "Role Management" })}
-            description={t("page.description", { defaultValue: "Manage your roles here." })}
             onAdd={() => openDialog("create-role")}
             addLabel={t("actions.create", { defaultValue: "Add Role" })}
             resource={resourceQuery}

@@ -4,6 +4,9 @@ import { NodeLibrary } from "@/features/pipelines/components/NodeLibrary";
 export const Route = createFileRoute(
   "/_protected/_project/projects/$projectId/pipeline/nodes/"
 )({
+  staticData: {
+    breadcrumb: "Node Library",
+  },
   component: NodeLibraryRoute,
 });
 

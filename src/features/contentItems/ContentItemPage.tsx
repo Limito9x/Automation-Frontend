@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutGrid, List, EditIcon, TrashIcon, Layers } from "lucide-react";
 import type { ContentTypeDto, ContentItemDto } from "@/gen/model";
 import { ContentResourcesDrawer } from "./components/drawers/ContentResourcesDrawer";
+import { DynamicIcon } from "@/components/custom-ui/DynamicIcon";
 
 export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
     const { t } = useTranslation(["contentItems", "common"]);
@@ -124,10 +125,10 @@ export function ContentItemPage({ useSearch, useNavigate }: ResourcePageProps) {
     return (
         <>
             <ResourcePageShell
-                title={contentType?.displayName || t("page.title", { defaultValue: "ContentItem Management" })}
-                description={`Manage all ${contentType?.name} in project` || t("page.description", { defaultValue: "Manage all contentItems in the system." })}
+                icon={<DynamicIcon name={contentType?.icon} className="h-6 w-6 text-primary shrink-0" />}
+                title={contentType?.displayName || t("page.title", { defaultValue: "Content Items" })}
                 onAdd={canCreate ? () => appNavigate({ to: "/projects/$projectId/contents/$typeKey/new", params: { projectId, typeKey } }) : undefined}
-                addLabel={contentType?.name ? `Add ${contentType.name}` : t("actions.create", { defaultValue: `Add Content Item` })}
+                addLabel={contentType?.name ? `Add ${contentType.name}` : t("actions.create", { defaultValue: "Add Content Item" })}
                 resource={resourceQuery}
                 filterConfig={contentItemFilterConfig}
                 searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search..." })}

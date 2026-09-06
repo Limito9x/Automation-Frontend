@@ -4,6 +4,9 @@ import { CreateCustomNodePage } from "@/features/pipelines/pages/CreateCustomNod
 export const Route = createFileRoute(
   "/_protected/_project/projects/$projectId/pipeline/nodes/new"
 )({
+  staticData: {
+    breadcrumb: "Create Custom Node",
+  },
   component: CreateCustomNodeRoute,
 });
 

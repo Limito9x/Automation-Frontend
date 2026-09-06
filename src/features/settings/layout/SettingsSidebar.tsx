@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { User, Shield, Bell } from 'lucide-react'
+import { User, Shield } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const settingsNavItems = [
@@ -12,11 +12,6 @@ const settingsNavItems = [
     title: 'Security',
     href: '/settings/security',
     icon: Shield,
-  },
-  {
-    title: 'Notifications',
-    href: '/settings/notifications',
-    icon: Bell,
   },
 ]
 

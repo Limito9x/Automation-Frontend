@@ -31,7 +31,6 @@ export function UserPage({ useSearch, useNavigate }: ResourcePageProps) {
     return (
         <ResourcePageShell
             title={t("page.title")}
-            description={t("page.description")}
             onAdd={() => navigate({ to: "/users/new" })}
             addLabel="Add User"
             resource={resourceQuery}

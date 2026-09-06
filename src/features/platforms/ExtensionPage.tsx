@@ -31,7 +31,6 @@ export function ExtensionPage({ useSearch, useNavigate }: ExtensionPageProps) {
     return (
         <ResourcePageShell
             title={t("extensions.title", { defaultValue: "Platform Extensions" })}
-            description={t("extensions.description", { defaultValue: "Manage allowed extensions for platforms." })}
             onAdd={() => openDialog("create-extension")}
             addLabel={t("createExtension", { defaultValue: "Add Extension" })}
             onRefresh={() => refetch()}

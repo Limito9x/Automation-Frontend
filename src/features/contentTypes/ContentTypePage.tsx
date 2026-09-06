@@ -38,13 +38,12 @@ export function ContentTypePage({ useSearch, useNavigate, projectId }: ContentTy
 
     return (
         <ResourcePageShell
-            title={t("page.title", { defaultValue: "ContentType Management" })}
-            description={t("page.description", { defaultValue: "Manage all contentTypes in the system." })}
+            title={t("page.title", { defaultValue: "Content Types" })}
             onAdd={canCreate ? () => openDialog("create-content-type", { projectId }) : undefined}
-            addLabel={t("actions.create", { defaultValue: "Add ContentType" })}
+            addLabel={t("actions.create", { defaultValue: "Add Content Type" })}
             resource={resourceQuery}
             filterConfig={contentTypeFilterConfig}
-            searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search contentTypes..." })}
+            searchPlaceholder={t("page.searchPlaceholder", { defaultValue: "Search content types..." })}
             renderViewOptions={<DataTableViewOptions table={table} />}
         >
             <ContentTypeTable

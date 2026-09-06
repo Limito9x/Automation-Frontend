@@ -16,7 +16,7 @@ import {
   SidebarMenuSubItem,
   SidebarGroupAction,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Users, Settings2, Shield, Settings, MonitorCog, Logs, Folder, Plus, Layers, Puzzle, Cpu, Server } from "lucide-react";
+import { LayoutDashboard, Users, Settings2, Shield, Settings, MonitorCog, Logs, Plus, Layers, Puzzle, Cpu, Server, FolderKanban, FolderGit2 } from "lucide-react";
 import { NavUser } from "./NavUser";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useProjects } from "@/features/projects/hooks/useProjects";
@@ -102,18 +102,25 @@ export function GlobalSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton isActive={pathname === "/projects"} onPress={() => handleNav("/projects")}>
-                  <LayoutDashboard />
+                  <FolderKanban className="size-4" />
                   <span>All Projects</span>
                 </SidebarMenuButton>
+                {projectsData?.items && projectsData.items.length > 0 && (
+                  <SidebarMenuSub className="my-1 mr-0 ml-3.5 px-1.5 border-l border-border/50">
+                    {projectsData.items.map((project) => (
+                      <SidebarMenuSubItem key={project.id}>
+                        <SidebarMenuSubButton
+                          isActive={pathname.startsWith(`/projects/${project.id}`)}
+                          onPress={() => handleNav(`/projects/${project.id}/overview`)}
+                        >
+                          <FolderGit2 className="size-3.5 text-muted-foreground" />
+                          <span className="truncate">{project.name}</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                )}
               </SidebarMenuItem>
-              {projectsData?.items?.map(project => (
-                <SidebarMenuItem key={project.id}>
-                  <SidebarMenuButton isActive={pathname.startsWith(`/projects/${project.id}`)} onPress={() => handleNav(`/projects/${project.id}/overview`)}>
-                    <Folder />
-                    <span>{project.name}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -4,6 +4,9 @@ import { PipelineListPage } from "@/features/pipelines/pages/PipelineListPage";
 export const Route = createFileRoute(
   "/_protected/_project/projects/$projectId/pipeline/"
 )({
+  staticData: {
+    breadcrumb: "Pipelines",
+  },
   component: PipelineListRoute,
 });
 

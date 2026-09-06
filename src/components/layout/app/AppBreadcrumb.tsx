@@ -13,10 +13,16 @@ export function AppBreadcrumb() {
   // Filter matches that have a breadcrumb staticData
   const breadcrumbs = matches
     .filter((match) => (match.staticData as any)?.breadcrumb)
-    .map((match) => ({
-      label: (match.staticData as any).breadcrumb,
-      path: match.pathname,
-    }))
+    .map((match) => {
+      const rawBreadcrumb = (match.staticData as any).breadcrumb;
+      const label = typeof rawBreadcrumb === "function" 
+        ? rawBreadcrumb(match.params, match.loaderData) 
+        : rawBreadcrumb;
+      return {
+        label,
+        path: match.pathname,
+      };
+    })
 
   if (breadcrumbs.length === 0) return null;
 

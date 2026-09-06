@@ -9,6 +9,7 @@ import type { ContentTypeDto } from "@/gen/model";
 import { EditIcon, TrashIcon, TypeIcon, KeyIcon, FileTextIcon, BlocksIcon } from "lucide-react";
 import { useDataTable } from "@/lib/useDataTable";
 import { useRouter } from "@tanstack/react-router";
+import { DynamicIcon } from "@/components/custom-ui/DynamicIcon";
 
 export interface UseContentTypeTableOptions {
     data: ContentTypeDto[];
@@ -30,7 +31,10 @@ export function useContentTypeTable({ data, totalCount, resource }: UseContentTy
                 meta: { label: t("fields.displayName", { defaultValue: "Display Name" }), icon: TypeIcon },
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2.5">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted/60 border border-border/50 text-muted-foreground">
+                                <DynamicIcon name={row.original.icon} className="h-4 w-4" />
+                            </div>
                             <span className="font-semibold text-foreground">{row.original.displayName}</span>
                         </div>
                     );
