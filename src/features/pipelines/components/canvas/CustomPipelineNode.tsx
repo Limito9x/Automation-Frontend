@@ -29,6 +29,12 @@ export interface CustomPipelineNodeData extends Record<string, unknown> {
   pipelineId?: string;
 }
 
+import {
+  normalizePinType,
+  getPinVisual as getCatalogueVisual,
+  type NormalizedPinType,
+} from "../../hooks/usePinCatalogue";
+
 export interface PinTypeVisual {
   label: string;
   hex: string;
@@ -36,106 +42,53 @@ export interface PinTypeVisual {
   textClass: string;
 }
 
-export function getPinVisual(type?: PinPrimitiveType | number | string): PinTypeVisual {
-  // String: 0 in C# enum
-  if (type === 0 || type === "0" || type === "String" || type === "string" || type === "str") {
-    return {
-      label: "String",
-      hex: "#0ea5e9", // sky-500
-      bgClass: "bg-sky-500",
-      textClass: "text-sky-600 dark:text-sky-400",
-    };
-  }
-  // Number: 1 in C# enum
-  if (type === 1 || type === "1" || type === "Number" || type === "number" || type === "int" || type === "float") {
-    return {
-      label: "Number",
-      hex: "#8b5cf6", // violet-500
-      bgClass: "bg-violet-500",
-      textClass: "text-violet-600 dark:text-violet-400",
-    };
-  }
-  // Boolean: 2 in C# enum
-  if (type === 2 || type === "2" || type === "Boolean" || type === "boolean" || type === "bool") {
-    return {
-      label: "Boolean",
-      hex: "#f59e0b", // amber-500
-      bgClass: "bg-amber-500",
-      textClass: "text-amber-600 dark:text-amber-400",
-    };
-  }
-  // Path: 3 in C# enum
-  if (type === 3 || type === "3" || type === "Path" || type === "path") {
-    return {
-      label: "Path",
-      hex: "#f97316", // orange-500
-      bgClass: "bg-orange-500",
-      textClass: "text-orange-600 dark:text-orange-400",
-    };
-  }
-  // EntityRef / Workspace: 4 in C# enum
-  if (type === 4 || type === "4" || type === "EntityRef" || type === "entityref" || type === "workspace") {
-    return {
-      label: "EntityRef",
-      hex: "#10b981", // emerald-500
-      bgClass: "bg-emerald-500",
-      textClass: "text-emerald-600 dark:text-emerald-400",
-    };
-  }
-  // Asset / File: 5 in C# enum
-  if (type === 5 || type === "5" || type === "Asset" || type === "asset" || type === "file") {
-    return {
-      label: "Asset",
-      hex: "#ec4899", // pink-500
-      bgClass: "bg-pink-500",
-      textClass: "text-pink-600 dark:text-pink-400",
-    };
-  }
-  // Variable: 6 in C# enum
-  if (type === 6 || type === "6" || type === "Variable" || type === "variable") {
-    return {
-      label: "Variable",
-      hex: "#06b6d4", // cyan-500
-      bgClass: "bg-cyan-500",
-      textClass: "text-cyan-600 dark:text-cyan-400",
-    };
-  }
+const PIN_BG_CLASSES: Record<NormalizedPinType, { bgClass: string; textClass: string }> = {
+  String: { bgClass: "bg-sky-500", textClass: "text-sky-600 dark:text-sky-400" },
+  Number: { bgClass: "bg-purple-500", textClass: "text-purple-600 dark:text-purple-400" },
+  Boolean: { bgClass: "bg-amber-500", textClass: "text-amber-600 dark:text-amber-400" },
+  Path: { bgClass: "bg-orange-500", textClass: "text-orange-600 dark:text-orange-400" },
+  EntityRef: { bgClass: "bg-emerald-500", textClass: "text-emerald-600 dark:text-emerald-400" },
+  Asset: { bgClass: "bg-pink-500", textClass: "text-pink-600 dark:text-pink-400" },
+};
 
-  // Fallback
+export function getPinVisual(type?: PinPrimitiveType | number | string): PinTypeVisual {
+  const norm = normalizePinType(type);
+  const visual = getCatalogueVisual(norm);
+  const style = PIN_BG_CLASSES[norm];
+
   return {
-    label: "Any",
-    hex: "#71717a", // zinc-500
-    bgClass: "bg-zinc-500",
-    textClass: "text-zinc-600 dark:text-zinc-400",
+    label: visual.label,
+    hex: visual.handleColor,
+    bgClass: style.bgClass,
+    textClass: style.textClass,
   };
 }
 
-export function isStringPin(type?: PinPrimitiveType | number | string) {
-  return type === 0 || type === "0" || type === "String" || type === "string" || type === "str";
+export function isStringPin(type?: unknown) {
+  return normalizePinType(type) === "String";
 }
-export function isNumberPin(type?: PinPrimitiveType | number | string) {
-  return type === 1 || type === "1" || type === "Number" || type === "number" || type === "int" || type === "float";
+export function isNumberPin(type?: unknown) {
+  return normalizePinType(type) === "Number";
 }
-export function isBooleanPin(type?: PinPrimitiveType | number | string) {
-  return type === 2 || type === "2" || type === "Boolean" || type === "boolean" || type === "bool";
+export function isBooleanPin(type?: unknown) {
+  return normalizePinType(type) === "Boolean";
 }
-export function isPathPin(type?: PinPrimitiveType | number | string) {
-  return type === 3 || type === "3" || type === "Path" || type === "path";
+export function isPathPin(type?: unknown) {
+  return normalizePinType(type) === "Path";
 }
-export function isEntityRefPin(type?: PinPrimitiveType | number | string) {
-  return type === 4 || type === "4" || type === "EntityRef" || type === "entityref" || type === "workspace";
+export function isEntityRefPin(type?: unknown) {
+  return normalizePinType(type) === "EntityRef";
 }
-export function isAssetPin(type?: PinPrimitiveType | number | string) {
-  return type === 5 || type === "5" || type === "Asset" || type === "asset" || type === "file";
+export function isAssetPin(type?: unknown) {
+  return normalizePinType(type) === "Asset";
 }
-export function isVariablePin(type?: PinPrimitiveType | number | string, pinId?: string) {
+export function isVariablePin(type?: unknown, pinId?: string, entityTarget?: string | null) {
   return (
-    type === 6 ||
-    type === "6" ||
-    type === "Variable" ||
-    type === "variable" ||
+    entityTarget === "variable" ||
     pinId?.toLowerCase() === "variablename" ||
-    pinId?.toLowerCase() === "targetvariable"
+    pinId?.toLowerCase() === "targetvariable" ||
+    String(type).toLowerCase() === "variable" ||
+    String(type) === "6"
   );
 }
 export function formatPinTypeLabel(type?: PinPrimitiveType | number | string, cardinality?: any): string {
@@ -171,16 +124,22 @@ export const CustomPipelineNode = memo(({ id, data, selected }: NodeProps) => {
   const outputs = nodeData.outputs || [];
   const status = nodeData.executionStatus || "idle";
 
-  // Data pins (exclude exec pins)
+  // Data pins (exclude exec pins: PinKind.Exec = 1, PinKind.Data = 0)
   const isExecPin = (p: PinDefinition) => {
-    const kind = (p as any).kind;
+    const rawKind = String((p as any).kind ?? "").toLowerCase();
+    if (rawKind === "exec" || rawKind === "1") return true;
+    if (rawKind === "data" || rawKind === "0") return false;
+
+    const idLower = (p.id || "").toLowerCase();
+    const labelLower = (p.label || "").toLowerCase();
+
     return (
-      kind === 1 ||
-      kind === "Exec" ||
-      p.id === "exec_in" ||
-      p.id === "exec_out" ||
-      p.id === "loop_body" ||
-      p.id === "completed"
+      idLower === "exec" ||
+      idLower === "exec_in" ||
+      idLower === "exec_out" ||
+      idLower === "loop_body" ||
+      idLower === "completed" ||
+      labelLower === "exec"
     );
   };
 

@@ -1,11 +1,16 @@
-import { getFieldRegistration, type FieldDefinition } from "@/lib/field-registry";
+import { getFieldRegistration, type FieldDefinition, type ScopedFieldRegistry } from "@/lib/field-registry";
 import type { Control, FieldValues } from "react-hook-form";
 
 export function DynamicField<T extends FieldValues>({
-    control, field, context
-}: { control: Control<T>; field: FieldDefinition<T>, context?: Record<string, any> }) {
-    const registration = getFieldRegistration(field.type as string)
-    const Component = registration?.component
+    control, field, context, registry
+}: {
+    control: Control<T>;
+    field: FieldDefinition<T>;
+    context?: Record<string, any>;
+    registry?: ScopedFieldRegistry;
+}) {
+    const registration = registry ? registry.get(field.type as string) : getFieldRegistration(field.type as string);
+    const Component = registration?.component;
 
     if (!Component) {
         return <div className="text-destructive">Field type "{field.type as string}" is not registered.</div>

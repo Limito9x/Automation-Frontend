@@ -7,7 +7,8 @@ import { useTagGroups, useTags } from "@/features/tags/hooks/useTags";
 import { useContentTypes } from "@/features/contentTypes/hooks/useContentTypes";
 
 interface EntityPinSelectProps {
-  entityType: string;
+  entityType?: string;
+  target?: string | null;
   projectId?: string;
   value?: any;
   onChange: (value: any) => void;
@@ -16,14 +17,15 @@ interface EntityPinSelectProps {
 }
 
 export function EntityPinSelect({
-  entityType,
+  entityType = "",
+  target,
   projectId = "",
   value,
   onChange,
   placeholder,
   disabled = false,
 }: EntityPinSelectProps) {
-  const normType = entityType.toLowerCase().replace(/[\s_-]+/g, "");
+  const normType = (target || entityType || "resource").toLowerCase().replace(/[\s_-]+/g, "");
   const isResourceRef = normType.includes("resource");
   const isTagGroupRef = normType === "taggroup" || normType.includes("taggroup");
   const isContentTypeRef = normType === "contenttype" || normType.includes("contenttype");

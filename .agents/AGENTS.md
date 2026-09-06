@@ -38,6 +38,7 @@
 - **`docs/frontend_rules.md`**: Đọc khi cần biết các quy định khắt khe về code frontend, style guide, hoặc các cấm kỵ (anti-patterns) của dự án.
 - **`docs/patterns/users.md`**: Đọc khi xây dựng một Feature Module mới hoặc làm việc với Table/Dialog. Chứa các quy ước tách biệt Component, Context, Dialogs, và Route schemas.
 - **`docs/patterns/filter.md`**: Đọc khi làm việc với hệ thống Filter Panel, Advanced Filters, hoặc cần viết Field Adapters cho các loại input tìm kiếm phức tạp (như date range, multi-select).
+- **`docs/patterns/pipelines_canvas.md`**: Đọc khi làm việc với Pipeline Canvas, Node Inspector, Scoped Field Registry ("Sàn" Pattern), hoặc chuyển đổi PinDefinition thành Form Control.
 - **`docs/agent_context.md`**: Context chung của agent cho dự án.
 
 ### Skill Index:
@@ -92,4 +93,10 @@
 ## 14. Feature Analysis & UI Layout Heuristics
 - **Simple Entity Features:** When a feature request only involves 1 single entity, has very few fields, and at most 1 foreign key, assume a standard **Table layout** (ResourcePageShell / BaseTable) at Frontend. Do not ask redundant questions about UI layout.
 - **Complex Features:** When a feature request is complex, involves multiple fields, multiple entities, or complex scene data flows, YOU MUST proactively ask the user to clarify: (1) Preferred UI layout (List Card, Canvas, Dashboard, Tabbed View, etc.), (2) Field mapping to dedicated Command/Query & Response DTOs, and (3) Scene Data Flow design to minimize API roundtrips.
+
+## 15. Scoped Field Registry & Canvas Form Architecture
+- **Kiến trúc Sàn (Scoped Registry):** Khi phát triển Form Controls cho các domain đặc thù (như Pipeline Canvas, Content Types), TUYỆT ĐỐI KHÔNG đăng ký vào Global Field Registry nếu controls đó chỉ dùng nội bộ domain. Phải sử dụng `ScopedFieldRegistry` kế thừa từ `baseRegistry` (như `pipelineRegistry`).
+- **Scope Context Injection:** Cung cấp dữ liệu nghiệp vụ (như `pipelineId`, `projectId`, `variables`, `edges`, `nodes`) thông qua Context Provider ở cấp độ Canvas/Page (như `PipelineFormScopeProvider`). Các Form Controls bên dưới phải đọc qua hook (`usePipelineFormScope()`) thay vì thực hiện prop drilling qua nhiều tầng component.
+- **Rule-based Strategy Factory:** Khi ánh xạ từ Data Model (như `PinDefinition`) sang `FieldDefinition` của Dynamic Form, BẮT BUỘC dùng Strategy Factory Pattern (mảng các rule độc lập với `predicate` và `create`) tuân thủ OCP. TUYỆT ĐỐI KHÔNG viết các chuỗi `if/else` lồng nhau.
+- **Tách bạch Inspector:** Phân tách rõ ràng giữa chân đã kết nối dây (Wired Pins - chỉ hiển thị badge/nguồn kết nối) và chân chưa nối dây (Unwired Pins - render qua `FormRenderer`), kết hợp `useForm` và debounced autosave (250ms) để gửi cập nhật về server.
 

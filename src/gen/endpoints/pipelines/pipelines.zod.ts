@@ -84,6 +84,16 @@ export const GetNodeExecutionsResponseItem = /*#__PURE__*/ zod.object({
 })
 export const GetNodeExecutionsResponse = /*#__PURE__*/ zod.array(GetNodeExecutionsResponseItem)
 
+export const GetPinCatalogueResponseItem = /*#__PURE__*/ zod.object({
+  "code": /*#__PURE__*/ zod.string(),
+  "name": /*#__PURE__*/ zod.string(),
+  "category": /*#__PURE__*/ zod.string(),
+  "color": /*#__PURE__*/ zod.string(),
+  "defaultControl": /*#__PURE__*/ zod.string(),
+  "supportedEntityTargets": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.string()))
+})
+export const GetPinCatalogueResponse = /*#__PURE__*/ zod.array(GetPinCatalogueResponseItem)
+
 export const UpdatePipelineParams = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid()
 })
@@ -142,21 +152,25 @@ export const GetPipelineGraphResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "configValues": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.looseObject({
 
@@ -174,7 +188,7 @@ export const GetPipelineGraphResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "isRequired": /*#__PURE__*/ zod.boolean(),
   "defaultValue": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
@@ -184,13 +198,13 @@ export const GetPipelineGraphResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "order": /*#__PURE__*/ zod.int()
 })),
   "variables": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
@@ -244,21 +258,25 @@ export const SavePipelineGraphResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "configValues": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.looseObject({
 
@@ -276,7 +294,7 @@ export const SavePipelineGraphResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "isRequired": /*#__PURE__*/ zod.boolean(),
   "defaultValue": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
@@ -286,13 +304,13 @@ export const SavePipelineGraphResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "order": /*#__PURE__*/ zod.int()
 })),
   "variables": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
@@ -376,7 +394,7 @@ export const GetPipelineInputSchemaResponseItem = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "isRequired": /*#__PURE__*/ zod.boolean(),
   "defaultValue": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
@@ -406,7 +424,7 @@ export const AddPipelineInputResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "isRequired": /*#__PURE__*/ zod.boolean(),
   "defaultValue": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
@@ -439,7 +457,7 @@ export const UpdatePipelineInputResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "isRequired": /*#__PURE__*/ zod.boolean(),
   "defaultValue": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.string()),
@@ -475,21 +493,25 @@ export const AddPipelineNodeResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "configValues": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.looseObject({
 
@@ -543,7 +565,7 @@ export const AddPipelineOutputResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "order": /*#__PURE__*/ zod.int()
 })
@@ -581,7 +603,7 @@ export const UpdatePipelineOutputResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.uuid(),
   "key": /*#__PURE__*/ zod.string(),
   "label": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)]),
   "order": /*#__PURE__*/ zod.int()
 })
@@ -628,7 +650,7 @@ export const ValidatePipelineResponse = /*#__PURE__*/ zod.object({
   "nodeLabel": /*#__PURE__*/ zod.string(),
   "pinKey": /*#__PURE__*/ zod.string(),
   "pinLabel": /*#__PURE__*/ zod.string(),
-  "primitiveType": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "primitiveType": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "reason": /*#__PURE__*/ zod.string()
 }))
 })
@@ -640,7 +662,7 @@ export const UpdatePipelineVariablesParams = /*#__PURE__*/ zod.object({
 export const UpdatePipelineVariablesBody = /*#__PURE__*/ zod.object({
   "variables": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 }))
@@ -648,7 +670,7 @@ export const UpdatePipelineVariablesBody = /*#__PURE__*/ zod.object({
 
 export const UpdatePipelineVariablesResponseItem = /*#__PURE__*/ zod.object({
   "name": /*#__PURE__*/ zod.string(),
-  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)]),
+  "type": /*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)]),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "description": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })

@@ -36,7 +36,7 @@ export function NodeLibrary({ projectId }: NodeLibraryProps) {
     nodes.forEach((n) => {
       if (n.category) set.add(n.category);
     });
-    return ["All", "Custom", "BuiltIn", ...Array.from(set)];
+    return ["All", "BuiltIn", ...Array.from(set)];
   }, [nodes]);
 
   const filteredNodes = useMemo(() => {

@@ -33,6 +33,60 @@ export interface FieldRegistration {
   resolvedDataProp?: string
 }
 
+export class ScopedFieldRegistry {
+  protected parent?: ScopedFieldRegistry;
+  protected _controls = new Map<string, FieldRegistration>();
+
+  constructor(parent?: ScopedFieldRegistry) {
+    this.parent = parent;
+  }
+
+  register(registration: FieldRegistration): this {
+    if (this._controls.has(registration.type)) {
+      console.warn(`Field "${registration.type}" already registered in this scope — skipping`);
+      return this;
+    }
+    this._controls.set(registration.type, registration);
+    return this;
+  }
+
+  get(type: string): FieldRegistration | undefined {
+    return this._controls.get(type) ?? this.parent?.get(type);
+  }
+
+  getAllTypes(): string[] {
+    const parentTypes = this.parent ? this.parent.getAllTypes() : [];
+    return [...new Set([...parentTypes, ...this._controls.keys()])];
+  }
+}
+
+class BaseFieldRegistry extends ScopedFieldRegistry {
+  private static readonly ALIASES: Record<string, string> = {
+    input: "text",
+    tagsInput: "tags",
+    keyValue: "key-value",
+  };
+
+  override get(type: string): FieldRegistration | undefined {
+    const direct = super.get(type) ?? getInternalRegistry().get(type);
+    if (direct) return direct;
+
+    const alias = BaseFieldRegistry.ALIASES[type];
+    if (alias) {
+      return super.get(alias) ?? getInternalRegistry().get(alias);
+    }
+
+    return undefined;
+  }
+
+  override getAllTypes(): string[] {
+    const globalTypes = Array.from(getInternalRegistry().keys());
+    return [...new Set([...globalTypes, ...super.getAllTypes(), ...Object.keys(BaseFieldRegistry.ALIASES)])];
+  }
+}
+
+export const baseRegistry = new BaseFieldRegistry();
+
 var _fieldRegistry: Map<string, FieldRegistration> | undefined;
 
 function getInternalRegistry() {

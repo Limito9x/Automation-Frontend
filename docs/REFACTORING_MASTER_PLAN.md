@@ -47,42 +47,34 @@ graph TD
 
 ---
 
-### 📐 Phase 2: Chuẩn hóa Schema & Type Safety cho Pin System (Backend + Frontend)
+### 📐 Phase 2: Chuẩn hóa Schema & Type Safety cho Pin System (Backend + Frontend) - [x] HOÀN THÀNH
 *Mục tiêu: Xây dựng nền móng dữ liệu vững chắc cho Canvas đồ thị, chấm dứt tình trạng type mông lung và chắp vá.*
 
-1. **Định nghĩa Schema chuẩn hóa (Schema-First):**
-   - Phân loại rạch ròi các nhóm Primitive Type:
-     - `PrimitivePin`: `String`, `Number`, `Boolean` (có min, max, regex validation).
-     - `EntityRefPin`: Tham chiếu thực thể cụ thể (`Resource`, `Workspace`, `Pipeline`, `TagGroup`...).
-     - `AssetPin`: Phân định rõ ràng giữa **File Upload Asset** (liên kết hệ thống storage/upload) và **Preset Reference Path** (đường dẫn định sẵn/cấu hình cố định).
-     - `MapPin` & `ArrayPin`: Cung cấp Key-Value Schema định hình cấu trúc, cấm dùng JSON tự do mù mờ.
-2. **Đồng bộ hợp đồng (Contracts) Backend & Frontend:**
-   - C# Backend: Tái cấu trúc `PinDefinition` và các Tool Resolver đầu vào/đầu ra.
-   - Frontend: Tạo `pinSchema.ts` với Zod Schema tương ứng 1-1, hỗ trợ parse an toàn.
-3. **Hệ thống Kiểm tra Tính tương thích khi nối dây (Connection Compatibility Validation):**
-   - Không cho phép nối tùy tiện giữa 2 Pin không tương thích (ví dụ không cho nối String vào EntityRef nếu không có adapter/cast).
-   - Đổi màu đường nối dây (Edge visual) hoặc từ chối kết nối ngay trên canvas khi type không hợp lệ.
+1. **Định nghĩa Schema chuẩn hóa & Single Source of Truth (Đã xong):**
+   - Backend cung cấp API `GET /api/pipelines/pin-catalogue` (`PinTypeMetadataDto`) bộc lộ mã màu HEX, nhãn hiển thị, style badge, và control gợi ý.
+   - Frontend kết nối qua `usePinCatalogue.ts` làm Single Source of Truth (SSOT).
+2. **Lưu trữ String Enums & Dọn dẹp Migration (Đã xong):**
+   - Chuyển đổi toàn bộ `PinKind` (Data/Exec) và `PinCardinality` (Single/Array/Map) sang String Enum trong DB PostgreSQL qua migration `20260906041319_MigratePinEnumsToStringAndCleanVariable.cs`, khắc phục triệt để lỗi Inverted Enum Bug.
+   - Loại bỏ kiểu "Variable" nguyên thủy mơ hồ; chuẩn hóa thành `EntityTarget = "variable"` hoặc quy chuẩn tên chân `VariableName`/`TargetVariable`.
 
 ---
 
-### 🧩 Phase 3: Bóc tách `NodeConfigInspector` & Áp dụng Registry Pattern (Frontend)
-*Mục tiêu: Giải phóng file gần 1.000 dòng, đưa kiến trúc Registry thanh thoát của module Content sang Pipeline.*
+### 🧩 Phase 3: Bóc tách `NodeConfigInspector` & Áp dụng Scoped Registry Pattern (Frontend) - [x] HOÀN THÀNH
+*Mục tiêu: Giải phóng file gần 1.000 dòng, đưa kiến trúc Scoped Registry ("Sàn" Pattern) thanh thoát vào Pipeline Canvas.*
 
-1. **Xây dựng `PinControlRegistry`:**
-   - Mỗi kiểu Pin trở thành một Component độc lập, tự đóng gói UI và validation:
-     - `StringPinControl.tsx`
-     - `NumberPinControl.tsx`
-     - `BooleanPinControl.tsx`
-     - `EntityRefPinControl.tsx` (tách riêng logic select/search thực thể)
-     - `AssetPinControl.tsx` (tách riêng logic upload và xem preview)
-     - `MapPinControl.tsx` (giao diện key-value editor chuyên nghiệp)
-2. **Tách biệt các khối chức năng lớn:**
-   - `TriggerConfigSection.tsx`: Chuyên trách cấu hình Event Trigger vs Manual Trigger (Workspace filter, Extension filter).
-   - `CustomInputsSection.tsx`: Chuyên trách cấu hình các tham số đầu vào do người dùng tự tạo.
-   - `NodeHeaderSection.tsx`: Chuyên trách hiển thị thông tin Node, mô tả, thao tác xóa/nhân bản.
-3. **Rút gọn `NodeConfigInspector.tsx`:**
-   - Đóng vai trò là Shell Container thuần túy (< 150 dòng).
-   - Chỉ giữ state chọn Node, nạp các Sub-components tương ứng qua Registry.
+1. **Hạ tầng Scoped Field Registry ("Sàn" Pattern) (Đã xong):**
+   - Bổ sung class `ScopedFieldRegistry` (hỗ trợ phân cấp Scope Chain Lookup) và `baseRegistry` trong `src/lib/field-registry.ts`.
+   - Khởi tạo sàn riêng `pipelineRegistry = new ScopedFieldRegistry(baseRegistry)` kế thừa toàn bộ controls cơ sở mà không làm lộ controls đặc thù sang Content FormBuilder.
+2. **Loại bỏ triệt để Prop Drilling qua Scope Context (Đã xong):**
+   - Tạo `PipelineFormScopeProvider` inject context nghiệp vụ (`pipelineId`, `projectId`, `variables`, `edges`, `nodes`) tại `PipelineCanvas.tsx`.
+   - Các Form Controls đọc trực tiếp dữ liệu qua hook `usePipelineFormScope()`.
+3. **Form Controls chuyên biệt & Rule-based Strategy Factory (Đã xong):**
+   - Xây dựng 4 form controls đặc thù: `FormPinVariableSelect`, `FormPinEntitySelect`, `FormPinAssetUpload`, `FormPinPathInput` tự đăng ký vào `pipelineRegistry`.
+   - Viết Pure Adapter `pinToFieldDefinition` áp dụng Rule-based Strategy Factory Pattern (`PIN_RULES` với `predicate` và `create`) tuân thủ Open-Closed Principle (OCP).
+4. **Cải tổ `NodeConfigInspector.tsx` (Đã xong):**
+   - Bóc tách mạch lạc: **Wired Inputs** (đã nối dây, chỉ hiển thị card thông tin kết nối) và **Configurable Fields** (chưa nối dây, render qua `FormRenderer` với `pipelineRegistry`).
+   - Tích hợp `useForm` cùng cơ chế Debounced Autosave (250ms) gửi mutation PATCH về server mượt mà.
+   - Xóa bỏ hoàn toàn `PinPropertyControl.tsx`. Kiểm tra toàn bộ dự án đạt 0 lỗi TypeScript (`pnpm tsc -b`).
 
 ---
 

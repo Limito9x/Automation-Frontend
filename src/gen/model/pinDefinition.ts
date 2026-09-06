@@ -18,4 +18,8 @@ export interface PinDefinition {
   defaultValue?: unknown;
   /** @nullable */
   metadata?: string | null;
+  /** @nullable */
+  entityTarget?: string | null;
+  /** @nullable */
+  allowedExtensions?: string | null;
 }

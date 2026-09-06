@@ -168,6 +168,21 @@ export const useUpdatePipelineNode = (pipelineId?: string) => {
   };
 };
 
+/**
+ * Mutation chuyên dùng cho Drag/Drop tọa độ: Lưu ngầm vào DB mà KHÔNG invalidate query,
+ * tránh refetch và reset toàn bộ nodes trên Canvas gây giật lag.
+ */
+export const useUpdateNodePosition = (pipelineId?: string) => {
+  const mutation = PipelinesApi.useUpdatePipelineNode();
+  return {
+    ...mutation,
+    mutate: ({ nodeId, data }: { nodeId: string; data: UpdatePipelineNodeRequest }, options?: any) =>
+      mutation.mutate({ pipelineId: pipelineId!, nodeId, data }, options),
+    mutateAsync: ({ nodeId, data }: { nodeId: string; data: UpdatePipelineNodeRequest }, options?: any) =>
+      mutation.mutateAsync({ pipelineId: pipelineId!, nodeId, data }, options),
+  };
+};
+
 export const useDeletePipelineNode = (pipelineId?: string) => {
   const queryKey = pipelineId ? PipelinesApi.getGetPipelineGraphQueryKey(pipelineId) : ["pipelines"];
   const mutation = createMutationHook(PipelinesApi.useDeletePipelineNode, [queryKey])();

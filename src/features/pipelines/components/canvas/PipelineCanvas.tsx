@@ -23,9 +23,11 @@ import { VariablePanel } from "./VariablePanel";
 import { VariableDropMenu } from "./VariableDropMenu";
 import { RunPipelineModal } from "../../dialogs/RunPipelineModal";
 import { LiveExecutionDrawer } from "./LiveExecutionDrawer";
+import { PipelineFormScopeProvider } from "../../form-scope/PipelineFormScope";
 import {
   useAddPipelineNode,
   useUpdatePipelineNode,
+  useUpdateNodePosition,
   useDeletePipelineNode,
   useAddPipelineEdge,
   useDeletePipelineEdge,
@@ -240,6 +242,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
   // Granular CRUD Mutations
   const addNodeMutation = useAddPipelineNode(graph.id);
   const updateNodeMutation = useUpdatePipelineNode(graph.id);
+  const updateNodePositionMutation = useUpdateNodePosition(graph.id);
   const deleteNodeMutation = useDeletePipelineNode(graph.id);
   const addEdgeMutation = useAddPipelineEdge(graph.id);
   const deleteEdgeMutation = useDeletePipelineEdge(graph.id);
@@ -378,10 +381,10 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
     [addEdgeMutation, setEdges, nodes, updateNodeMutation, setNodes]
   );
 
-  // Drag stop handler (Node moved) -> Calls PATCH /api/pipelines/{id}/nodes/{nodeId}
+  // Drag stop handler (Node moved) -> Calls PATCH /api/pipelines/{id}/nodes/{nodeId} without refetching graph query
   const onNodeDragStop = useCallback(
     (_: MouseEvent | TouchEvent, node: Node) => {
-      updateNodeMutation.mutate({
+      updateNodePositionMutation.mutate({
         nodeId: node.id,
         data: {
           positionX: node.position.x,
@@ -389,7 +392,7 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
         },
       });
     },
-    [updateNodeMutation]
+    [updateNodePositionMutation]
   );
 
   // Nodes deleted handler (Delete key or backspace) -> Calls DELETE /api/pipelines/{id}/nodes/{nodeId}
@@ -651,145 +654,157 @@ export function PipelineCanvas({ projectId, graph }: PipelineCanvasProps) {
     addEdgeMutation.isPending ||
     deleteEdgeMutation.isPending;
 
+  const scopeValue = useMemo(
+    () => ({
+      pipelineId: graph.id,
+      projectId,
+      variables: graph.variables || [],
+      edges,
+      nodes,
+    }),
+    [graph.id, projectId, graph.variables, edges, nodes]
+  );
+
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-background">
-      {/* Top Toolbar */}
-      <CanvasToolbar
-        projectId={projectId}
-        pipelineId={graph.id}
-        pipelineName={graph.name}
-        triggerType={graph.triggerType}
-        isSaving={isMutating}
-        onOpenRunModal={() => setIsRunModalOpen(true)}
-        onOpenHistory={() => {
-          setDrawerDefaultTab("history");
-          setIsDrawerOpen(true);
-        }}
-        onValidate={handleValidate}
-        isValidating={validateMutation.isPending}
-      />
+    <PipelineFormScopeProvider value={scopeValue}>
+      <div className="relative flex h-full w-full flex-col overflow-hidden bg-background">
+        {/* Top Toolbar */}
+        <CanvasToolbar
+          projectId={projectId}
+          pipelineId={graph.id}
+          pipelineName={graph.name}
+          triggerType={graph.triggerType}
+          isSaving={isMutating}
+          onOpenRunModal={() => setIsRunModalOpen(true)}
+          onOpenHistory={() => {
+            setDrawerDefaultTab("history");
+            setIsDrawerOpen(true);
+          }}
+          onValidate={handleValidate}
+          isValidating={validateMutation.isPending}
+        />
 
-      {/* Main Canvas & Inspector Layout */}
-      <div className="relative flex flex-1 overflow-hidden">
-        <div className="relative flex-1 h-full">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeDragStop={onNodeDragStop}
-            onNodesDelete={onNodesDelete}
-            onEdgesDelete={onEdgesDelete}
-            onEdgeContextMenu={onEdgeContextMenu}
-            onConnect={onConnect}
-            isValidConnection={isValidConnection}
-            nodeTypes={nodeTypes}
-            defaultEdgeOptions={defaultEdgeOptions}
-            deleteKeyCode={["Backspace", "Delete"]}
-            onNodeClick={(_, node) => setSelectedNodeId(node.id)}
-            onPaneClick={() => setSelectedNodeId(null)}
-            onPaneContextMenu={onPaneContextMenu}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-            fitView
-            fitViewOptions={{ padding: 0.2 }}
-            proOptions={{ hideAttribution: true }}
-            className="bg-dot-grid"
-          >
-            <Background variant={BackgroundVariant.Dots} gap={16} size={1} className="opacity-40" />
-            <Controls />
-            <MiniMap
-              zoomable
-              pannable
-              nodeColor={(node) => {
-                const kind = (node.data as any)?.kind?.toLowerCase();
-                if (kind === "start") return "#10b981";
-                if (kind === "tool") return "#3b82f6";
-                return "#a855f7";
-              }}
+        {/* Main Canvas & Inspector Layout */}
+        <div className="relative flex flex-1 overflow-hidden">
+          <div className="relative flex-1 h-full">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeDragStop={onNodeDragStop}
+              onNodesDelete={onNodesDelete}
+              onEdgesDelete={onEdgesDelete}
+              onEdgeContextMenu={onEdgeContextMenu}
+              onConnect={onConnect}
+              isValidConnection={isValidConnection}
+              nodeTypes={nodeTypes}
+              defaultEdgeOptions={defaultEdgeOptions}
+              deleteKeyCode={["Backspace", "Delete"]}
+              onNodeClick={(_, node) => setSelectedNodeId(node.id)}
+              onPaneClick={() => setSelectedNodeId(null)}
+              onPaneContextMenu={onPaneContextMenu}
+              onDragOver={onDragOver}
+              onDrop={onDrop}
+              fitView
+              fitViewOptions={{ padding: 0.2 }}
+              onlyRenderVisibleElements={true}
+              proOptions={{ hideAttribution: true }}
+              className="bg-dot-grid"
+            >
+              <Background variant={BackgroundVariant.Dots} gap={16} size={1} className="opacity-40" />
+              <Controls />
+              <MiniMap
+                zoomable
+                pannable
+                nodeColor={(node) => {
+                  const kind = (node.data as any)?.kind?.toLowerCase();
+                  if (kind === "start") return "#10b981";
+                  if (kind === "tool") return "#3b82f6";
+                  return "#a855f7";
+                }}
+              />
+            </ReactFlow>
+
+            {/* Right-click Context Palette Popover */}
+            <ContextMenuPalette
+              projectId={projectId}
+              position={palettePosition}
+              onClose={() => setPalettePosition(null)}
+              onSelect={handleSelectPaletteItem}
             />
-          </ReactFlow>
 
-          {/* Right-click Context Palette Popover */}
-          <ContextMenuPalette
-            projectId={projectId}
-            position={palettePosition}
-            onClose={() => setPalettePosition(null)}
-            onSelect={handleSelectPaletteItem}
-          />
+            {/* Unreal-style Variable Drop Context Menu */}
+            {varDropState && (
+              <VariableDropMenu
+                varName={varDropState.varName}
+                position={varDropState.screenPos}
+                onSelect={(action) => {
+                  const toolKey = action === "Get" ? "GetVariable" : "SetVariable";
+                  handleSpawnVariableNodeAt(toolKey, varDropState.varName, varDropState.flowPos);
+                  setVarDropState(null);
+                }}
+                onClose={() => setVarDropState(null)}
+              />
+            )}
 
-          {/* Unreal-style Variable Drop Context Menu */}
-          {varDropState && (
-            <VariableDropMenu
-              varName={varDropState.varName}
-              position={varDropState.screenPos}
-              onSelect={(action) => {
-                const toolKey = action === "Get" ? "GetVariable" : "SetVariable";
-                handleSpawnVariableNodeAt(toolKey, varDropState.varName, varDropState.flowPos);
-                setVarDropState(null);
-              }}
-              onClose={() => setVarDropState(null)}
-            />
-          )}
-
-          {/* Left-side Blackboard Variables Panel */}
-          <VariablePanel
-            pipelineId={graph.id}
-            variables={graph.variables || []}
-            onSpawnNode={handleSpawnVariableNode}
-            isOpen={isVariablesOpen}
-            onToggle={() => setIsVariablesOpen((prev) => !prev)}
-          />
-
-          {/* Live Execution Run & History Drawer */}
-          {isDrawerOpen && (
-            <LiveExecutionDrawer
+            {/* Left-side Blackboard Variables Panel */}
+            <VariablePanel
               pipelineId={graph.id}
-              executionId={activeExecutionId}
-              defaultTab={drawerDefaultTab}
-              onSelectExecution={(id) => {
-                setActiveExecutionId(id);
-                setDrawerDefaultTab("inspect");
-              }}
-              onClose={() => setIsDrawerOpen(false)}
+              variables={graph.variables || []}
+              onSpawnNode={handleSpawnVariableNode}
+              isOpen={isVariablesOpen}
+              onToggle={() => setIsVariablesOpen((prev) => !prev)}
+            />
+
+            {/* Live Execution Run & History Drawer */}
+            {isDrawerOpen && (
+              <LiveExecutionDrawer
+                pipelineId={graph.id}
+                executionId={activeExecutionId}
+                defaultTab={drawerDefaultTab}
+                onSelectExecution={(id) => {
+                  setActiveExecutionId(id);
+                  setDrawerDefaultTab("inspect");
+                }}
+                onClose={() => setIsDrawerOpen(false)}
+              />
+            )}
+          </div>
+
+          {/* Selected Node Config Inspector Side Panel */}
+          {selectedNode && (
+            <NodeConfigInspector
+              pipelineId={graph.id}
+              node={selectedNode}
+              triggerType={graph.triggerType}
+              triggerWorkspaceId={graph.triggerWorkspaceId}
+              triggerConfig={graph.triggerConfig}
+              onClose={() => setSelectedNodeId(null)}
+              onUpdateConfig={handleUpdateConfig}
+              onDeleteNode={handleDeleteNode}
             />
           )}
         </div>
 
-        {/* Selected Node Config Inspector Side Panel */}
-        {selectedNode && (
-          <NodeConfigInspector
+        {/* Run Pipeline Modal */}
+        {isRunModalOpen && (
+          <RunPipelineModal
             pipelineId={graph.id}
-            variables={graph.variables || []}
-            node={selectedNode}
-            edges={edges}
-            nodes={nodes}
+            pipelineName={graph.name}
             projectId={projectId}
-            triggerType={graph.triggerType}
-            triggerWorkspaceId={graph.triggerWorkspaceId}
-            triggerConfig={graph.triggerConfig}
-            onClose={() => setSelectedNodeId(null)}
-            onUpdateConfig={handleUpdateConfig}
-            onDeleteNode={handleDeleteNode}
+            nodes={nodes}
+            edges={edges}
+            isOpen={isRunModalOpen}
+            onClose={() => setIsRunModalOpen(false)}
+            onExecutionStarted={(execId) => {
+              setActiveExecutionId(execId);
+              setDrawerDefaultTab("logs");
+              setIsDrawerOpen(true);
+            }}
           />
         )}
       </div>
-
-      {/* Run Pipeline Modal */}
-      <RunPipelineModal
-        pipelineId={graph.id}
-        pipelineName={graph.name}
-        projectId={projectId}
-        nodes={nodes}
-        edges={edges}
-        isOpen={isRunModalOpen}
-        onClose={() => setIsRunModalOpen(false)}
-        onExecutionStarted={(execId) => {
-          setActiveExecutionId(execId);
-          setDrawerDefaultTab("logs");
-          setIsDrawerOpen(true);
-        }}
-      />
-    </div>
+    </PipelineFormScopeProvider>
   );
 }

@@ -27,6 +27,7 @@ import type {
   AddPipelineOutputCommand,
   CreatePipelineCommand,
   GetPipelinesParams,
+  IReadOnlyListOfPinTypeMetadataDto,
   IReadOnlyListOfPipelineInputDto,
   ListOfNodeExecutionDto,
   ListOfPipelineExecutionDto,
@@ -569,6 +570,141 @@ export function useGetNodeExecutions<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetNodeExecutionsQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getPinCatalogue = (signal?: AbortSignal) => {
+  return customInstance<IReadOnlyListOfPinTypeMetadataDto>({
+    url: `/api/pipelines/pins/catalogue`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetPinCatalogueQueryKey = () => {
+  return [`/api/pipelines/pins/catalogue`] as const;
+};
+
+export const getGetPinCatalogueQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPinCatalogue>>,
+  TError = void,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getPinCatalogue>>, TError, TData>
+  >;
+}) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPinCatalogueQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPinCatalogue>>> = ({
+    signal,
+  }) => getPinCatalogue(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPinCatalogue>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetPinCatalogueQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPinCatalogue>>
+>;
+export type GetPinCatalogueQueryError = void;
+
+export function useGetPinCatalogue<
+  TData = Awaited<ReturnType<typeof getPinCatalogue>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPinCatalogue>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPinCatalogue>>,
+          TError,
+          Awaited<ReturnType<typeof getPinCatalogue>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPinCatalogue<
+  TData = Awaited<ReturnType<typeof getPinCatalogue>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPinCatalogue>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPinCatalogue>>,
+          TError,
+          Awaited<ReturnType<typeof getPinCatalogue>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPinCatalogue<
+  TData = Awaited<ReturnType<typeof getPinCatalogue>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPinCatalogue>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetPinCatalogue<
+  TData = Awaited<ReturnType<typeof getPinCatalogue>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPinCatalogue>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetPinCatalogueQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

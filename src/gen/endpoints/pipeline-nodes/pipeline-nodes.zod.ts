@@ -24,21 +24,25 @@ export const CreateCustomNodeBody = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 }))),
   "outputs": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })))
 })
 
@@ -53,21 +57,25 @@ export const CreateCustomNodeResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })
@@ -87,21 +95,25 @@ export const GetCustomNodeByIdResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })
@@ -120,21 +132,25 @@ export const UpdateCustomNodeBody = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 }))),
   "outputs": /*#__PURE__*/ zod.nullable(/*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })))
 })
 
@@ -149,21 +165,25 @@ export const UpdateCustomNodeResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "createdAt": /*#__PURE__*/ zod.iso.datetime({"offset":true})
 })
@@ -182,21 +202,25 @@ export const GetNodePaletteResponseItem = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "id": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.uuid())
 })
@@ -216,21 +240,25 @@ export const ParseScriptSchemaResponse = /*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 })),
   "outputs": /*#__PURE__*/ zod.array(/*#__PURE__*/ zod.object({
   "id": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "label": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.string()),
   "kind": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1)])),
-  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5),/*#__PURE__*/ zod.literal(6)])),
+  "primitiveType": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2),/*#__PURE__*/ zod.literal(3),/*#__PURE__*/ zod.literal(4),/*#__PURE__*/ zod.literal(5)])),
   "cardinality": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.union([/*#__PURE__*/ zod.literal(0),/*#__PURE__*/ zod.literal(1),/*#__PURE__*/ zod.literal(2)])),
   "isRequired": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.boolean()),
   "defaultValue": /*#__PURE__*/ zod.optional(/*#__PURE__*/ zod.unknown()),
-  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
+  "metadata": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "entityTarget": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string()),
+  "allowedExtensions": /*#__PURE__*/ zod.nullish(/*#__PURE__*/ zod.string())
 }))
 })
 
