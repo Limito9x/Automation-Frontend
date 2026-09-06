@@ -60,7 +60,7 @@ graph TD
 ---
 
 ### 🧩 Phase 3: Bóc tách `NodeConfigInspector` & Áp dụng Scoped Registry Pattern (Frontend) - [x] HOÀN THÀNH
-*Mục tiêu: Giải phóng file gần 1.000 dòng, đưa kiến trúc Scoped Registry ("Sàn" Pattern) thanh thoát vào Pipeline Canvas.*
+*Mục tiêu: Giải phóng file gần 1.000 dòng, đưa kiến trúc Scoped Registry ("Sàn" Pattern) thanh thoát vào toàn bộ hệ thống Pipeline Canvas.*
 
 1. **Hạ tầng Scoped Field Registry ("Sàn" Pattern) (Đã xong):**
    - Bổ sung class `ScopedFieldRegistry` (hỗ trợ phân cấp Scope Chain Lookup) và `baseRegistry` trong `src/lib/field-registry.ts`.
@@ -70,10 +70,12 @@ graph TD
    - Các Form Controls đọc trực tiếp dữ liệu qua hook `usePipelineFormScope()`.
 3. **Form Controls chuyên biệt & Rule-based Strategy Factory (Đã xong):**
    - Xây dựng 4 form controls đặc thù: `FormPinVariableSelect`, `FormPinEntitySelect`, `FormPinAssetUpload`, `FormPinPathInput` tự đăng ký vào `pipelineRegistry`.
-   - Viết Pure Adapter `pinToFieldDefinition` áp dụng Rule-based Strategy Factory Pattern (`PIN_RULES` với `predicate` và `create`) tuân thủ Open-Closed Principle (OCP).
-4. **Cải tổ `NodeConfigInspector.tsx` (Đã xong):**
-   - Bóc tách mạch lạc: **Wired Inputs** (đã nối dây, chỉ hiển thị card thông tin kết nối) và **Configurable Fields** (chưa nối dây, render qua `FormRenderer` với `pipelineRegistry`).
+   - Viết Pure Adapter `pinToFieldDefinition` áp dụng Rule-based Strategy Factory Pattern (`PIN_RULES` với `predicate` và `create`) tuân thủ Open-Closed Principle (OCP), hỗ trợ cả `Map` (`FormKeyValue`) và `Array` (`FormTagsInput`).
+4. **Cải tổ `NodeConfigInspector.tsx` & `RunPipelineModal.tsx` (Đã xong):**
+   - Bóc tách mạch lạc Inspector: **Wired Inputs** (đã nối dây, chỉ hiển thị card thông tin kết nối) và **Configurable Fields** (chưa nối dây, render qua `FormRenderer` với `pipelineRegistry`).
    - Tích hợp `useForm` cùng cơ chế Debounced Autosave (250ms) gửi mutation PATCH về server mượt mà.
+   - Refactor `RunPipelineModal.tsx` loại bỏ hoàn toàn đống `if-else` thủ công, chuyển sang render bằng `FormRenderer` + `pipelineRegistry` kết hợp `useForm`.
+   - Cập nhật `PinConfigInspector.tsx` đồng bộ với Catalogue API (`usePinCatalogue`), hỗ trợ String Enum và Entity Target.
    - Xóa bỏ hoàn toàn `PinPropertyControl.tsx`. Kiểm tra toàn bộ dự án đạt 0 lỗi TypeScript (`pnpm tsc -b`).
 
 ---

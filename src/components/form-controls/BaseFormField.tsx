@@ -38,11 +38,22 @@ export function BaseFormField<T extends FieldValues>({
     const field_id = formId ? `${formId}_${name}` : name
     const resolvedinput_name = autoComplete ?? (formId ? `${formId}_${name}` : name)
 
+    const isFieldRequired = isRequired ?? rest.rules?.required;
+    const computedRules = rest.rules ?? (isFieldRequired ? {
+        validate: (val: any) => {
+            if (val === undefined || val === null || val === "" || (Array.isArray(val) && val.length === 0)) {
+                return `${label || name} is required`;
+            }
+            return true;
+        }
+    } : undefined);
+
     return (
         <Controller
             control={control}
             name={name}
             defaultValue={defaultValue}
+            rules={computedRules}
             render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                     {label && (

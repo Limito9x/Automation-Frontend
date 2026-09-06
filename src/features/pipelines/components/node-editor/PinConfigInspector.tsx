@@ -1,6 +1,9 @@
 import type { PinDefinition } from "@/gen/model";
-import { PinPrimitiveType } from "@/gen/model/pinPrimitiveType";
-import { PinCardinality } from "@/gen/model/pinCardinality";
+import {
+  STATIC_PIN_CATALOGUE,
+  normalizePinType,
+  type NormalizedPinType,
+} from "../../hooks/usePinCatalogue";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -40,6 +43,15 @@ export function PinConfigInspector({
 
   const { pin, direction } = selectedPin;
   const isInput = direction === "in";
+
+  const normType: NormalizedPinType = normalizePinType(pin.primitiveType);
+
+  const currentCardinality = (() => {
+    const c = String(pin.cardinality ?? "").toLowerCase();
+    if (c === "array" || c === "1") return "Array";
+    if (c === "map" || c === "2") return "Map";
+    return "Single";
+  })();
 
   return (
     <Card className="h-full flex flex-col shadow-xs border bg-card">
@@ -97,38 +109,71 @@ export function PinConfigInspector({
           />
         </div>
 
-        {/* Data Type */}
+        {/* Data Type (Catalogue SSOT) */}
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold">Data Type</Label>
           <Select
-            selectedKey={String(pin.primitiveType ?? 0)}
+            selectedKey={normType}
             onSelectionChange={(key) =>
-              onUpdatePin({ ...pin, primitiveType: parseInt(String(key), 10) as PinPrimitiveType })
+              onUpdatePin({ ...pin, primitiveType: String(key) as any })
             }
           >
             <SelectTrigger className="text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem id="0">String (text / raw)</SelectItem>
-              <SelectItem id="1">Number (int / float)</SelectItem>
-              <SelectItem id="2">Boolean (true / false)</SelectItem>
-              <SelectItem id="3">Path (file / folder)</SelectItem>
-              <SelectItem id="4">EntityRef (workspace / content reference)</SelectItem>
-              <SelectItem id="5">Asset / File (Upload preset, script, file)</SelectItem>
+              {Object.values(STATIC_PIN_CATALOGUE).map((item) => (
+                <SelectItem key={item.code} id={item.code} textValue={item.label}>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="size-2.5 rounded-full shrink-0 shadow-xs"
+                      style={{ backgroundColor: item.handleColor }}
+                    />
+                    <span className="font-medium text-xs">{item.label}</span>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      ({item.code})
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
+
+        {/* Entity Target for EntityRef */}
+        {normType === "EntityRef" && (
+          <div className="space-y-1.5 animate-in fade-in duration-150">
+            <Label className="text-xs font-semibold">Entity Target</Label>
+            <Select
+              selectedKey={pin.entityTarget || "Resource"}
+              onSelectionChange={(key) =>
+                onUpdatePin({ ...pin, entityTarget: String(key) })
+              }
+            >
+              <SelectTrigger className="text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem id="Resource">Resource (Files, Models, Textures)</SelectItem>
+                <SelectItem id="Workspace">Workspace (Folder Root)</SelectItem>
+                <SelectItem id="ContentType">Content Type (Dynamic Schema)</SelectItem>
+                <SelectItem id="Agent">Agent (Runner Worker)</SelectItem>
+                <SelectItem id="Tag">Tag / Metadata Group</SelectItem>
+                <SelectItem id="variable">Pipeline Variable (Runtime Store)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Cardinality (Single vs Array vs Map) */}
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold">Cardinality (Data Structure)</Label>
           <Select
-            selectedKey={String(pin.cardinality ?? 0)}
+            selectedKey={currentCardinality}
             onSelectionChange={(key) =>
               onUpdatePin({
                 ...pin,
-                cardinality: parseInt(String(key), 10) as PinCardinality,
+                cardinality: String(key) as any,
               })
             }
           >
@@ -136,9 +181,9 @@ export function PinConfigInspector({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem id="0">Single Value</SelectItem>
-              <SelectItem id="1">Array / List ([])</SelectItem>
-              <SelectItem id="2">Map / Dictionary (Key-Value)</SelectItem>
+              <SelectItem id="Single">Single Value</SelectItem>
+              <SelectItem id="Array">Array / List ([])</SelectItem>
+              <SelectItem id="Map">Map / Dictionary (Key-Value)</SelectItem>
             </SelectContent>
           </Select>
         </div>

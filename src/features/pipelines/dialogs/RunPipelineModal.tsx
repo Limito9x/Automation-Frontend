@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import type { Node, Edge } from "@xyflow/react";
+import { useForm } from "react-hook-form";
 import { useGetAgents } from "@/gen/endpoints/agents/agents";
 import { useRunPipeline, usePipelineInputSchema } from "../hooks/usePipelineGraph";
-import type { PipelineInputDto } from "@/gen/model";
 import {
   Dialog,
   DialogHeader,
@@ -12,14 +12,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Play, Server, Loader2, AlertCircle, Sparkles, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getPinVisual, isBooleanPin, isNumberPin, isEntityRefPin, isAssetPin } from "../components/canvas/CustomPipelineNode";
-import { EntityPinSelect } from "../components/canvas/EntityPinSelect";
-import { AssetPinUpload } from "../components/canvas/AssetPinUpload";
 import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { buildDynamicSchema } from "@/lib/schema-builder";
+import { FormRenderer } from "@/components/dynamic-form/FormRenderer";
+import { pipelineRegistry } from "../form-scope/pipelineRegistry";
+import {
+  pinToFieldDefinition,
+  pipelineInputToFieldDefinition,
+} from "../form-scope/pinToFieldDefinition";
 
 export interface MissingRuntimeInput {
   nodeId: string;
@@ -44,7 +47,6 @@ interface RunPipelineModalProps {
 export function RunPipelineModal({
   pipelineId,
   pipelineName,
-  projectId = "",
   nodes = [],
   edges = [],
   isOpen,
@@ -55,33 +57,17 @@ export function RunPipelineModal({
   const { data: schemaInputs = [], isLoading: isLoadingSchema } = usePipelineInputSchema(pipelineId);
 
   const [selectedAgentId, setSelectedAgentId] = useState<string>("");
-  const [runtimeValues, setRuntimeValues] = useState<Record<string, any>>({});
   const runMutation = useRunPipeline(pipelineId);
 
   // Auto-select active or first agent
   useEffect(() => {
     if (agents && agents.length > 0 && !selectedAgentId) {
-      const active = agents.find((a: any) => a.isOnline || a.status === "Active" || a.status === 1);
+      const active = agents.find((a: any) => a.isOnline || a.isActive || a.status === "Active" || a.status === 1);
       setSelectedAgentId(active?.id || agents[0].id);
     }
   }, [agents, selectedAgentId]);
 
-  // Initialize runtime values with default values from schema inputs
-  useEffect(() => {
-    if (schemaInputs && schemaInputs.length > 0) {
-      setRuntimeValues((prev) => {
-        const next = { ...prev };
-        for (const input of schemaInputs) {
-          if (next[input.key] === undefined && input.defaultValue !== null && input.defaultValue !== undefined) {
-            next[input.key] = input.defaultValue;
-          }
-        }
-        return next;
-      });
-    }
-  }, [schemaInputs]);
-
-  // Compute unwired & unconfigured required inputs on other nodes (excluding Start node)
+  // Compute unwired & unconfigured required inputs on internal nodes (excluding Start node)
   const additionalMissingInputs = useMemo<MissingRuntimeInput[]>(() => {
     const list: MissingRuntimeInput[] = [];
     for (const node of nodes) {
@@ -121,32 +107,132 @@ export function RunPipelineModal({
     return list;
   }, [nodes, edges]);
 
-  const handleUpdateRuntimeInput = (key: string, value: any) => {
-    setRuntimeValues((prev) => ({ ...prev, [key]: value }));
-  };
+  // Convert schema inputs (Start Node) to FieldDefinition[]
+  const startFields = useMemo(() => {
+    return schemaInputs.map((input) => pipelineInputToFieldDefinition(input));
+  }, [schemaInputs]);
 
-  const handleRun = async () => {
-    const finalAgentId =
-      selectedAgentId ||
-      (agents.length > 0 ? agents[0].id : "00000000-0000-0000-0000-000000000001");
+  // Convert missing unwired inputs to FieldDefinition[]
+  const missingFields = useMemo(() => {
+    return additionalMissingInputs.map((input) =>
+      pinToFieldDefinition(
+        {
+          id: input.pinId,
+          label: input.pinLabel,
+          primitiveType: input.primitiveType,
+          isRequired: true,
+          metadata: input.metadata,
+        },
+        {},
+        {
+          name: `${input.nodeId}.${input.pinId}`,
+          label: `${input.nodeLabel} → ${input.pinLabel}`,
+        }
+      )
+    );
+  }, [additionalMissingInputs]);
 
-    try {
-      const execution = await runMutation.mutateAsync({
-        agentId: finalAgentId,
-        runtimeInputs: runtimeValues,
+  // Aggregate all fields for schema validation
+  const allFields = useMemo(
+    () => [...startFields, ...missingFields],
+    [startFields, missingFields]
+  );
+
+  const validationSchema = useMemo(
+    () => buildDynamicSchema(allFields, pipelineRegistry),
+    [allFields]
+  );
+
+  // Initial default values for all inputs
+  const defaultValues = useMemo(() => {
+    const defaults: Record<string, any> = {};
+    const KNOWN_PLACEHOLDERS = [
+      "resource",
+      "workspace",
+      "contenttype",
+      "agent",
+      "tag",
+      "taggroup",
+      "variable",
+      "none",
+    ];
+
+    schemaInputs.forEach((input) => {
+      const f = startFields.find((field) => field.name === input.key);
+      const val = f?.defaultValue !== undefined ? f.defaultValue : input.defaultValue;
+      const valStr = typeof val === "string" ? val.trim().toLowerCase() : "";
+
+      // Nếu defaultValue trùng với tên Entity Target placeholder thì coi là chưa chọn (rỗng)
+      if (val === null || val === undefined || KNOWN_PLACEHOLDERS.includes(valStr)) {
+        defaults[input.key] = "";
+      } else {
+        defaults[input.key] = val;
+      }
+    });
+
+    additionalMissingInputs.forEach((input) => {
+      defaults[`${input.nodeId}.${input.pinId}`] = "";
+    });
+
+    return defaults;
+  }, [schemaInputs, startFields, additionalMissingInputs]);
+
+  const form = useForm({
+    resolver: zodResolver(validationSchema as any),
+    defaultValues,
+    values: defaultValues,
+    mode: "onSubmit",
+  });
+
+  const handleRun = form.handleSubmit(
+    async (values) => {
+      const finalAgentId =
+        selectedAgentId ||
+        (agents.length > 0 ? agents[0].id : "00000000-0000-0000-0000-000000000001");
+
+      // Separate start inputs vs node overrides
+      const runtimeInputs: Record<string, any> = {};
+
+      schemaInputs.forEach((input) => {
+        if (values[input.key] !== undefined) {
+          runtimeInputs[input.key] = values[input.key];
+        }
       });
 
-      toast.success("Pipeline execution started!");
-      onClose();
-      if (execution?.id && onExecutionStarted) {
-        onExecutionStarted(execution.id);
+      additionalMissingInputs.forEach((input) => {
+        const key = `${input.nodeId}.${input.pinId}`;
+        if (values[key] !== undefined) {
+          runtimeInputs[key] = values[key];
+        }
+      });
+
+      try {
+        const execution = await runMutation.mutateAsync({
+          agentId: finalAgentId,
+          runtimeInputs,
+        });
+
+        toast.success("Pipeline execution started!");
+        onClose();
+        if (execution?.id && onExecutionStarted) {
+          onExecutionStarted(execution.id);
+        }
+      } catch (err: any) {
+        const msg =
+          err?.response?.data?.message || err?.message || "Failed to start pipeline execution";
+        toast.error(msg);
       }
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message || err?.message || "Failed to start pipeline execution";
-      toast.error(msg);
+    },
+    (errors) => {
+      console.warn("Pipeline run validation errors:", errors);
+      const firstError = Object.values(errors)[0]?.message;
+      toast.error(
+        typeof firstError === "string"
+          ? firstError
+          : "Please fill in all required inputs before running pipeline."
+      );
     }
-  };
+  );
 
   return (
     <Dialog
@@ -164,7 +250,8 @@ export function RunPipelineModal({
         </p>
       </DialogHeader>
 
-      <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+      <form onSubmit={handleRun} className="space-y-4">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
           {/* 1. Pipeline Start Inputs Section (From Backend Schema) */}
           {isLoadingSchema ? (
             <div className="flex items-center justify-center py-4 text-xs text-muted-foreground">
@@ -178,136 +265,34 @@ export function RunPipelineModal({
                 <span>Pipeline Start Inputs ({schemaInputs.length})</span>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                These inputs are injected into the Start Node when execution begins:
+                Configure runtime arguments for your pipeline execution entry point.
               </p>
-
-              <div className="space-y-2.5">
-                {schemaInputs.map((input: PipelineInputDto) => {
-                  const key = input.key;
-                  const visual = getPinVisual(input.type);
-                  const currentVal = runtimeValues[key] ?? "";
-
-                  return (
-                    <div key={key} className="rounded-lg border border-border/70 bg-card p-2.5 space-y-1.5 shadow-sm">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="text-[11px] font-semibold text-foreground truncate">
-                            {input.label || input.key}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground font-mono truncate">
-                            ({input.key})
-                          </span>
-                          {input.isRequired && (
-                            <span className="text-destructive font-bold text-xs">*</span>
-                          )}
-                        </div>
-                        <Badge variant="outline" className={cn("text-[9px] font-mono px-1.5 h-4 font-semibold", visual.textClass)}>
-                          {visual.label}
-                        </Badge>
-                      </div>
-
-                      <div>
-                        {isBooleanPin(input.type) ? (
-                          <div className="flex items-center justify-between pt-1">
-                            <span className="text-xs text-muted-foreground">Enable</span>
-                            <Switch
-                              isSelected={Boolean(currentVal)}
-                              onChange={(v) => handleUpdateRuntimeInput(key, v)}
-                            />
-                          </div>
-                        ) : isNumberPin(input.type) ? (
-                          <Input
-                            type="number"
-                            value={currentVal}
-                            onChange={(e) => handleUpdateRuntimeInput(key, e.target.value === "" ? null : Number(e.target.value))}
-                            placeholder={`Enter ${input.label || input.key}...`}
-                            className="h-8 text-xs bg-background"
-                          />
-                        ) : isAssetPin(input.type) || input.key?.toLowerCase().includes("preset") ? (
-                          <AssetPinUpload
-                            value={currentVal}
-                            onChange={(val) => handleUpdateRuntimeInput(key, val)}
-                            placeholder={`Upload ${input.label || input.key} file...`}
-                          />
-                        ) : isEntityRefPin(input.type) || input.key?.toLowerCase().includes("contenttype") ? (
-                          <EntityPinSelect
-                            entityType={
-                              input.key?.toLowerCase().includes("contenttype")
-                                ? "ContentType"
-                                : input.defaultValue ||
-                                  (input.key?.toLowerCase().includes("workspace")
-                                    ? "Workspace"
-                                    : input.key?.toLowerCase().includes("taggroup") || input.key?.toLowerCase().includes("tag_group")
-                                    ? "TagGroup"
-                                    : input.key?.toLowerCase().includes("tag")
-                                    ? "Tag"
-                                    : input.key?.toLowerCase().includes("agent")
-                                    ? "Agent"
-                                    : "Resource")
-                            }
-                            projectId={projectId}
-                            value={currentVal}
-                            onChange={(val) => handleUpdateRuntimeInput(key, val)}
-                            placeholder={`Select ${input.label || input.key}...`}
-                          />
-                        ) : (
-                          <Input
-                            type="text"
-                            value={currentVal}
-                            onChange={(e) => handleUpdateRuntimeInput(key, e.target.value)}
-                            placeholder={`Enter ${input.label || input.key}...`}
-                            className="h-8 text-xs bg-background"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="rounded-lg border border-border/70 bg-card p-3 shadow-sm">
+                <FormRenderer
+                  registry={pipelineRegistry}
+                  control={form.control}
+                  fields={startFields}
+                />
               </div>
             </div>
           ) : null}
 
           {/* 2. Additional Unwired Required Inputs */}
-          {additionalMissingInputs.length > 0 && (
+          {missingFields.length > 0 && (
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 space-y-3">
               <div className="flex items-center gap-2 text-xs font-medium text-amber-600 dark:text-amber-400">
                 <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>Additional Unconnected Inputs ({additionalMissingInputs.length})</span>
+                <span>Additional Unconnected Inputs ({missingFields.length})</span>
               </div>
-              <div className="space-y-2.5">
-                {additionalMissingInputs.map((input) => {
-                  const key = `${input.nodeId}.${input.pinId}`;
-                  const visual = getPinVisual(input.primitiveType);
-                  const currentVal = runtimeValues[key] ?? "";
-
-                  return (
-                    <div key={key} className="rounded-lg border border-border/70 bg-card p-2.5 space-y-1.5 shadow-sm">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-semibold text-foreground truncate">
-                          {input.nodeLabel} &rarr; {input.pinLabel}
-                        </span>
-                        <Badge variant="outline" className={cn("text-[9px] font-mono px-1.5 h-4 font-semibold", visual.textClass)}>
-                          {visual.label}
-                        </Badge>
-                      </div>
-                      {isAssetPin(input.primitiveType) || input.pinId?.toLowerCase().includes("preset") ? (
-                        <AssetPinUpload
-                          value={currentVal}
-                          onChange={(val) => handleUpdateRuntimeInput(key, val)}
-                          placeholder={`Upload ${input.pinLabel}...`}
-                        />
-                      ) : (
-                        <Input
-                          type="text"
-                          value={currentVal}
-                          onChange={(e) => handleUpdateRuntimeInput(key, e.target.value)}
-                          placeholder={`Enter ${input.pinLabel}...`}
-                          className="h-8 text-xs bg-background"
-                        />
-                      )}
-                    </div>
-                  );
-                })}
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Required inputs on internal nodes that are not connected to any wire.
+              </p>
+              <div className="rounded-lg border border-border/70 bg-card p-3 shadow-sm">
+                <FormRenderer
+                  registry={pipelineRegistry}
+                  control={form.control}
+                  fields={missingFields}
+                />
               </div>
             </div>
           )}
@@ -384,7 +369,8 @@ export function RunPipelineModal({
           </Button>
           <Button
             size="sm"
-            onPress={handleRun}
+            type="submit"
+            onPress={() => handleRun()}
             isDisabled={!selectedAgentId || runMutation.isPending}
             className="gap-1.5"
           >
@@ -401,6 +387,7 @@ export function RunPipelineModal({
             )}
           </Button>
         </DialogFooter>
+      </form>
     </Dialog>
   );
 }

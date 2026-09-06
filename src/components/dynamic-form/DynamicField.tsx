@@ -41,7 +41,7 @@ export function DynamicField<T extends FieldValues>({
             name={field.name}
             label={field.label}
             description={field.description}
-            isRequired={field.properties?.required}
+            isRequired={field.properties?.required ?? field.rules?.required}
             {...finalProps}
         />
     )

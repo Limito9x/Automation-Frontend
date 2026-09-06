@@ -23,6 +23,13 @@ export function resolveEntityTargetFromPin(
     return pin.entityTarget;
   }
 
+  // Nếu defaultValue là tên một Entity Target đã biết ("Resource", "Workspace", v.v.)
+  const defaultValStr = typeof pin.defaultValue === "string" ? pin.defaultValue.trim() : "";
+  const knownTargets = ["resource", "workspace", "contenttype", "agent", "tag", "taggroup", "variable"];
+  if (knownTargets.includes(defaultValStr.toLowerCase())) {
+    return defaultValStr;
+  }
+
   const idLower = (pin.id || "").toLowerCase();
   const labelLower = (pin.label || "").toLowerCase();
 
@@ -49,6 +56,13 @@ export function resolveEntityTargetFromPin(
     return "ContentType";
   }
 
+  if (idLower.includes("resource") || labelLower.includes("resource")) {
+    return "Resource";
+  }
+  if (idLower.includes("workspace") || labelLower.includes("workspace")) {
+    return "Workspace";
+  }
+
   return "Resource";
 }
 
@@ -62,9 +76,7 @@ export const PIN_RULES: PinFieldRule[] = [
       label: pin.label || pin.id!,
       type: "pin:variableSelect",
       defaultValue: pin.defaultValue ?? "",
-      properties: {
-        isRequired: pin.isRequired,
-      },
+      properties: {},
     }),
   },
 
@@ -79,9 +91,7 @@ export const PIN_RULES: PinFieldRule[] = [
       label: pin.label || pin.id!,
       type: "key-value",
       defaultValue: pin.defaultValue ?? {},
-      properties: {
-        isRequired: pin.isRequired,
-      },
+      properties: {},
     }),
   },
 
@@ -104,7 +114,6 @@ export const PIN_RULES: PinFieldRule[] = [
       type: "tags",
       defaultValue: Array.isArray(pin.defaultValue) ? pin.defaultValue : [],
       properties: {
-        isRequired: pin.isRequired,
         placeholder: "Type and press Enter to add tag...",
       },
     }),
@@ -117,16 +126,22 @@ export const PIN_RULES: PinFieldRule[] = [
       Boolean(pin.entityTarget) ||
       idLower === "entityid" ||
       idLower === "entity",
-    create: (pin, _, configValues) => ({
-      name: pin.id!,
-      label: pin.label || pin.id!,
-      type: "pin:entitySelect",
-      defaultValue: pin.defaultValue ?? "",
-      properties: {
-        entityTarget: resolveEntityTargetFromPin(pin, configValues),
-        isRequired: pin.isRequired,
-      },
-    }),
+    create: (pin, _, configValues) => {
+      const entityTarget = resolveEntityTargetFromPin(pin, configValues);
+      const valStr = typeof pin.defaultValue === "string" ? pin.defaultValue.trim().toLowerCase() : "";
+      const isPlaceholder = ["resource", "workspace", "contenttype", "agent", "tag", "taggroup", "variable", "none"].includes(valStr);
+      const cleanDefault = isPlaceholder ? "" : (pin.defaultValue ?? "");
+
+      return {
+        name: pin.id!,
+        label: pin.label || pin.id!,
+        type: "pin:entitySelect",
+        defaultValue: cleanDefault,
+        properties: {
+          entityTarget,
+        },
+      };
+    },
   },
 
   // 5. Asset → Asset Upload
@@ -140,7 +155,6 @@ export const PIN_RULES: PinFieldRule[] = [
       defaultValue: pin.defaultValue ?? "",
       properties: {
         accept: typeof pin.allowedExtensions === "string" ? pin.allowedExtensions : undefined,
-        isRequired: pin.isRequired,
       },
     }),
   },
@@ -153,9 +167,7 @@ export const PIN_RULES: PinFieldRule[] = [
       label: pin.label || pin.id!,
       type: "switch",
       defaultValue: Boolean(pin.defaultValue),
-      properties: {
-        isRequired: pin.isRequired,
-      },
+      properties: {},
     }),
   },
 
@@ -167,9 +179,7 @@ export const PIN_RULES: PinFieldRule[] = [
       label: pin.label || pin.id!,
       type: "number",
       defaultValue: pin.defaultValue ?? 0,
-      properties: {
-        isRequired: pin.isRequired,
-      },
+      properties: {},
     }),
   },
 
@@ -183,7 +193,6 @@ export const PIN_RULES: PinFieldRule[] = [
       type: "textarea",
       defaultValue: pin.defaultValue ?? "",
       properties: {
-        isRequired: pin.isRequired,
         rows: 4,
       },
     }),
@@ -197,36 +206,62 @@ export const PIN_RULES: PinFieldRule[] = [
       label: pin.label || pin.id!,
       type: "pin:path",
       defaultValue: pin.defaultValue ?? "",
-      properties: {
-        isRequired: pin.isRequired,
-      },
+      properties: {},
     }),
   },
 ];
+
+import type { PipelineInputDto } from "@/gen/model";
 
 /**
  * Pure function adapter biến đổi PinDefinition thành FieldDefinition chuẩn của FormRenderer
  */
 export function pinToFieldDefinition(
   pin: PinDefinition,
-  configValues: Record<string, any>
+  configValues: Record<string, any> = {},
+  overrides?: { name?: string; label?: string }
 ): FieldDefinition<any> {
   const normType = normalizePinType(pin.primitiveType);
   const idLower = (pin.id || "").toLowerCase();
 
   const matchedRule = PIN_RULES.find((rule) => rule.predicate(pin, normType, idLower));
-  if (matchedRule) {
-    return matchedRule.create(pin, normType, configValues);
-  }
+  const fieldDef = matchedRule
+    ? matchedRule.create(pin, normType, configValues)
+    : {
+        name: pin.id!,
+        label: pin.label || pin.id!,
+        type: "text",
+        defaultValue: pin.defaultValue ?? "",
+        properties: {},
+      };
 
-  // Fallback mặc định: text input
-  return {
-    name: pin.id!,
-    label: pin.label || pin.id!,
-    type: "text",
-    defaultValue: pin.defaultValue ?? "",
-    properties: {
-      isRequired: pin.isRequired,
-    },
+  const isReq = pin.isRequired === true;
+  fieldDef.properties = {
+    ...fieldDef.properties,
+    required: isReq,
   };
+
+  if (overrides?.name) fieldDef.name = overrides.name;
+  if (overrides?.label) fieldDef.label = overrides.label;
+
+  return fieldDef;
 }
+
+/**
+ * Adapter helper chuyển đổi PipelineInputDto từ Start node thành FieldDefinition của FormRenderer
+ */
+export function pipelineInputToFieldDefinition(
+  input: PipelineInputDto,
+  configValues: Record<string, any> = {}
+): FieldDefinition<any> {
+  const pinDef: PinDefinition = {
+    id: input.key,
+    label: input.label || input.key,
+    primitiveType: input.type,
+    cardinality: 0 as any,
+    isRequired: input.isRequired,
+    defaultValue: input.defaultValue,
+  };
+  return pinToFieldDefinition(pinDef, configValues);
+}
+
